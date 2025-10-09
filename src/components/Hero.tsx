@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-nati
 import { Feather } from "@expo/vector-icons";
 import { COLORS, isMobile, WINDOW } from "../constants/theme";
 
-export default function Hero({ onLoginPress }: { onLoginPress: () => void }) {
+export default function Hero() {
   return (
     <View style={styles.hero}>
       {/* Background Elements */}
@@ -36,7 +36,7 @@ export default function Hero({ onLoginPress }: { onLoginPress: () => void }) {
           </Text>
 
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.primaryButton} onPress={onLoginPress}>
+            <TouchableOpacity style={styles.primaryButton}>
               <View style={styles.primaryBackground} />
               <Text style={styles.primaryText}>Start Free Trial</Text>
               <Feather name="arrow-right" size={18} color="#000" style={styles.buttonIcon} />
@@ -166,13 +166,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   badge: {
-    backgroundColor: "rgba(250,237,38,0.08)",
+    backgroundColor: "rgba(134,194,50,0.08)",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     alignSelf: "flex-start",
     borderWidth: 1,
-    borderColor: "rgba(250,237,38,0.15)",
+    borderColor: "rgba(134,194,50,0.15)",
     position: 'relative',
     overflow: 'hidden',
   },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: "rgba(250,237,38,0.3)",
+    backgroundColor: "rgba(134,194,50,0.3)",
   },
   badgeText: { 
     color: COLORS.accent, 
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   titleAccent: { 
     color: COLORS.accent,
-    textShadowColor: 'rgba(74, 144, 226, 0.3)',
+    textShadowColor: 'rgba(134,194,50,0.3)',
     textShadowOffset: { width: 0, height: 4 },
     textShadowRadius: 8,
   },

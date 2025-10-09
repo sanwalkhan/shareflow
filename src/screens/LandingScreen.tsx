@@ -1,6 +1,6 @@
 // src/screens/LandingScreen.tsx
 import React from "react";
-import { View, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
 import Features from "../components/Features";
@@ -9,25 +9,24 @@ import Testimonials from "../components/Testimonials";
 import Footer from "../components/Footer";
 import { COLORS } from "../constants/theme";
 
-const { width } = Dimensions.get("window");
-
-export default function LandingScreen({ onLoginPress }: { onLoginPress: () => void }) {
+export default function LandingScreen() {
   return (
     <View style={styles.container}>
-      {/* ✅ Centered Header */}
-      <View style={styles.headerWrapper}>
-        <Header onLoginPress={onLoginPress} />
+      {/* Header */}
+      <View style={styles.header}>
+        <Header />
       </View>
 
-      {/* Scrollable main content */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
+      {/* Main Content */}
+      <ScrollView 
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <View style={styles.contentWrapper}>
-          <Hero onLoginPress={onLoginPress} />
+        <View style={styles.content}>
+          <Hero />
           <Features />
-          <CTA onLoginPress={onLoginPress} />
+          <CTA />
           <Testimonials />
           <Footer />
         </View>
@@ -41,17 +40,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.black,
   },
-  headerWrapper: {
+  header: {
     width: "100%",
-    alignItems: "center",   // ✅ Centers header horizontally
+  },
+  scrollView: {
+    height: "100%",
   },
   scrollContent: {
-    paddingBottom: 0,
-    alignItems: "center",   // ✅ Keeps content centered
+    flexGrow: 1,
   },
-  contentWrapper: {
+  content: {
     width: "100%",
-    maxWidth: 1500,
-    backgroundColor: COLORS.black,
   },
 });

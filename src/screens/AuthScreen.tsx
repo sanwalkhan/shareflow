@@ -12,28 +12,13 @@ import {
   Platform
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
+import { COLORS, WINDOW, isMobile } from "../constants/theme";
 
-const { width, height } = Dimensions.get("window");
-const isMobile = width < 768;
+const { width, height } = WINDOW;
 
-// Consistent Color Scheme
-const COLORS = {
-  accent: "#faed26",      // Bright Yellow - Primary CTA & Highlights
-  primary: "#46344e",     // Dark Purple - Main Background
-  secondary: "#5a5560",   // Medium Purple - Cards & Sections
-  tertiary: "#9d8d8f",    // Muted Pink - Secondary Text
-  neutral: "#9b986f",     // Olive Green - Supporting Elements
-  white: "#ffffff",
-  black: "#000000",
-  textLight: "#f8f9fa",
-  textDark: "#1a202c",
-  overlay: "#46344e",
-  error: "#ef4444",
-  success: "#10b981"
-};
-
-export default function AuthScreen({ onBack }: { onBack: () => void }) {
+export default function AuthScreen() {
+  const navigation = useNavigation();
   const [isLogin, setIsLogin] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -116,6 +101,10 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
     }, 2000);
   };
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
   const renderStepIndicator = () => (
     <View style={styles.stepIndicator}>
       {[1, 2, 3, 4].map((step) => (
@@ -164,41 +153,35 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Company Type *</Text>
-                <View style={styles.selectInput}>
-                  <Text style={[
-                    styles.selectText,
-                    !formData.companyType && { color: COLORS.tertiary + "80" }
-                  ]}>
-                    {formData.companyType || "Select company type"}
-                  </Text>
-                  <Feather name="chevron-down" size={20} color={COLORS.tertiary} />
-                </View>
+                <TextInput
+                  placeholder="e.g., Corporation, LLC, Partnership"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.companyType}
+                  onChangeText={(value) => handleInputChange('companyType', value)}
+                />
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Industry *</Text>
-                <View style={styles.selectInput}>
-                  <Text style={[
-                    styles.selectText,
-                    !formData.industry && { color: COLORS.tertiary + "80" }
-                  ]}>
-                    {formData.industry || "Select industry"}
-                  </Text>
-                  <Feather name="chevron-down" size={20} color={COLORS.tertiary} />
-                </View>
+                <TextInput
+                  placeholder="e.g., Technology, Finance, Healthcare"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.industry}
+                  onChangeText={(value) => handleInputChange('industry', value)}
+                />
               </View>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Company Size *</Text>
-                <View style={styles.selectInput}>
-                  <Text style={[
-                    styles.selectText,
-                    !formData.companySize && { color: COLORS.tertiary + "80" }
-                  ]}>
-                    {formData.companySize || "Select company size"}
-                  </Text>
-                  <Feather name="chevron-down" size={20} color={COLORS.tertiary} />
-                </View>
+                <TextInput
+                  placeholder="e.g., 1-10, 11-50, 51-200"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.companySize}
+                  onChangeText={(value) => handleInputChange('companySize', value)}
+                />
               </View>
 
               <View style={styles.inputGroup}>
@@ -221,6 +204,17 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                   style={styles.input}
                   value={formData.taxId}
                   onChangeText={(value) => handleInputChange('taxId', value)}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Registration Number</Text>
+                <TextInput
+                  placeholder="Business registration number"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.registrationNumber}
+                  onChangeText={(value) => handleInputChange('registrationNumber', value)}
                 />
               </View>
             </View>
@@ -283,15 +277,13 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Country *</Text>
-                <View style={styles.selectInput}>
-                  <Text style={[
-                    styles.selectText,
-                    !formData.country && { color: COLORS.tertiary + "80" }
-                  ]}>
-                    {formData.country || "Select country"}
-                  </Text>
-                  <Feather name="chevron-down" size={20} color={COLORS.tertiary} />
-                </View>
+                <TextInput
+                  placeholder="Enter country"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.country}
+                  onChangeText={(value) => handleInputChange('country', value)}
+                />
               </View>
 
               <View style={styles.inputGroup}>
@@ -350,15 +342,13 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Department *</Text>
-                <View style={styles.selectInput}>
-                  <Text style={[
-                    styles.selectText,
-                    !formData.department && { color: COLORS.tertiary + "80" }
-                  ]}>
-                    {formData.department || "Select department"}
-                  </Text>
-                  <Feather name="chevron-down" size={20} color={COLORS.tertiary} />
-                </View>
+                <TextInput
+                  placeholder="e.g., Finance, HR, Operations"
+                  placeholderTextColor={COLORS.tertiary + "80"}
+                  style={styles.input}
+                  value={formData.department}
+                  onChangeText={(value) => handleInputChange('department', value)}
+                />
               </View>
             </View>
           </View>
@@ -422,7 +412,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                     onPress={() => handleInputChange('acceptTerms', !formData.acceptTerms)}
                   >
                     {formData.acceptTerms && (
-                      <Feather name="check" size={16} color={COLORS.primary} />
+                      <Feather name="check" size={16} color={COLORS.white} />
                     )}
                   </TouchableOpacity>
                   <Text style={styles.checkboxLabel}>
@@ -442,7 +432,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                     onPress={() => handleInputChange('newsletter', !formData.newsletter)}
                   >
                     {formData.newsletter && (
-                      <Feather name="check" size={16} color={COLORS.primary} />
+                      <Feather name="check" size={16} color={COLORS.white} />
                     )}
                   </TouchableOpacity>
                   <Text style={styles.checkboxLabel}>
@@ -460,10 +450,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.secondary, "#6a6375"]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       {/* Background Elements */}
       <View style={styles.backgroundElements}>
         <View style={[styles.floatingOrb, styles.orb1]} />
@@ -475,8 +462,10 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
       <KeyboardAvoidingView 
         style={styles.keyboardAvoid}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <ScrollView 
+          style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -491,14 +480,11 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
           >
             {/* Header Section */}
             <View style={styles.header}>
-              <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-                <LinearGradient
-                  colors={["rgba(250, 237, 38, 0.1)", "rgba(250, 237, 38, 0.05)"]}
-                  style={styles.backBtnGradient}
-                >
+              <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+                <View style={styles.backBtnContent}>
                   <Feather name="arrow-left" size={20} color={COLORS.accent} />
                   <Text style={styles.backText}>Back to Home</Text>
-                </LinearGradient>
+                </View>
               </TouchableOpacity>
 
               <View style={styles.logoSection}>
@@ -515,65 +501,57 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
             <View style={styles.mainContainer}>
               {/* Left Panel - Branding */}
               <View style={styles.brandingPanel}>
-                <LinearGradient
-                  colors={["rgba(70, 52, 78, 0.9)", "rgba(90, 85, 96, 0.85)"]}
-                  style={styles.brandingGradient}
-                >
-                  <View style={styles.brandingContent}>
-                    <View style={styles.brandingBadge}>
-                      <Feather name="award" size={20} color={COLORS.accent} />
-                      <Text style={styles.brandingBadgeText}>ENTERPRISE GRADE</Text>
+                <View style={styles.brandingContent}>
+                  <View style={styles.brandingBadge}>
+                    <Feather name="award" size={20} color={COLORS.accent} />
+                    <Text style={styles.brandingBadgeText}>ENTERPRISE GRADE</Text>
+                  </View>
+                  
+                  <Text style={styles.brandingTitle}>
+                    Join 500+ Companies{"\n"}
+                    <Text style={styles.brandingTitleAccent}>Managing Finances</Text>{"\n"}
+                    with Confidence
+                  </Text>
+                  
+                  <View style={styles.featuresList}>
+                    <View style={styles.featureItem}>
+                      <Feather name="check-circle" size={18} color={COLORS.accent} />
+                      <Text style={styles.featureText}>Automated Expense Tracking</Text>
                     </View>
-                    
-                    <Text style={styles.brandingTitle}>
-                      Join 500+ Companies{"\n"}
-                      <Text style={styles.brandingTitleAccent}>Managing Finances</Text>{"\n"}
-                      with Confidence
-                    </Text>
-                    
-                    <View style={styles.featuresList}>
-                      <View style={styles.featureItem}>
-                        <Feather name="check-circle" size={18} color={COLORS.accent} />
-                        <Text style={styles.featureText}>Automated Expense Tracking</Text>
-                      </View>
-                      <View style={styles.featureItem}>
-                        <Feather name="check-circle" size={18} color={COLORS.accent} />
-                        <Text style={styles.featureText}>Seamless Payroll Management</Text>
-                      </View>
-                      <View style={styles.featureItem}>
-                        <Feather name="check-circle" size={18} color={COLORS.accent} />
-                        <Text style={styles.featureText}>Real-time Shareholder Insights</Text>
-                      </View>
-                      <View style={styles.featureItem}>
-                        <Feather name="check-circle" size={18} color={COLORS.accent} />
-                        <Text style={styles.featureText}>Bank-Grade Security</Text>
-                      </View>
+                    <View style={styles.featureItem}>
+                      <Feather name="check-circle" size={18} color={COLORS.accent} />
+                      <Text style={styles.featureText}>Seamless Payroll Management</Text>
                     </View>
-
-                    <View style={styles.statsContainer}>
-                      <View style={styles.stat}>
-                        <Text style={styles.statNumber}>99.7%</Text>
-                        <Text style={styles.statLabel}>Uptime</Text>
-                      </View>
-                      <View style={styles.stat}>
-                        <Text style={styles.statNumber}>256-bit</Text>
-                        <Text style={styles.statLabel}>Encryption</Text>
-                      </View>
-                      <View style={styles.stat}>
-                        <Text style={styles.statNumber}>24/7</Text>
-                        <Text style={styles.statLabel}>Support</Text>
-                      </View>
+                    <View style={styles.featureItem}>
+                      <Feather name="check-circle" size={18} color={COLORS.accent} />
+                      <Text style={styles.featureText}>Real-time Shareholder Insights</Text>
+                    </View>
+                    <View style={styles.featureItem}>
+                      <Feather name="check-circle" size={18} color={COLORS.accent} />
+                      <Text style={styles.featureText}>Bank-Grade Security</Text>
                     </View>
                   </View>
-                </LinearGradient>
+
+                  <View style={styles.statsContainer}>
+                    <View style={styles.stat}>
+                      <Text style={styles.statNumber}>99.7%</Text>
+                      <Text style={styles.statLabel}>Uptime</Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statNumber}>256-bit</Text>
+                      <Text style={styles.statLabel}>Encryption</Text>
+                    </View>
+                    <View style={styles.stat}>
+                      <Text style={styles.statNumber}>24/7</Text>
+                      <Text style={styles.statLabel}>Support</Text>
+                    </View>
+                  </View>
+                </View>
               </View>
 
               {/* Right Panel - Registration Form */}
               <View style={styles.formPanel}>
-                <LinearGradient
-                  colors={["rgba(255, 255, 255, 0.95)", "rgba(255, 255, 255, 0.98)"]}
-                  style={styles.formGradient}
-                >
+                <View style={styles.formContentContainer}>
                   <View style={styles.formHeader}>
                     <View style={styles.formBadge}>
                       <Feather name="home" size={16} color={COLORS.accent} />
@@ -593,12 +571,9 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                   </View>
 
                   {/* Step Content */}
-                  <ScrollView 
-                    style={styles.formContent}
-                    showsVerticalScrollIndicator={false}
-                  >
+                  <View style={styles.formContent}>
                     {renderStepContent()}
-                  </ScrollView>
+                  </View>
 
                   {/* Action Buttons */}
                   <View style={styles.actionButtons}>
@@ -620,13 +595,10 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                       onPress={currentStep < 4 ? handleNextStep : handleSubmit}
                       disabled={isLoading}
                     >
-                      <LinearGradient
-                        colors={[COLORS.accent, "#e6d422"]}
-                        style={styles.primaryButtonGradient}
-                      >
+                      <View style={styles.primaryButtonContent}>
                         {isLoading ? (
                           <View style={styles.loadingContainer}>
-                            <Feather name="loader" size={20} color={COLORS.primary} />
+                            <Feather name="loader" size={20} color={COLORS.white} />
                             <Text style={styles.primaryButtonText}>
                               Processing...
                             </Text>
@@ -639,11 +611,11 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                             <Feather 
                               name={currentStep < 4 ? "arrow-right" : "check"} 
                               size={20} 
-                              color={COLORS.primary} 
+                              color={COLORS.white} 
                             />
                           </View>
                         )}
-                      </LinearGradient>
+                      </View>
                     </TouchableOpacity>
                   </View>
 
@@ -659,19 +631,20 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
                       </Text>
                     </Text>
                   </View>
-                </LinearGradient>
+                </View>
               </View>
             </View>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.primary,
   },
   backgroundElements: {
     position: "absolute",
@@ -701,9 +674,9 @@ const styles = StyleSheet.create({
   },
   geometricShape: {
     position: "absolute",
-    backgroundColor: `${COLORS.overlay}15`,
+    backgroundColor: `${COLORS.secondary}30`,
     borderWidth: 1,
-    borderColor: `${COLORS.overlay}30`,
+    borderColor: `${COLORS.secondary}50`,
   },
   shape1: {
     width: 100,
@@ -724,15 +697,19 @@ const styles = StyleSheet.create({
   keyboardAvoid: {
     flex: 1,
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
   },
   content: {
     flex: 1,
-    paddingVertical: 20,
+    minHeight: height,
   },
   header: {
     paddingHorizontal: isMobile ? 20 : 40,
+    paddingTop: 20,
     marginBottom: 20,
   },
   backBtn: {
@@ -741,7 +718,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
   },
-  backBtnGradient: {
+  backBtnContent: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -749,7 +726,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(250, 237, 38, 0.2)",
+    borderColor: "rgba(134, 194, 50, 0.3)",
+    backgroundColor: "rgba(134, 194, 50, 0.1)",
   },
   backText: {
     color: COLORS.accent,
@@ -766,16 +744,16 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 16,
-    backgroundColor: "rgba(250, 237, 38, 0.15)",
+    backgroundColor: "rgba(134, 194, 50, 0.15)",
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1.5,
-    borderColor: "rgba(250, 237, 38, 0.3)",
+    borderColor: "rgba(134, 194, 50, 0.3)",
   },
   logoText: {
     fontSize: 32,
     fontWeight: "800",
-    color: COLORS.white,
+    color: COLORS.textLight,
     letterSpacing: -1,
   },
   logoAccent: {
@@ -785,6 +763,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: isMobile ? "column" : "row",
     paddingHorizontal: isMobile ? 20 : 40,
+    paddingBottom: 20,
   },
   brandingPanel: {
     flex: 1,
@@ -792,33 +771,30 @@ const styles = StyleSheet.create({
     marginBottom: isMobile ? 20 : 0,
     borderRadius: 24,
     overflow: "hidden",
+    backgroundColor: COLORS.secondary,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.3,
     shadowRadius: 40,
     elevation: 20,
-  },
-  brandingGradient: {
-    flex: 1,
-    padding: 32,
-    borderRadius: 24,
     borderWidth: 1.5,
     borderColor: "rgba(255, 255, 255, 0.1)",
   },
   brandingContent: {
     flex: 1,
+    padding: 32,
     justifyContent: "center",
   },
   brandingBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "rgba(250, 237, 38, 0.12)",
+    backgroundColor: "rgba(134, 194, 50, 0.12)",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(250, 237, 38, 0.25)",
+    borderColor: "rgba(134, 194, 50, 0.25)",
     marginBottom: 32,
     alignSelf: "flex-start",
   },
@@ -831,7 +807,7 @@ const styles = StyleSheet.create({
   brandingTitle: {
     fontSize: 36,
     fontWeight: "800",
-    color: COLORS.white,
+    color: COLORS.textLight,
     lineHeight: 44,
     letterSpacing: -0.5,
     marginBottom: 32,
@@ -849,7 +825,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   featureText: {
-    color: COLORS.tertiary,
+    color: COLORS.textLight,
     fontSize: 16,
     fontWeight: "600",
   },
@@ -867,7 +843,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statLabel: {
-    color: COLORS.tertiary,
+    color: COLORS.textLight,
     fontSize: 14,
     fontWeight: "600",
     textTransform: "uppercase",
@@ -877,15 +853,17 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 24,
     overflow: "hidden",
+    backgroundColor: COLORS.white,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.2,
     shadowRadius: 30,
     elevation: 15,
   },
-  formGradient: {
+  formContentContainer: {
     flex: 1,
     padding: 32,
+    justifyContent: "space-between",
   },
   formHeader: {
     marginBottom: 24,
@@ -894,12 +872,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "rgba(250, 237, 38, 0.1)",
+    backgroundColor: "rgba(134, 194, 50, 0.1)",
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(250, 237, 38, 0.2)",
+    borderColor: "rgba(134, 194, 50, 0.2)",
     marginBottom: 16,
     alignSelf: "flex-start",
   },
@@ -912,7 +890,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 28,
     fontWeight: "800",
-    color: COLORS.primary,
+    color: COLORS.textDark,
     marginBottom: 8,
     letterSpacing: -0.5,
   },
@@ -953,7 +931,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
   },
   stepNumberActive: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   stepLine: {
     flex: 1,
@@ -966,7 +944,6 @@ const styles = StyleSheet.create({
   },
   formContent: {
     flex: 1,
-    marginBottom: 24,
   },
   stepContent: {
     flex: 1,
@@ -974,7 +951,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 22,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: COLORS.textDark,
     marginBottom: 8,
   },
   stepSubtitle: {
@@ -996,7 +973,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputLabel: {
-    color: COLORS.primary,
+    color: COLORS.textDark,
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 8,
@@ -1007,24 +984,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: COLORS.primary,
+    color: COLORS.textDark,
     borderWidth: 1.5,
     borderColor: "#e2e8f0",
-  },
-  selectInput: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  selectText: {
-    fontSize: 15,
-    color: COLORS.primary,
   },
   passwordContainer: {
     position: "relative",
@@ -1078,6 +1040,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 20,
     marginBottom: 20,
   },
   secondaryButton: {
@@ -1092,7 +1055,7 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
   },
   secondaryButtonText: {
-    color: COLORS.primary,
+    color: COLORS.textDark,
     fontSize: 15,
     fontWeight: "600",
   },
@@ -1101,6 +1064,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     borderRadius: 12,
     overflow: "hidden",
+    backgroundColor: COLORS.accent,
     shadowColor: COLORS.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -1110,7 +1074,7 @@ const styles = StyleSheet.create({
   nextButton: {
     flex: 0.5,
   },
-  primaryButtonGradient: {
+  primaryButtonContent: {
     paddingVertical: 14,
   },
   loadingContainer: {
@@ -1126,7 +1090,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   primaryButtonText: {
-    color: COLORS.primary,
+    color: COLORS.white,
     fontSize: 15,
     fontWeight: "700",
   },

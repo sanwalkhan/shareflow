@@ -1,25 +1,23 @@
+// AppNavigator.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ExpensesScreen from '../screens/ExpensesScreen';
-import ShareholdersScreen from '../screens/ShareholdersScreen';
-import PayrollScreen from '../screens/PayrollScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import LandingScreen from '../screens/LandingScreen';
+import AuthScreen from '../screens/AuthScreen';
 
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      <Stack.Navigator
         screenOptions={{
-          headerShown: true,
-          tabBarStyle: { backgroundColor: '#fff' },
+          headerShown: false
         }}
       >
-        <Tab.Screen name="Expenses" component={ExpensesScreen} />
-        <Tab.Screen name="Shareholders" component={ShareholdersScreen} />
-        <Tab.Screen name="Payroll" component={PayrollScreen} />
-      </Tab.Navigator>
+        <Stack.Screen name="Landing" component={LandingScreen} />
+        <Stack.Screen name="Auth" component={AuthScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

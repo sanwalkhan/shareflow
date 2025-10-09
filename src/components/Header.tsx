@@ -9,8 +9,15 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS, isMobile } from "../constants/theme";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Header({ onLoginPress }: { onLoginPress: () => void }) {
+export default function Header() {
+  const navigation = useNavigation();
+
+  const handleRegisterPress = () => {
+    navigation.navigate("Auth" as never);
+  };
+
   return (
     <View style={styles.header}>
       <View style={styles.headerBackground} />
@@ -43,7 +50,7 @@ export default function Header({ onLoginPress }: { onLoginPress: () => void }) {
             </>
           )}
 
-          <TouchableOpacity style={styles.ctaButton} onPress={onLoginPress}>
+          <TouchableOpacity style={styles.ctaButton} onPress={handleRegisterPress}>
             <View style={styles.ctaBackground} />
             <Text style={styles.ctaText}>Register as Company</Text>
             <Feather
@@ -68,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
     maxWidth: 1500,
-    alignSelf: "center", // ✅ Centers it horizontally
+    alignSelf: "center",
     overflow: "hidden",
   },
   headerBackground: {
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
   },
   logoAccent: {
     color: COLORS.accent,
-    textShadowColor: "rgba(74, 144, 226, 0.3)",
+    textShadowColor: "rgba(134, 194, 50, 0.3)",
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },

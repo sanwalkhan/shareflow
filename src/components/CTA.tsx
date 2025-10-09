@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-nati
 import { Feather } from "@expo/vector-icons";
 import { COLORS, isMobile } from "../constants/theme";
 
-export default function CTA({ onLoginPress }: { onLoginPress: () => void }) {
+export default function CTA() {
   return (
     <View style={styles.container}>
       {/* Background Elements */}
@@ -26,7 +26,7 @@ export default function CTA({ onLoginPress }: { onLoginPress: () => void }) {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.ctaButton} onPress={onLoginPress}>
+        <TouchableOpacity style={styles.ctaButton}>
           {/* Button Background Elements */}
           <View style={styles.buttonBackground} />
           <View style={styles.buttonGlow} />
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(74, 144, 226, 0.15)',
+    backgroundColor: 'rgba(134,194,50,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,

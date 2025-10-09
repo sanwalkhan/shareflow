@@ -223,10 +223,10 @@ const styles = StyleSheet.create({
   },
   iconBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(74, 144, 226, 0.08)',
+    backgroundColor: 'rgba(134,194,50,0.08)',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(74, 144, 226, 0.12)',
+    borderColor: 'rgba(134,194,50,0.12)',
   },
   iconBadge: {
     position: 'absolute',

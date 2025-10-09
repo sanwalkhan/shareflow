@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     opacity: 0.02,
     // backgroundImage is not supported in React Native
-    // backgroundImage: `radial-gradient(circle at 80% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 50%)`,
+    // backgroundImage: `radial-gradient(circle at 80% 20%, rgba(134,194,50,0.1) 0%, transparent 50%)`,
   },
   backgroundAccent: {
     position: 'absolute',
@@ -165,11 +165,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+    backgroundColor: 'rgba(134,194,50,0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(74, 144, 226, 0.2)',
+    borderColor: 'rgba(134,194,50,0.2)',
   },
   brandText: {
     color: '#FFFFFF',
