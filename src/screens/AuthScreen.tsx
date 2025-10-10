@@ -4,8 +4,6 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  StyleSheet, 
-  Dimensions,
   Animated,
   ScrollView,
   KeyboardAvoidingView,
@@ -14,8 +12,6 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, WINDOW, isMobile } from "../constants/theme";
-
-const { width, height } = WINDOW;
 
 export default function AuthScreen() {
   const navigation = useNavigation();
@@ -94,10 +90,8 @@ export default function AuthScreen() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      // Handle registration logic here
     }, 2000);
   };
 
@@ -106,25 +100,24 @@ export default function AuthScreen() {
   };
 
   const renderStepIndicator = () => (
-    <View style={styles.stepIndicator}>
+    <View className="flex-row items-center justify-between mb-8">
       {[1, 2, 3, 4].map((step) => (
-        <View key={step} style={styles.stepContainer}>
-          <View style={[
-            styles.stepCircle,
-            currentStep >= step && styles.stepCircleActive
-          ]}>
-            <Text style={[
-              styles.stepNumber,
-              currentStep >= step && styles.stepNumberActive
-            ]}>
+        <View key={step} className="flex-row items-center flex-1">
+          <View className={`w-9 h-9 rounded-full justify-center items-center border-2 ${
+            currentStep >= step 
+              ? "bg-accent border-accent" 
+              : "bg-gray-100 border-gray-300"
+          }`}>
+            <Text className={`text-sm font-bold ${
+              currentStep >= step ? "text-white" : "text-gray-500"
+            }`}>
               {step}
             </Text>
           </View>
           {step < 4 && (
-            <View style={[
-              styles.stepLine,
-              currentStep > step && styles.stepLineActive
-            ]} />
+            <View className={`flex-1 h-0.5 mx-2 ${
+              currentStep > step ? "bg-accent" : "bg-gray-300"
+            }`} />
           )}
         </View>
       ))}
@@ -135,84 +128,84 @@ export default function AuthScreen() {
     switch (currentStep) {
       case 1:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Company Information</Text>
-            <Text style={styles.stepSubtitle}>Tell us about your organization</Text>
+          <View className="flex-1">
+            <Text className="text-textDark text-[22px] font-bold mb-2">Company Information</Text>
+            <Text className="text-secondary text-[15px] mb-6 font-medium">Tell us about your organization</Text>
             
-            <View style={styles.formGrid}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Company Legal Name *</Text>
+            <View className="flex-row flex-wrap justify-between">
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Company Legal Name *</Text>
                 <TextInput
                   placeholder="Enter legal company name"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.companyName}
                   onChangeText={(value) => handleInputChange('companyName', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Company Type *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Company Type *</Text>
                 <TextInput
                   placeholder="e.g., Corporation, LLC, Partnership"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.companyType}
                   onChangeText={(value) => handleInputChange('companyType', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Industry *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Industry *</Text>
                 <TextInput
                   placeholder="e.g., Technology, Finance, Healthcare"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.industry}
                   onChangeText={(value) => handleInputChange('industry', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Company Size *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Company Size *</Text>
                 <TextInput
                   placeholder="e.g., 1-10, 11-50, 51-200"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.companySize}
                   onChangeText={(value) => handleInputChange('companySize', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Year Founded</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Year Founded</Text>
                 <TextInput
                   placeholder="YYYY"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.foundedYear}
                   onChangeText={(value) => handleInputChange('foundedYear', value)}
                   keyboardType="numeric"
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Tax ID / EIN *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Tax ID / EIN *</Text>
                 <TextInput
                   placeholder="Enter tax identification number"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.taxId}
                   onChangeText={(value) => handleInputChange('taxId', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Registration Number</Text>
+              <View className="w-full mb-5">
+                <Text className="text-textDark text-sm font-semibold mb-2">Registration Number</Text>
                 <TextInput
                   placeholder="Business registration number"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.registrationNumber}
                   onChangeText={(value) => handleInputChange('registrationNumber', value)}
                 />
@@ -223,17 +216,17 @@ export default function AuthScreen() {
 
       case 2:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Contact Details</Text>
-            <Text style={styles.stepSubtitle}>Where can we reach your company?</Text>
+          <View className="flex-1">
+            <Text className="text-textDark text-[22px] font-bold mb-2">Contact Details</Text>
+            <Text className="text-secondary text-[15px] mb-6 font-medium">Where can we reach your company?</Text>
             
-            <View style={styles.formGrid}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Business Email *</Text>
+            <View className="flex-row flex-wrap justify-between">
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Business Email *</Text>
                 <TextInput
                   placeholder="contact@company.com"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.email}
                   onChangeText={(value) => handleInputChange('email', value)}
                   keyboardType="email-address"
@@ -241,57 +234,57 @@ export default function AuthScreen() {
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Phone Number *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Phone Number *</Text>
                 <TextInput
                   placeholder="+1 (555) 000-0000"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.phone}
                   onChangeText={(value) => handleInputChange('phone', value)}
                   keyboardType="phone-pad"
                 />
               </View>
 
-              <View style={[styles.inputGroup, styles.fullWidth]}>
-                <Text style={styles.inputLabel}>Street Address *</Text>
+              <View className="w-full mb-5">
+                <Text className="text-textDark text-sm font-semibold mb-2">Street Address *</Text>
                 <TextInput
                   placeholder="Enter company headquarters address"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.address}
                   onChangeText={(value) => handleInputChange('address', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>City *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">City *</Text>
                 <TextInput
                   placeholder="Enter city"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.city}
                   onChangeText={(value) => handleInputChange('city', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Country *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Country *</Text>
                 <TextInput
                   placeholder="Enter country"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.country}
                   onChangeText={(value) => handleInputChange('country', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Postal Code *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Postal Code *</Text>
                 <TextInput
                   placeholder="ZIP / Postal code"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.postalCode}
                   onChangeText={(value) => handleInputChange('postalCode', value)}
                 />
@@ -302,50 +295,50 @@ export default function AuthScreen() {
 
       case 3:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Administrator Details</Text>
-            <Text style={styles.stepSubtitle}>Primary account administrator information</Text>
+          <View className="flex-1">
+            <Text className="text-textDark text-[22px] font-bold mb-2">Administrator Details</Text>
+            <Text className="text-secondary text-[15px] mb-6 font-medium">Primary account administrator information</Text>
             
-            <View style={styles.formGrid}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>First Name *</Text>
+            <View className="flex-row flex-wrap justify-between">
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">First Name *</Text>
                 <TextInput
                   placeholder="Enter first name"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.firstName}
                   onChangeText={(value) => handleInputChange('firstName', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Last Name *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Last Name *</Text>
                 <TextInput
                   placeholder="Enter last name"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.lastName}
                   onChangeText={(value) => handleInputChange('lastName', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Job Title *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Job Title *</Text>
                 <TextInput
                   placeholder="e.g., CEO, Finance Manager"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.jobTitle}
                   onChangeText={(value) => handleInputChange('jobTitle', value)}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Department *</Text>
+              <View className={`${isMobile ? "w-full" : "w-[48%]"} mb-5`}>
+                <Text className="text-textDark text-sm font-semibold mb-2">Department *</Text>
                 <TextInput
                   placeholder="e.g., Finance, HR, Operations"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.department}
                   onChangeText={(value) => handleInputChange('department', value)}
                 />
@@ -356,25 +349,25 @@ export default function AuthScreen() {
 
       case 4:
         return (
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Security & Preferences</Text>
-            <Text style={styles.stepSubtitle}>Set up your account security</Text>
+          <View className="flex-1">
+            <Text className="text-textDark text-[22px] font-bold mb-2">Security & Preferences</Text>
+            <Text className="text-secondary text-[15px] mb-6 font-medium">Set up your account security</Text>
             
-            <View style={styles.formGrid}>
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Password *</Text>
-                <View style={styles.passwordContainer}>
+            <View className="flex-row flex-wrap justify-between">
+              <View className="w-full mb-5">
+                <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
+                <View className="relative">
                   <TextInput
                     placeholder="Create secure password"
                     placeholderTextColor={COLORS.tertiary + "80"}
-                    style={[styles.input, styles.passwordInput]}
+                    className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
                     value={formData.password}
                     onChangeText={(value) => handleInputChange('password', value)}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                   />
                   <TouchableOpacity 
-                    style={styles.eyeButton}
+                    className="absolute right-4 top-3.5 p-1"
                     onPress={() => setShowPassword(!showPassword)}
                   >
                     <Feather 
@@ -384,17 +377,17 @@ export default function AuthScreen() {
                     />
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.passwordHint}>
+                <Text className="text-secondary text-xs mt-1.5 italic">
                   Must be at least 8 characters with uppercase, lowercase, and numbers
                 </Text>
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Confirm Password *</Text>
+              <View className="w-full mb-5">
+                <Text className="text-textDark text-sm font-semibold mb-2">Confirm Password *</Text>
                 <TextInput
                   placeholder="Re-enter your password"
                   placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.input}
+                  className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                   value={formData.confirmPassword}
                   onChangeText={(value) => handleInputChange('confirmPassword', value)}
                   secureTextEntry={!showPassword}
@@ -402,40 +395,42 @@ export default function AuthScreen() {
                 />
               </View>
 
-              <View style={[styles.inputGroup, styles.fullWidth]}>
-                <View style={styles.checkboxContainer}>
+              <View className="w-full mb-5">
+                <View className="flex-row items-start gap-3">
                   <TouchableOpacity 
-                    style={[
-                      styles.checkbox,
-                      formData.acceptTerms && styles.checkboxChecked
-                    ]}
+                    className={`w-5 h-5 rounded border justify-center items-center mt-0.5 ${
+                      formData.acceptTerms 
+                        ? "bg-accent border-accent" 
+                        : "bg-gray-50 border-gray-300"
+                    }`}
                     onPress={() => handleInputChange('acceptTerms', !formData.acceptTerms)}
                   >
                     {formData.acceptTerms && (
                       <Feather name="check" size={16} color={COLORS.white} />
                     )}
                   </TouchableOpacity>
-                  <Text style={styles.checkboxLabel}>
-                    I agree to the <Text style={styles.checkboxLink}>Terms of Service</Text> and{" "}
-                    <Text style={styles.checkboxLink}>Privacy Policy</Text> *
+                  <Text className="text-secondary text-sm flex-1 leading-5">
+                    I agree to the <Text className="text-accent font-semibold">Terms of Service</Text> and{" "}
+                    <Text className="text-accent font-semibold">Privacy Policy</Text> *
                   </Text>
                 </View>
               </View>
 
-              <View style={[styles.inputGroup, styles.fullWidth]}>
-                <View style={styles.checkboxContainer}>
+              <View className="w-full mb-5">
+                <View className="flex-row items-start gap-3">
                   <TouchableOpacity 
-                    style={[
-                      styles.checkbox,
-                      formData.newsletter && styles.checkboxChecked
-                    ]}
+                    className={`w-5 h-5 rounded border justify-center items-center mt-0.5 ${
+                      formData.newsletter 
+                        ? "bg-accent border-accent" 
+                        : "bg-gray-50 border-gray-300"
+                    }`}
                     onPress={() => handleInputChange('newsletter', !formData.newsletter)}
                   >
                     {formData.newsletter && (
                       <Feather name="check" size={16} color={COLORS.white} />
                     )}
                   </TouchableOpacity>
-                  <Text style={styles.checkboxLabel}>
+                  <Text className="text-secondary text-sm flex-1 leading-5">
                     Send me product updates, security tips, and industry insights
                   </Text>
                 </View>
@@ -450,186 +445,221 @@ export default function AuthScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
       {/* Background Elements */}
-      <View style={styles.backgroundElements}>
-        <View style={[styles.floatingOrb, styles.orb1]} />
-        <View style={[styles.floatingOrb, styles.orb2]} />
-        <View style={[styles.geometricShape, styles.shape1]} />
-        <View style={[styles.geometricShape, styles.shape2]} />
+      <View className="absolute top-0 left-0 right-0 bottom-0">
+        <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
+        <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
+        <View className="absolute w-[100px] h-[100px] rounded-[25px] bg-secondary/30 border border-secondary/50 top-1/5 right-1/10 transform rotate-45" />
+        <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
       </View>
 
       <KeyboardAvoidingView 
-        style={styles.keyboardAvoid}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           <Animated.View 
-            style={[
-              styles.content,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }]
-              }
-            ]}
+            className="flex-1"
+            style={{ 
+              minHeight: WINDOW.height,
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }}
           >
             {/* Header Section */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-                <View style={styles.backBtnContent}>
+            <View className={`${isMobile ? "px-5" : "px-10"} pt-5 mb-5`}>
+              <TouchableOpacity onPress={handleBack} className="self-start mb-5 rounded-xl overflow-hidden">
+                <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
+                  borderColor: "rgba(134, 194, 50, 0.3)",
+                  backgroundColor: "rgba(134, 194, 50, 0.1)" 
+                }}>
                   <Feather name="arrow-left" size={20} color={COLORS.accent} />
-                  <Text style={styles.backText}>Back to Home</Text>
+                  <Text className="text-accent text-[15px] font-semibold">Back to Home</Text>
                 </View>
               </TouchableOpacity>
 
-              <View style={styles.logoSection}>
-                <View style={styles.logoIcon}>
+              <View className="flex-row items-center gap-3 justify-center">
+                <View className="w-13 h-13 rounded-[16px] justify-center items-center border" style={{
+                  backgroundColor: "rgba(134, 194, 50, 0.15)",
+                  borderColor: "rgba(134, 194, 50, 0.3)",
+                }}>
                   <Feather name="trending-up" size={28} color={COLORS.accent} />
                 </View>
-                <Text style={styles.logoText}>
-                  Share<Text style={styles.logoAccent}>Flow</Text>
+                <Text className="text-textLight text-3xl font-extrabold tracking-tight">
+                  Share<Text style={{ color: COLORS.accent }}>Flow</Text>
                 </Text>
               </View>
             </View>
 
             {/* Main Auth Container */}
-            <View style={styles.mainContainer}>
+            <View className={`flex-1 ${isMobile ? "flex-col px-5" : "flex-row px-10"} pb-5`}>
               {/* Left Panel - Branding */}
-              <View style={styles.brandingPanel}>
-                <View style={styles.brandingContent}>
-                  <View style={styles.brandingBadge}>
+              <View 
+                className={`flex-1 ${isMobile ? "mb-5" : "mr-5"} rounded-3xl overflow-hidden`}
+                style={{
+                  backgroundColor: COLORS.secondary,
+                  shadowColor: COLORS.black,
+                  shadowOffset: { width: 0, height: 20 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 40,
+                  elevation: 20,
+                  borderWidth: 1.5,
+                  borderColor: "rgba(255, 255, 255, 0.1)",
+                }}
+              >
+                <View className="flex-1 p-8 justify-center">
+                  <View className="flex-row items-center gap-2 bg-accent/12 px-4 py-2 rounded-full border border-accent/25 mb-8 self-start">
                     <Feather name="award" size={20} color={COLORS.accent} />
-                    <Text style={styles.brandingBadgeText}>ENTERPRISE GRADE</Text>
+                    <Text className="text-accent text-xs font-bold tracking-wider">ENTERPRISE GRADE</Text>
                   </View>
                   
-                  <Text style={styles.brandingTitle}>
+                  <Text className="text-textLight text-4xl font-extrabold leading-[44px] tracking-tight mb-8">
                     Join 500+ Companies{"\n"}
-                    <Text style={styles.brandingTitleAccent}>Managing Finances</Text>{"\n"}
+                    <Text style={{ color: COLORS.accent }}>Managing Finances</Text>{"\n"}
                     with Confidence
                   </Text>
                   
-                  <View style={styles.featuresList}>
-                    <View style={styles.featureItem}>
+                  <View className="mb-10">
+                    <View className="flex-row items-center gap-3 mb-4">
                       <Feather name="check-circle" size={18} color={COLORS.accent} />
-                      <Text style={styles.featureText}>Automated Expense Tracking</Text>
+                      <Text className="text-textLight text-base font-semibold">Automated Expense Tracking</Text>
                     </View>
-                    <View style={styles.featureItem}>
+                    <View className="flex-row items-center gap-3 mb-4">
                       <Feather name="check-circle" size={18} color={COLORS.accent} />
-                      <Text style={styles.featureText}>Seamless Payroll Management</Text>
+                      <Text className="text-textLight text-base font-semibold">Seamless Payroll Management</Text>
                     </View>
-                    <View style={styles.featureItem}>
+                    <View className="flex-row items-center gap-3 mb-4">
                       <Feather name="check-circle" size={18} color={COLORS.accent} />
-                      <Text style={styles.featureText}>Real-time Shareholder Insights</Text>
+                      <Text className="text-textLight text-base font-semibold">Real-time Shareholder Insights</Text>
                     </View>
-                    <View style={styles.featureItem}>
+                    <View className="flex-row items-center gap-3 mb-4">
                       <Feather name="check-circle" size={18} color={COLORS.accent} />
-                      <Text style={styles.featureText}>Bank-Grade Security</Text>
+                      <Text className="text-textLight text-base font-semibold">Bank-Grade Security</Text>
                     </View>
                   </View>
 
-                  <View style={styles.statsContainer}>
-                    <View style={styles.stat}>
-                      <Text style={styles.statNumber}>99.7%</Text>
-                      <Text style={styles.statLabel}>Uptime</Text>
+                  <View className="flex-row justify-around">
+                    <View className="items-center">
+                      <Text className="text-accent text-2xl font-extrabold mb-1">99.7%</Text>
+                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Uptime</Text>
                     </View>
-                    <View style={styles.stat}>
-                      <Text style={styles.statNumber}>256-bit</Text>
-                      <Text style={styles.statLabel}>Encryption</Text>
+                    <View className="items-center">
+                      <Text className="text-accent text-2xl font-extrabold mb-1">256-bit</Text>
+                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Encryption</Text>
                     </View>
-                    <View style={styles.stat}>
-                      <Text style={styles.statNumber}>24/7</Text>
-                      <Text style={styles.statLabel}>Support</Text>
+                    <View className="items-center">
+                      <Text className="text-accent text-2xl font-extrabold mb-1">24/7</Text>
+                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Support</Text>
                     </View>
                   </View>
                 </View>
               </View>
 
               {/* Right Panel - Registration Form */}
-              <View style={styles.formPanel}>
-                <View style={styles.formContentContainer}>
-                  <View style={styles.formHeader}>
-                    <View style={styles.formBadge}>
-                      <Feather name="home" size={16} color={COLORS.accent} />
-                      <Text style={styles.formBadgeText}>COMPANY REGISTRATION</Text>
+              <View 
+                className="flex-1 rounded-3xl overflow-hidden bg-white"
+                style={{
+                  shadowColor: COLORS.black,
+                  shadowOffset: { width: 0, height: 20 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 30,
+                  elevation: 15,
+                }}
+              >
+                <View className="flex-1 p-8 justify-between">
+                  <View>
+                    <View className="mb-4">
+                      <View className="flex-row items-center gap-2 bg-accent/10 px-3.5 py-1.5 rounded-full border border-accent/20 mb-4 self-start">
+                        <Feather name="home" size={16} color={COLORS.accent} />
+                        <Text className="text-accent text-xs font-bold tracking-wider">COMPANY REGISTRATION</Text>
+                      </View>
+                      
+                      <Text className="text-textDark text-2xl font-extrabold tracking-tight mb-2">
+                        Create Your Company Account
+                      </Text>
+                      
+                      <Text className="text-secondary text-base mb-6 font-medium">
+                        Complete your company profile to get started with ShareFlow Enterprise
+                      </Text>
+
+                      {/* Step Indicator */}
+                      {renderStepIndicator()}
                     </View>
-                    
-                    <Text style={styles.formTitle}>
-                      Create Your Company Account
-                    </Text>
-                    
-                    <Text style={styles.formSubtitle}>
-                      Complete your company profile to get started with ShareFlow Enterprise
-                    </Text>
 
-                    {/* Step Indicator */}
-                    {renderStepIndicator()}
-                  </View>
-
-                  {/* Step Content */}
-                  <View style={styles.formContent}>
-                    {renderStepContent()}
+                    {/* Step Content */}
+                    <View className="flex-1">
+                      {renderStepContent()}
+                    </View>
                   </View>
 
                   {/* Action Buttons */}
-                  <View style={styles.actionButtons}>
-                    {currentStep > 1 && (
+                  <View>
+                    <View className="flex-row justify-between items-center mb-5">
+                      {currentStep > 1 && (
+                        <TouchableOpacity 
+                          className="flex-row items-center gap-2 px-6 py-3.5 rounded-xl bg-gray-50 border border-gray-300"
+                          onPress={handlePrevStep}
+                        >
+                          <Feather name="arrow-left" size={18} color={COLORS.primary} />
+                          <Text className="text-textDark text-[15px] font-semibold">Previous</Text>
+                        </TouchableOpacity>
+                      )}
+                      
                       <TouchableOpacity 
-                        style={styles.secondaryButton}
-                        onPress={handlePrevStep}
+                        className={`${currentStep < 4 ? "flex-1 ml-3" : "flex-1"} rounded-xl overflow-hidden`}
+                        style={{
+                          backgroundColor: COLORS.accent,
+                          shadowColor: COLORS.accent,
+                          shadowOffset: { width: 0, height: 8 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 16,
+                          elevation: 8,
+                        }}
+                        onPress={currentStep < 4 ? handleNextStep : handleSubmit}
+                        disabled={isLoading}
                       >
-                        <Feather name="arrow-left" size={18} color={COLORS.primary} />
-                        <Text style={styles.secondaryButtonText}>Previous</Text>
+                        <View className="py-3.5">
+                          {isLoading ? (
+                            <View className="flex-row items-center justify-center gap-3">
+                              <Feather name="loader" size={20} color={COLORS.white} />
+                              <Text className="text-white text-[15px] font-bold">
+                                Processing...
+                              </Text>
+                            </View>
+                          ) : (
+                            <View className="flex-row items-center justify-center gap-2">
+                              <Text className="text-white text-[15px] font-bold">
+                                {currentStep < 4 ? 'Continue' : 'Complete Registration'}
+                              </Text>
+                              <Feather 
+                                name={currentStep < 4 ? "arrow-right" : "check"} 
+                                size={20} 
+                                color={COLORS.white} 
+                              />
+                            </View>
+                          )}
+                        </View>
                       </TouchableOpacity>
-                    )}
-                    
-                    <TouchableOpacity 
-                      style={[
-                        styles.primaryButton,
-                        currentStep < 4 && styles.nextButton
-                      ]}
-                      onPress={currentStep < 4 ? handleNextStep : handleSubmit}
-                      disabled={isLoading}
-                    >
-                      <View style={styles.primaryButtonContent}>
-                        {isLoading ? (
-                          <View style={styles.loadingContainer}>
-                            <Feather name="loader" size={20} color={COLORS.white} />
-                            <Text style={styles.primaryButtonText}>
-                              Processing...
-                            </Text>
-                          </View>
-                        ) : (
-                          <View style={styles.buttonContent}>
-                            <Text style={styles.primaryButtonText}>
-                              {currentStep < 4 ? 'Continue' : 'Complete Registration'}
-                            </Text>
-                            <Feather 
-                              name={currentStep < 4 ? "arrow-right" : "check"} 
-                              size={20} 
-                              color={COLORS.white} 
-                            />
-                          </View>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  </View>
+                    </View>
 
-                  {/* Footer Note */}
-                  <View style={styles.footerNote}>
-                    <Text style={styles.footerText}>
-                      Already have an account?{" "}
-                      <Text 
-                        style={styles.footerLink}
-                        onPress={() => setIsLogin(true)}
-                      >
-                        Sign in here
+                    {/* Footer Note */}
+                    <View className="items-center pt-5 border-t border-gray-300">
+                      <Text className="text-secondary text-sm text-center">
+                        Already have an account?{" "}
+                        <Text 
+                          className="text-accent font-bold"
+                          onPress={() => setIsLogin(true)}
+                        >
+                          Sign in here
+                        </Text>
                       </Text>
-                    </Text>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -640,473 +670,3 @@ export default function AuthScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-  },
-  backgroundElements: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  floatingOrb: {
-    position: "absolute",
-    borderRadius: 9999,
-    opacity: 0.1,
-  },
-  orb1: {
-    width: 300,
-    height: 300,
-    backgroundColor: COLORS.accent,
-    top: -150,
-    right: -100,
-  },
-  orb2: {
-    width: 200,
-    height: 200,
-    backgroundColor: COLORS.neutral,
-    bottom: -100,
-    left: -50,
-  },
-  geometricShape: {
-    position: "absolute",
-    backgroundColor: `${COLORS.secondary}30`,
-    borderWidth: 1,
-    borderColor: `${COLORS.secondary}50`,
-  },
-  shape1: {
-    width: 100,
-    height: 100,
-    borderRadius: 25,
-    top: "20%",
-    right: "10%",
-    transform: [{ rotate: "45deg" }],
-  },
-  shape2: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    bottom: "15%",
-    left: "5%",
-    transform: [{ rotate: "-30deg" }],
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    minHeight: height,
-  },
-  header: {
-    paddingHorizontal: isMobile ? 20 : 40,
-    paddingTop: 20,
-    marginBottom: 20,
-  },
-  backBtn: {
-    alignSelf: "flex-start",
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  backBtnContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(134, 194, 50, 0.3)",
-    backgroundColor: "rgba(134, 194, 50, 0.1)",
-  },
-  backText: {
-    color: COLORS.accent,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  logoSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    justifyContent: "center",
-  },
-  logoIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: "rgba(134, 194, 50, 0.15)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "rgba(134, 194, 50, 0.3)",
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.textLight,
-    letterSpacing: -1,
-  },
-  logoAccent: {
-    color: COLORS.accent,
-  },
-  mainContainer: {
-    flex: 1,
-    flexDirection: isMobile ? "column" : "row",
-    paddingHorizontal: isMobile ? 20 : 40,
-    paddingBottom: 20,
-  },
-  brandingPanel: {
-    flex: 1,
-    marginRight: isMobile ? 0 : 20,
-    marginBottom: isMobile ? 20 : 0,
-    borderRadius: 24,
-    overflow: "hidden",
-    backgroundColor: COLORS.secondary,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.3,
-    shadowRadius: 40,
-    elevation: 20,
-    borderWidth: 1.5,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-  },
-  brandingContent: {
-    flex: 1,
-    padding: 32,
-    justifyContent: "center",
-  },
-  brandingBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "rgba(134, 194, 50, 0.12)",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(134, 194, 50, 0.25)",
-    marginBottom: 32,
-    alignSelf: "flex-start",
-  },
-  brandingBadgeText: {
-    color: COLORS.accent,
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 0.8,
-  },
-  brandingTitle: {
-    fontSize: 36,
-    fontWeight: "800",
-    color: COLORS.textLight,
-    lineHeight: 44,
-    letterSpacing: -0.5,
-    marginBottom: 32,
-  },
-  brandingTitleAccent: {
-    color: COLORS.accent,
-  },
-  featuresList: {
-    marginBottom: 40,
-  },
-  featureItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 16,
-  },
-  featureText: {
-    color: COLORS.textLight,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  stat: {
-    alignItems: "center",
-  },
-  statNumber: {
-    color: COLORS.accent,
-    fontSize: 24,
-    fontWeight: "800",
-    marginBottom: 4,
-  },
-  statLabel: {
-    color: COLORS.textLight,
-    fontSize: 14,
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-  },
-  formPanel: {
-    flex: 1,
-    borderRadius: 24,
-    overflow: "hidden",
-    backgroundColor: COLORS.white,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.2,
-    shadowRadius: 30,
-    elevation: 15,
-  },
-  formContentContainer: {
-    flex: 1,
-    padding: 32,
-    justifyContent: "space-between",
-  },
-  formHeader: {
-    marginBottom: 24,
-  },
-  formBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "rgba(134, 194, 50, 0.1)",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(134, 194, 50, 0.2)",
-    marginBottom: 16,
-    alignSelf: "flex-start",
-  },
-  formBadgeText: {
-    color: COLORS.accent,
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 0.8,
-  },
-  formTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    marginBottom: 8,
-    letterSpacing: -0.5,
-  },
-  formSubtitle: {
-    fontSize: 16,
-    color: COLORS.secondary,
-    marginBottom: 24,
-    fontWeight: "500",
-  },
-  stepIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 32,
-  },
-  stepContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  stepCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#f1f5f9",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-  },
-  stepCircleActive: {
-    backgroundColor: COLORS.accent,
-    borderColor: COLORS.accent,
-  },
-  stepNumber: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#64748b",
-  },
-  stepNumberActive: {
-    color: COLORS.white,
-  },
-  stepLine: {
-    flex: 1,
-    height: 2,
-    backgroundColor: "#e2e8f0",
-    marginHorizontal: 8,
-  },
-  stepLineActive: {
-    backgroundColor: COLORS.accent,
-  },
-  formContent: {
-    flex: 1,
-  },
-  stepContent: {
-    flex: 1,
-  },
-  stepTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    marginBottom: 8,
-  },
-  stepSubtitle: {
-    fontSize: 15,
-    color: COLORS.secondary,
-    marginBottom: 24,
-    fontWeight: "500",
-  },
-  formGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  inputGroup: {
-    width: isMobile ? "100%" : "48%",
-    marginBottom: 20,
-  },
-  fullWidth: {
-    width: "100%",
-  },
-  inputLabel: {
-    color: COLORS.textDark,
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
-    color: COLORS.textDark,
-    borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-  },
-  passwordContainer: {
-    position: "relative",
-  },
-  passwordInput: {
-    paddingRight: 50,
-  },
-  eyeButton: {
-    position: "absolute",
-    right: 16,
-    top: 14,
-    padding: 4,
-  },
-  passwordHint: {
-    fontSize: 12,
-    color: COLORS.secondary,
-    marginTop: 6,
-    fontStyle: "italic",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    backgroundColor: "#f8fafc",
-    borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 2,
-  },
-  checkboxChecked: {
-    backgroundColor: COLORS.accent,
-    borderColor: COLORS.accent,
-  },
-  checkboxLabel: {
-    flex: 1,
-    fontSize: 14,
-    color: COLORS.secondary,
-    lineHeight: 20,
-  },
-  checkboxLink: {
-    color: COLORS.accent,
-    fontWeight: "600",
-  },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  secondaryButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: "#f1f5f9",
-    borderWidth: 1.5,
-    borderColor: "#e2e8f0",
-  },
-  secondaryButtonText: {
-    color: COLORS.textDark,
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  primaryButton: {
-    flex: 1,
-    marginLeft: 12,
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: COLORS.accent,
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  nextButton: {
-    flex: 0.5,
-  },
-  primaryButtonContent: {
-    paddingVertical: 14,
-  },
-  loadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  primaryButtonText: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  footerNote: {
-    alignItems: "center",
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
-  },
-  footerText: {
-    color: COLORS.secondary,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  footerLink: {
-    color: COLORS.accent,
-    fontWeight: "700",
-  },
-});

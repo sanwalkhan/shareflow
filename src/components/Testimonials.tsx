@@ -1,6 +1,6 @@
 // src/components/Testimonials.tsx
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { COLORS, isMobile } from "../constants/theme";
 import { Feather } from "@expo/vector-icons";
 
@@ -34,7 +34,7 @@ export default function Testimonials() {
 
   const renderStars = (rating: number) => {
     return (
-      <View style={styles.starsContainer}>
+      <View className="flex-row gap-0.5">
         {[...Array(rating)].map((_, index) => (
           <Feather key={index} name="star" size={16} color="#FFD700" />
         ))}
@@ -43,19 +43,37 @@ export default function Testimonials() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="relative bg-transparent overflow-hidden w-full max-w-[1500px] mx-auto">
       {/* Background Elements */}
-      <View style={styles.backgroundBase} />
-      <View style={styles.backgroundPattern} />
-      <View style={styles.backgroundGlow} />
+      <View className="absolute inset-0" style={{ backgroundColor: '#FAFAFA' }} />
+      <View className="absolute inset-0 bg-transparent" style={{ opacity: 0.02 }} />
+      <View className="absolute top-[-50px] left-[-50px] w-[200px] h-[200px] rounded-[100px]" style={{ backgroundColor: COLORS.accent, opacity: 0.03 }} />
       
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Trusted by Industry Leaders</Text>
-            <View style={styles.titleUnderline} />
+      <View 
+        className="relative z-10"
+        style={{
+          paddingVertical: isMobile ? 60 : 80,
+          paddingHorizontal: isMobile ? 20 : 40
+        }}
+      >
+        <View className="items-center mb-16">
+          <View className="items-center mb-4 relative">
+            <Text 
+              className="text-primary text-center font-extrabold mb-3 tracking-[-0.8px]"
+              style={{
+                fontSize: isMobile ? 32 : 42,
+              }}
+            >
+              Trusted by Industry Leaders
+            </Text>
+            <View className="w-20 h-1 rounded-[2px]" style={{ backgroundColor: COLORS.accent, opacity: 0.8 }} />
           </View>
-          <Text style={styles.subtitle}>
+          <Text 
+            className="text-[#0A0A0A]/70 text-center max-w-[500px] tracking-[-0.2px] leading-6"
+            style={{
+              fontSize: isMobile ? 16 : 18,
+            }}
+          >
             Join thousands of companies transforming their financial operations with ShareFlow
           </Text>
         </View>
@@ -63,35 +81,70 @@ export default function Testimonials() {
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{
+            paddingHorizontal: isMobile ? 10 : 20,
+            paddingVertical: 20,
+            gap: 24,
+          }}
           decelerationRate="fast"
           snapToInterval={isMobile ? 320 : 380}
           snapToAlignment="center"
         >
           {cards.map((card, index) => (
-            <View key={card.name} style={styles.cardContainer}>
+            <View 
+              key={card.name} 
+              className="bg-transparent rounded-[24px] p-7 mx-2 relative overflow-hidden"
+              style={{
+                width: isMobile ? 300 : 360,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: 0.1,
+                shadowRadius: 24,
+                elevation: 16,
+              }}
+            >
               {/* Card Background Elements */}
-              <View style={styles.cardBackground} />
-              <View style={styles.cardGlow} />
-              <View style={styles.cardAccent} />
+              <View 
+                className="absolute inset-0 rounded-[24px] border"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderColor: 'rgba(255,255,255,0.8)',
+                }}
+              />
+              <View className="absolute top-[-1px] left-[-1px] right-[-1px] h-1 rounded-t-[24px]" style={{ backgroundColor: COLORS.accent, opacity: 0.1 }} />
+              <View className="absolute top-0 left-0 w-1.5 h-full rounded-l-[24px]" style={{ backgroundColor: COLORS.accent, opacity: 0.1 }} />
               
               {/* Card Content */}
-              <View style={styles.cardHeader}>
-                <View style={styles.quoteIcon}>
+              <View className="flex-row justify-between items-center mb-5">
+                <View 
+                  className="w-12 h-12 rounded-[24px] justify-center items-center"
+                  style={{ backgroundColor: 'rgba(134,194,50,0.08)' }}
+                >
                   <Feather name="message-square" size={24} color={COLORS.accent} />
                 </View>
                 {renderStars(card.rating)}
               </View>
 
-              <Text style={styles.cardText}>"{card.text}"</Text>
+              <Text 
+                className="text-[#0A0A0A]/85 italic mb-6 leading-[22px] tracking-[-0.2px]"
+                style={{ fontSize: 15 }}
+              >
+                "{card.text}"
+              </Text>
 
-              <View style={styles.cardFooter}>
-                <View style={styles.author}>
-                  <Text style={styles.authorName}>{card.name}</Text>
-                  <Text style={styles.authorRole}>{card.role}</Text>
+              <View className="flex-row justify-between items-center pt-5 border-t" style={{ borderTopColor: 'rgba(10,10,10,0.08)' }}>
+                <View className="flex-1">
+                  <Text className="text-primary font-bold text-base mb-0.5 tracking-[-0.3px]">{card.name}</Text>
+                  <Text className="text-[#0A0A0A]/60 text-[13px] font-medium tracking-[0.2px]">{card.role}</Text>
                 </View>
-                <View style={styles.companyLogo}>
-                  <Text style={styles.companyInitial}>
+                <View 
+                  className="w-11 h-11 rounded-[22px] justify-center items-center border"
+                  style={{
+                    backgroundColor: 'rgba(134,194,50,0.1)',
+                    borderColor: 'rgba(134,194,50,0.2)',
+                  }}
+                >
+                  <Text className="text-accent font-bold text-sm">
                     {card.name.split(' ').map(n => n[0]).join('')}
                   </Text>
                 </View>
@@ -101,213 +154,16 @@ export default function Testimonials() {
         </ScrollView>
 
         {/* Scroll Indicator */}
-        <View style={styles.scrollIndicator}>
+        <View className="flex-row justify-center items-center mt-10 gap-2">
           {cards.map((_, index) => (
-            <View key={index} style={styles.indicatorDot} />
+            <View 
+              key={index} 
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: 'rgba(10,10,10,0.2)' }}
+            />
           ))}
         </View>
       </View>
     </View>
   );
 }
-
-const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-    width: '100%',
-    maxWidth: 1500,
-  },
-  backgroundBase: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#FAFAFA',
-  },
-  backgroundPattern: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-    opacity: 0.02,
-    // backgroundImage is not supported in React Native
-    // backgroundImage: `radial-gradient(circle at 20% 80%, rgba(134,194,50,0.1) 0%, transparent 50%)`,
-  },
-  backgroundGlow: {
-    position: 'absolute',
-    top: -50,
-    left: -50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: COLORS.accent,
-    opacity: 0.03,
-    // blurRadius is not supported in React Native styles
-  },
-  content: {
-    paddingVertical: isMobile ? 60 : 80,
-    paddingHorizontal: isMobile ? 20 : 40,
-    position: 'relative',
-    zIndex: 10,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: isMobile ? 40 : 60,
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 16,
-    position: 'relative',
-  },
-  title: { 
-    fontSize: isMobile ? 32 : 42, 
-    fontWeight: "800", 
-    color: COLORS.primary, 
-    textAlign: "center", 
-    marginBottom: 12,
-    letterSpacing: -0.8,
-  },
-  titleUnderline: {
-    width: 80,
-    height: 4,
-    backgroundColor: COLORS.accent,
-    borderRadius: 2,
-    opacity: 0.8,
-  },
-  subtitle: { 
-    color: 'rgba(10,10,10,0.7)', 
-    textAlign: "center",
-    fontSize: isMobile ? 16 : 18,
-    lineHeight: 24,
-    maxWidth: 500,
-    letterSpacing: -0.2,
-  },
-  scrollContent: { 
-    paddingHorizontal: isMobile ? 10 : 20,
-    paddingVertical: 20,
-    gap: 24,
-  },
-  cardContainer: {
-    width: isMobile ? 300 : 360,
-    backgroundColor: 'transparent',
-    borderRadius: 24,
-    padding: 28,
-    marginHorizontal: 8,
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 24,
-    elevation: 16,
-  },
-  cardBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
-  },
-  cardGlow: {
-    position: 'absolute',
-    top: -1,
-    left: -1,
-    right: -1,
-    height: 4,
-    backgroundColor: COLORS.accent,
-    opacity: 0.1,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-  },
-  cardAccent: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 6,
-    height: '100%',
-    backgroundColor: COLORS.accent,
-    opacity: 0.1,
-    borderTopLeftRadius: 24,
-    borderBottomLeftRadius: 24,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  quoteIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(134,194,50,0.08)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  starsContainer: {
-    flexDirection: 'row',
-    gap: 2,
-  },
-  cardText: { 
-    color: 'rgba(10,10,10,0.85)', 
-    fontStyle: "italic", 
-    marginBottom: 24,
-    fontSize: 15,
-    lineHeight: 22,
-    letterSpacing: -0.2,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(10,10,10,0.08)',
-  },
-  author: {
-    flex: 1,
-  },
-  authorName: { 
-    color: COLORS.primary, 
-    fontWeight: "700",
-    fontSize: 16,
-    marginBottom: 2,
-    letterSpacing: -0.3,
-  },
-  authorRole: { 
-    color: 'rgba(10,10,10,0.6)', 
-    fontSize: 13,
-    fontWeight: '500',
-    letterSpacing: 0.2,
-  },
-  companyLogo: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(134,194,50,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(134,194,50,0.2)',
-  },
-  companyInitial: {
-    color: COLORS.accent,
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  scrollIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-    gap: 8,
-  },
-  indicatorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(10,10,10,0.2)',
-  },
-});

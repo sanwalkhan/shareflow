@@ -1,6 +1,6 @@
 // src/components/Footer.tsx
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS, isMobile } from "../constants/theme";
 
@@ -12,71 +12,107 @@ export default function Footer() {
   const supportLinks = ["Help Center", "Contact", "Status", "Security", "Compliance"];
 
   return (
-    <View style={styles.container}>
+    <View className="relative bg-transparent overflow-hidden w-full max-w-[1500px] mx-auto">
       {/* Background Elements */}
-      <View style={styles.backgroundBase} />
-      <View style={styles.backgroundPattern} />
-      <View style={styles.backgroundAccent} />
+      <View className="absolute inset-0" style={{ backgroundColor: '#0A0A0A' }} />
+      <View className="absolute inset-0 bg-transparent" style={{ opacity: 0.02 }} />
+      <View className="absolute top-0 left-0 right-0 h-[1px]" style={{ backgroundColor: COLORS.accent, opacity: 0.1 }} />
       
-      <View style={styles.content}>
+      <View 
+        className="relative z-10"
+        style={{
+          paddingVertical: isMobile ? 48 : 64,
+          paddingHorizontal: isMobile ? 20 : 40
+        }}
+      >
         {/* Main Footer Content */}
-        <View style={styles.mainSection}>
+        <View className={`${isMobile ? "flex-col" : "flex-row"} justify-between items-start mb-8`}>
           {/* Brand Section */}
-          <View style={styles.brandSection}>
-            <View style={styles.brandContainer}>
-              <View style={styles.logo}>
+          <View 
+            className="flex-1"
+            style={{
+              marginBottom: isMobile ? 32 : 0,
+              maxWidth: isMobile ? '100%' : 320
+            }}
+          >
+            <View className="flex-row items-center mb-4">
+              <View 
+                className="w-11 h-11 rounded-[12px] justify-center items-center border"
+                style={{
+                  backgroundColor: 'rgba(134,194,50,0.1)',
+                  borderColor: 'rgba(134,194,50,0.2)',
+                }}
+              >
                 <Feather name="trending-up" size={24} color={COLORS.accent} />
               </View>
-              <Text style={styles.brandText}>
-                Share<Text style={styles.brandAccent}>Flow</Text>
+              <Text className="text-white text-2xl font-extrabold tracking-[-0.5px] ml-3">
+                Share<Text style={{ color: COLORS.accent }}>Flow</Text>
               </Text>
             </View>
-            <Text style={styles.tagline}>
+            <Text className="text-white/70 text-[15px] leading-[22px] tracking-[-0.2px] mb-6">
               Enterprise financial intelligence platform powering the world's most innovative companies.
             </Text>
             
             {/* Social Links */}
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton}>
+            <View className="flex-row gap-3">
+              <TouchableOpacity 
+                className="w-10 h-10 rounded-[12px] justify-center items-center border"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  borderColor: 'rgba(255,255,255,0.08)',
+                }}
+              >
                 <Feather name="twitter" size={18} color="rgba(255,255,255,0.8)" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity 
+                className="w-10 h-10 rounded-[12px] justify-center items-center border"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  borderColor: 'rgba(255,255,255,0.08)',
+                }}
+              >
                 <Feather name="linkedin" size={18} color="rgba(255,255,255,0.8)" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity 
+                className="w-10 h-10 rounded-[12px] justify-center items-center border"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.05)',
+                  borderColor: 'rgba(255,255,255,0.08)',
+                }}
+              >
                 <Feather name="github" size={18} color="rgba(255,255,255,0.8)" />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Links Grid */}
-          <View style={styles.linksGrid}>
-            <View style={styles.linkColumn}>
-              <Text style={styles.columnTitle}>Product</Text>
+          <View className={`${isMobile ? "flex-col" : "flex-row"} gap-12`}>
+            <View style={{ minWidth: isMobile ? '100%' : 160 }}>
+              <Text className="text-white font-bold text-base mb-4 tracking-[-0.3px]">Product</Text>
               {productLinks.map((link) => (
-                <TouchableOpacity key={link} style={styles.linkItem}>
-                  <Text style={styles.linkText}>{link}</Text>
-                  <View style={styles.linkUnderline} />
+                <TouchableOpacity key={link} className="mb-3 relative">
+                  <Text className="text-white/70 text-sm tracking-[-0.2px]">{link}</Text>
+                  <View className="absolute bottom-[-2px] left-0 w-0 h-[1px]" style={{ backgroundColor: COLORS.accent, opacity: 0 }} />
                 </TouchableOpacity>
               ))}
             </View>
 
-            <View style={styles.linkColumn}>
-              <Text style={styles.columnTitle}>Company</Text>
+            <View style={{ minWidth: isMobile ? '100%' : 160 }}>
+              <Text className="text-white font-bold text-base mb-4 tracking-[-0.3px]">Company</Text>
               {companyLinks.map((link) => (
-                <TouchableOpacity key={link} style={styles.linkItem}>
-                  <Text style={styles.linkText}>{link}</Text>
-                  <View style={styles.linkUnderline} />
+                <TouchableOpacity key={link} className="mb-3 relative">
+                  <Text className="text-white/70 text-sm tracking-[-0.2px]">{link}</Text>
+                  <View className="absolute bottom-[-2px] left-0 w-0 h-[1px]" style={{ backgroundColor: COLORS.accent, opacity: 0 }} />
                 </TouchableOpacity>
               ))}
             </View>
 
-            <View style={styles.linkColumn}>
-              <Text style={styles.columnTitle}>Support</Text>
+            <View style={{ minWidth: isMobile ? '100%' : 160 }}>
+              <Text className="text-white font-bold text-base mb-4 tracking-[-0.3px]">Support</Text>
               {supportLinks.map((link) => (
-                <TouchableOpacity key={link} style={styles.linkItem}>
-                  <Text style={styles.linkText}>{link}</Text>
-                  <View style={styles.linkUnderline} />
+                <TouchableOpacity key={link} className="mb-3 relative">
+                  <Text className="text-white/70 text-sm tracking-[-0.2px]">{link}</Text>
+                  <View className="absolute bottom-[-2px] left-0 w-0 h-[1px]" style={{ backgroundColor: COLORS.accent, opacity: 0 }} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -84,23 +120,26 @@ export default function Footer() {
         </View>
 
         {/* Divider */}
-        <View style={styles.divider} />
+        <View className="h-[1px] bg-white/8 mb-6" />
 
         {/* Bottom Section */}
-        <View style={styles.bottomSection}>
-          <View style={styles.legalLinks}>
-            <TouchableOpacity style={styles.legalLink}>
-              <Text style={styles.legalText}>Privacy Policy</Text>
+        <View className={`${isMobile ? "flex-col" : "flex-row"} justify-between ${isMobile ? "items-start" : "items-center"}`}>
+          <View className={`${isMobile ? "flex-col" : "flex-row"} gap-6 ${isMobile ? "mb-4" : "mb-0"}`}>
+            <TouchableOpacity className="py-1">
+              <Text className="text-white/60 text-[13px] tracking-[0.2px]">Privacy Policy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.legalLink}>
-              <Text style={styles.legalText}>Terms of Service</Text>
+            <TouchableOpacity className="py-1">
+              <Text className="text-white/60 text-[13px] tracking-[0.2px]">Terms of Service</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.legalLink}>
-              <Text style={styles.legalText}>Cookie Policy</Text>
+            <TouchableOpacity className="py-1">
+              <Text className="text-white/60 text-[13px] tracking-[0.2px]">Cookie Policy</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.copyright}>
+          <Text 
+            className="text-white/50 text-[13px] tracking-[0.2px]"
+            style={{ textAlign: isMobile ? "left" : "center" }}
+          >
             © {currentYear} ShareFlow Technologies. All rights reserved.
           </Text>
         </View>
@@ -108,159 +147,3 @@ export default function Footer() {
     </View>
   );
 }
-
-const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-    width: '100%',
-    maxWidth: 1500,
-  },
-  backgroundBase: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0A0A0A',
-  },
-  backgroundPattern: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-    opacity: 0.02,
-    // backgroundImage is not supported in React Native
-    // backgroundImage: `radial-gradient(circle at 80% 20%, rgba(134,194,50,0.1) 0%, transparent 50%)`,
-  },
-  backgroundAccent: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: COLORS.accent,
-    opacity: 0.1,
-  },
-  content: {
-    paddingVertical: isMobile ? 48 : 64,
-    paddingHorizontal: isMobile ? 20 : 40,
-    position: 'relative',
-    zIndex: 10,
-  },
-  mainSection: {
-    flexDirection: isMobile ? "column" : "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 32,
-  },
-  brandSection: {
-    flex: 1,
-    marginBottom: isMobile ? 32 : 0,
-    maxWidth: isMobile ? '100%' : 320,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  logo: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(134,194,50,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(134,194,50,0.2)',
-  },
-  brandText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: "800",
-    marginLeft: 12,
-    letterSpacing: -0.5,
-  },
-  brandAccent: {
-    color: COLORS.accent,
-  },
-  tagline: {
-    color: 'rgba(255,255,255,0.7)',
-    marginBottom: 24,
-    fontSize: 15,
-    lineHeight: 22,
-    letterSpacing: -0.2,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  socialButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-  linksGrid: {
-    flexDirection: isMobile ? "column" : "row",
-    gap: isMobile ? 32 : 48,
-  },
-  linkColumn: {
-    minWidth: isMobile ? '100%' : 160,
-  },
-  columnTitle: {
-    color: '#FFFFFF',
-    fontWeight: "700",
-    fontSize: 16,
-    marginBottom: 16,
-    letterSpacing: -0.3,
-  },
-  linkItem: {
-    marginBottom: 12,
-    position: 'relative',
-  },
-  linkText: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
-    letterSpacing: -0.2,
-  },
-  linkUnderline: {
-    position: 'absolute',
-    bottom: -2,
-    left: 0,
-    width: 0,
-    height: 1,
-    backgroundColor: COLORS.accent,
-    opacity: 0,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    marginBottom: 24,
-  },
-  bottomSection: {
-    flexDirection: isMobile ? "column" : "row",
-    justifyContent: "space-between",
-    alignItems: isMobile ? "flex-start" : "center",
-  },
-  legalLinks: {
-    flexDirection: isMobile ? "column" : "row",
-    gap: isMobile ? 8 : 24,
-    marginBottom: isMobile ? 16 : 0,
-  },
-  legalLink: {
-    paddingVertical: 4,
-  },
-  legalText: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 13,
-    letterSpacing: 0.2,
-  },
-  copyright: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 13,
-    textAlign: isMobile ? "left" : "center",
-    letterSpacing: 0.2,
-  },
-});

@@ -4,17 +4,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Dimensions,
   Animated,
   ScrollView,
   TextInput,
   Modal,
   Alert,
-  Image
 } from "react-native";
-import { Feather, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { COLORS, isMobile } from "../constants/theme";
+import { Feather } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -55,11 +52,11 @@ const DEMO_DATA = {
     }
   },
   expenses: [
-    { id: 1, category: "Salaries", amount: 245000, percentage: 54, trend: "up", color: COLORS.accent },
-    { id: 2, category: "Operations", amount: 87300, percentage: 19, trend: "stable", color: COLORS.primary },
-    { id: 3, category: "Marketing", amount: 45600, percentage: 10, trend: "up", color: COLORS.secondary },
+    { id: 1, category: "Salaries", amount: 245000, percentage: 54, trend: "up", color: "#86C232" },
+    { id: 2, category: "Operations", amount: 87300, percentage: 19, trend: "stable", color: "#3A7CA5" },
+    { id: 3, category: "Marketing", amount: 45600, percentage: 10, trend: "up", color: "#F9C80E" },
     { id: 4, category: "R&D", amount: 38900, percentage: 9, trend: "up", color: "#8B5CF6" },
-    { id: 5, category: "Other", amount: 35500, percentage: 8, trend: "down", color: COLORS.tertiary }
+    { id: 5, category: "Other", amount: 35500, percentage: 8, trend: "down", color: "#6B7280" }
   ],
   recentTransactions: [
     { id: 1, type: "revenue", description: "Q3 Product Sales", amount: 125000, date: "2024-03-15", status: "completed" },
@@ -68,21 +65,9 @@ const DEMO_DATA = {
     { id: 4, type: "expense", description: "Software Licenses", amount: -12000, date: "2024-03-10", status: "completed" },
     { id: 5, type: "revenue", description: "Consulting Services", amount: 45000, date: "2024-03-08", status: "completed" }
   ],
-  employees: [
-    { id: 1, name: "Sarah Chen", role: "CTO", department: "Engineering", salary: 185000, status: "active" },
-    { id: 2, name: "Marcus Johnson", role: "CFO", department: "Finance", salary: 165000, status: "active" },
-    { id: 3, name: "Elena Rodriguez", role: "CMO", department: "Marketing", salary: 155000, status: "active" },
-    { id: 4, name: "David Kim", role: "Lead Developer", department: "Engineering", salary: 145000, status: "active" }
-  ],
-  shareholders: [
-    { id: 1, name: "Sarah Chen", shares: 250000, percentage: 25, value: 6250000 },
-    { id: 2, name: "Venture Partners", shares: 200000, percentage: 20, value: 5000000 },
-    { id: 3, name: "Marcus Johnson", shares: 150000, percentage: 15, value: 3750000 },
-    { id: 4, name: "Angel Investors", shares: 100000, percentage: 10, value: 2500000 }
-  ]
 };
 
-// Format currency function - moved to top level
+// Format currency function
 const formatCurrency = (amount: number): string => {
   if (typeof amount !== "number" || isNaN(amount)) return "$0";
   return amount.toLocaleString("en-US", {
@@ -97,7 +82,6 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
   const [activeModule, setActiveModule] = useState("overview");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [dateRange, setDateRange] = useState("q1_2024");
   const [searchQuery, setSearchQuery] = useState("");
 
   const sidebarWidth = useRef(new Animated.Value(280)).current;
@@ -149,12 +133,12 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
   };
 
   const sidebarItems = [
-    { id: "overview", icon: "home", label: "Dashboard", color: COLORS.accent },
+    { id: "overview", icon: "home", label: "Dashboard", color: "#86C232" },
     { id: "expenses", icon: "credit-card", label: "Expenses", color: "#8B5CF6" },
     { id: "payroll", icon: "users", label: "Payroll", color: "#06B6D4" },
     { id: "shareholders", icon: "pie-chart", label: "Shareholders", color: "#10B981" },
     { id: "reports", icon: "bar-chart-2", label: "Analytics", color: "#F59E0B" },
-    { id: "settings", icon: "settings", label: "Settings", color: COLORS.tertiary },
+    { id: "settings", icon: "settings", label: "Settings", color: "#6B7280" },
   ];
 
   const renderModuleContent = () => {
@@ -162,13 +146,13 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
       case "overview":
         return <OverviewModule data={DEMO_DATA} />;
       case "expenses":
-        return <ExpensesModule data={DEMO_DATA} />;
+        return <ExpensesModule />;
       case "payroll":
-        return <PayrollModule data={DEMO_DATA} />;
+        return <PayrollModule />;
       case "shareholders":
-        return <ShareholdersModule data={DEMO_DATA} />;
+        return <ShareholdersModule />;
       case "reports":
-        return <ReportsModule data={DEMO_DATA} />;
+        return <ReportsModule />;
       case "settings":
         return <SettingsModule />;
       default:
@@ -177,77 +161,83 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <View className="flex-1 flex-row bg-white">
       {/* Premium Sidebar Navigation */}
       <Animated.View 
-        style={[
-          styles.sidebar,
-          { 
-            width: sidebarWidth,
-            opacity: sidebarOpacity
-          }
-        ]}
+        className="bg-gray-800 shadow-xl z-50"
+        style={{ 
+          width: sidebarWidth,
+          opacity: sidebarOpacity
+        }}
       >
-        <View style={styles.sidebarBackground}>
+        <View className="flex-1 bg-gray-800">
           {/* Sidebar Header */}
-          <View style={styles.sidebarHeader}>
-            <View style={styles.logoContainer}>
-              <View style={styles.logoIcon}>
-                <Feather name="trending-up" size={28} color={COLORS.accent} />
+          <View className="p-6 border-b border-gray-700 flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <View className="w-11 h-11 rounded-xl bg-green-100 border border-green-200 justify-center items-center mr-3">
+                <Feather name="trending-up" size={28} color="#86C232" />
               </View>
               {!isSidebarCollapsed && (
                 <View>
-                  <Text style={styles.logoText}>
-                    Share<Text style={styles.logoAccent}>Flow</Text>
+                  <Text className="text-white text-xl font-extrabold tracking-tight">
+                    Share<Text className="text-green-500">Flow</Text>
                   </Text>
-                  <Text style={styles.companySubtitle}>ENTERPRISE</Text>
+                  <Text className="text-green-500 text-xs font-bold tracking-wide mt-0.5">
+                    ENTERPRISE
+                  </Text>
                 </View>
               )}
             </View>
             
             <TouchableOpacity 
-              style={styles.collapseButton}
+              className="w-9 h-9 rounded-xl bg-gray-700 border border-gray-600 justify-center items-center"
               onPress={toggleSidebar}
             >
               <Feather 
                 name={isSidebarCollapsed ? "chevron-right" : "chevron-left"} 
                 size={18} 
-                color={COLORS.textLight} 
+                color="#FFFFFF" 
               />
             </TouchableOpacity>
           </View>
 
           {/* Navigation Items */}
-          <ScrollView style={styles.sidebarContent} showsVerticalScrollIndicator={false}>
-            {sidebarItems.map((item, index) => (
+          <ScrollView 
+            className="flex-1 py-5"
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+          >
+            {sidebarItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                style={[
-                  styles.navItem,
-                  activeModule === item.id && styles.navItemActive
-                ]}
+                className={`mx-3 my-1 rounded-xl overflow-hidden ${
+                  activeModule === item.id ? "shadow-lg shadow-green-500/30" : ""
+                }`}
                 onPress={() => setActiveModule(item.id)}
               >
-                <View style={[
-                  styles.navItemBackground,
-                  activeModule === item.id && { backgroundColor: item.color + '30' }
-                ]}>
-                  <View style={[
-                    styles.navIconContainer,
-                    { backgroundColor: activeModule === item.id ? item.color : 'transparent' }
-                  ]}>
+                <View 
+                  className={`flex-row items-center px-4 py-3.5 ${
+                    activeModule === item.id ? `bg-[${item.color}30]` : ""
+                  }`}
+                >
+                  <View 
+                    className={`w-9 h-9 rounded-xl justify-center items-center shadow-sm ${
+                      activeModule === item.id ? `bg-[${item.color}]` : "bg-transparent"
+                    }`}
+                  >
                     <Feather 
                       name={item.icon as any} 
                       size={20} 
-                      color={activeModule === item.id ? COLORS.white : item.color} 
+                      color={activeModule === item.id ? "#FFFFFF" : item.color} 
                     />
                   </View>
                   
                   {!isSidebarCollapsed && (
-                    <Text style={[
-                      styles.navLabel,
-                      activeModule === item.id && styles.navLabelActive
-                    ]}>
+                    <Text 
+                      className={`text-white text-base font-semibold ml-3 opacity-90 ${
+                        activeModule === item.id ? "text-green-500 font-bold" : ""
+                      }`}
+                    >
                       {item.label}
                     </Text>
                   )}
@@ -258,39 +248,39 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
 
           {/* User Profile & Logout */}
           {!isSidebarCollapsed && (
-            <View style={styles.sidebarFooter}>
-              <View style={styles.userProfile}>
-                <View style={styles.userAvatar}>
-                  <Text style={styles.userAvatarText}>SC</Text>
+            <View className="p-5 border-t border-gray-700">
+              <View className="flex-row items-center mb-4">
+                <View className="w-11 h-11 rounded-xl bg-green-500 justify-center items-center mr-3">
+                  <Text className="text-white font-bold text-base">SC</Text>
                 </View>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userName}>Sarah Chen</Text>
-                  <Text style={styles.userRole}>Administrator</Text>
+                <View className="flex-1">
+                  <Text className="text-white text-base font-bold mb-0.5">Sarah Chen</Text>
+                  <Text className="text-gray-400 text-xs font-medium">Administrator</Text>
                 </View>
               </View>
               
               <TouchableOpacity 
-                style={styles.logoutButton}
+                className="flex-row items-center justify-center py-3 rounded-xl bg-red-100 border border-red-200"
                 onPress={handleLogout}
               >
                 <Feather name="log-out" size={18} color="#ef4444" />
-                <Text style={styles.logoutText}>Logout</Text>
+                <Text className="text-red-500 text-sm font-semibold ml-2">Logout</Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
       </Animated.View>
 
-      {/* Main Content Area */}
-      <View style={styles.mainContent}>
+      {/* Main Content Area - This should take the remaining space */}
+      <View className="flex-1 bg-gray-50">
         {/* Premium Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.headerTitle}>
+        <View className="bg-white border-b border-gray-200 shadow-sm">
+          <View className="px-6 py-5 flex-row items-center justify-between">
+            <View className="flex-1">
+              <Text className="text-2xl font-extrabold text-gray-900 mb-1">
                 {sidebarItems.find(item => item.id === activeModule)?.label}
               </Text>
-              <Text style={styles.headerSubtitle}>
+              <Text className="text-gray-500 text-sm font-medium">
                 {DEMO_DATA.company.name} • {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
                   year: 'numeric', 
@@ -300,63 +290,64 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
               </Text>
             </View>
 
-            <View style={styles.headerRight}>
+            <View className="flex-row items-center">
               {/* Search Bar */}
-              <View style={styles.searchContainer}>
-                <Feather name="search" size={18} color={COLORS.tertiary} />
+              <View className="flex-row items-center bg-white px-4 py-2.5 rounded-xl border border-gray-200 min-w-72 shadow-sm mr-4">
+                <Feather name="search" size={18} color="#6B7280" />
                 <TextInput
                   placeholder="Search transactions, reports..."
-                  placeholderTextColor={COLORS.tertiary + "80"}
-                  style={styles.searchInput}
+                  placeholderTextColor="#9CA3AF"
+                  className="flex-1 ml-3 mr-2 text-sm text-gray-900"
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                 />
                 {searchQuery && (
                   <TouchableOpacity onPress={() => setSearchQuery("")}>
-                    <Feather name="x" size={16} color={COLORS.tertiary} />
+                    <Feather name="x" size={16} color="#6B7280" />
                   </TouchableOpacity>
                 )}
               </View>
 
               {/* Date Range Selector */}
-              <TouchableOpacity style={styles.dateSelector}>
-                <Feather name="calendar" size={16} color={COLORS.tertiary} />
-                <Text style={styles.dateText}>Q1 2024</Text>
-                <Feather name="chevron-down" size={14} color={COLORS.tertiary} />
+              <TouchableOpacity className="flex-row items-center bg-white px-3.5 py-2.5 rounded-lg border border-gray-200 shadow-sm mr-4">
+                <Feather name="calendar" size={16} color="#6B7280" />
+                <Text className="text-gray-900 text-sm font-semibold mx-2">Q1 2024</Text>
+                <Feather name="chevron-down" size={14} color="#6B7280" />
               </TouchableOpacity>
 
               {/* Notifications */}
-              <TouchableOpacity style={styles.notificationButton}>
-                <Feather name="bell" size={18} color={COLORS.tertiary} />
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationCount}>3</Text>
+              <TouchableOpacity className="relative w-11 h-11 rounded-xl bg-white justify-center items-center border border-gray-200 shadow-sm mr-4">
+                <Feather name="bell" size={18} color="#6B7280" />
+                <View className="absolute top-2 right-2 w-4.5 h-4.5 rounded-full bg-red-500 justify-center items-center">
+                  <Text className="text-white text-xs font-bold">3</Text>
                 </View>
               </TouchableOpacity>
 
               {/* Theme Toggle */}
               <TouchableOpacity 
-                style={styles.themeToggle}
+                className="w-11 h-11 rounded-xl overflow-hidden shadow-sm mr-4"
                 onPress={() => setIsDarkMode(!isDarkMode)}
               >
-                <View style={[
-                  styles.themeToggleBackground,
-                  { backgroundColor: isDarkMode ? '#4B5563' : '#FBBF24' }
-                ]}>
+                <View 
+                  className={`w-full h-full justify-center items-center rounded-xl ${
+                    isDarkMode ? 'bg-gray-600' : 'bg-yellow-400'
+                  }`}
+                >
                   <Feather 
                     name={isDarkMode ? "moon" : "sun"} 
                     size={16} 
-                    color={COLORS.white} 
+                    color="#FFFFFF" 
                   />
                 </View>
               </TouchableOpacity>
 
               {/* Profile Dropdown */}
               <TouchableOpacity 
-                style={styles.profileButton}
+                className="ml-2 shadow-sm"
                 onPress={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
               >
-                <View style={styles.profileAvatar}>
-                  <Text style={styles.profileAvatarText}>SC</Text>
+                <View className="w-11 h-11 rounded-xl bg-green-500 justify-center items-center">
+                  <Text className="text-white font-bold text-base">SC</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -371,49 +362,49 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
           onRequestClose={() => setIsProfileDropdownOpen(false)}
         >
           <TouchableOpacity 
-            style={styles.dropdownOverlay}
+            className="flex-1 bg-black/40 justify-start items-end pt-24 pr-6"
             activeOpacity={1}
             onPress={() => setIsProfileDropdownOpen(false)}
           >
-            <View style={styles.profileDropdown}>
-              <View style={styles.dropdownHeader}>
-                <View style={styles.dropdownAvatar}>
-                  <Text style={styles.dropdownAvatarText}>SC</Text>
+            <View className="bg-white rounded-2xl w-80 shadow-xl overflow-hidden">
+              <View className="p-6 bg-green-500 flex-row items-center">
+                <View className="w-15 h-15 rounded-2xl bg-white/20 justify-center items-center mr-4">
+                  <Text className="text-white font-bold text-lg">SC</Text>
                 </View>
-                <View style={styles.dropdownProfileInfo}>
-                  <Text style={styles.dropdownName}>Sarah Chen</Text>
-                  <Text style={styles.dropdownRole}>Chief Technology Officer</Text>
-                  <Text style={styles.dropdownCompany}>{DEMO_DATA.company.name}</Text>
+                <View className="flex-1">
+                  <Text className="text-white text-lg font-bold mb-0.5">Sarah Chen</Text>
+                  <Text className="text-white/90 text-sm font-semibold mb-0.5">Chief Technology Officer</Text>
+                  <Text className="text-white/70 text-xs font-medium">{DEMO_DATA.company.name}</Text>
                 </View>
               </View>
               
-              <View style={styles.dropdownContent}>
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Feather name="user" size={18} color={COLORS.tertiary} />
-                  <Text style={styles.dropdownText}>My Profile</Text>
-                  <Feather name="chevron-right" size={16} color={COLORS.tertiary} />
+              <View className="p-4">
+                <TouchableOpacity className="flex-row items-center py-3.5 px-3 rounded-lg">
+                  <Feather name="user" size={18} color="#6B7280" />
+                  <Text className="flex-1 text-gray-900 text-base font-medium ml-3">My Profile</Text>
+                  <Feather name="chevron-right" size={16} color="#6B7280" />
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Feather name="settings" size={18} color={COLORS.tertiary} />
-                  <Text style={styles.dropdownText}>Company Settings</Text>
-                  <Feather name="chevron-right" size={16} color={COLORS.tertiary} />
+                <TouchableOpacity className="flex-row items-center py-3.5 px-3 rounded-lg">
+                  <Feather name="settings" size={18} color="#6B7280" />
+                  <Text className="flex-1 text-gray-900 text-base font-medium ml-3">Company Settings</Text>
+                  <Feather name="chevron-right" size={16} color="#6B7280" />
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Feather name="credit-card" size={18} color={COLORS.tertiary} />
-                  <Text style={styles.dropdownText}>Billing & Plans</Text>
-                  <Feather name="chevron-right" size={16} color={COLORS.tertiary} />
+                <TouchableOpacity className="flex-row items-center py-3.5 px-3 rounded-lg">
+                  <Feather name="credit-card" size={18} color="#6B7280" />
+                  <Text className="flex-1 text-gray-900 text-base font-medium ml-3">Billing & Plans</Text>
+                  <Feather name="chevron-right" size={16} color="#6B7280" />
                 </TouchableOpacity>
                 
-                <View style={styles.dropdownDivider} />
+                <View className="h-px bg-gray-100 my-2" />
                 
                 <TouchableOpacity 
-                  style={[styles.dropdownItem, styles.logoutDropdownItem]}
+                  className="flex-row items-center py-3.5 px-3 rounded-lg mt-1"
                   onPress={handleLogout}
                 >
                   <Feather name="log-out" size={18} color="#ef4444" />
-                  <Text style={styles.logoutDropdownText}>Logout</Text>
+                  <Text className="flex-1 text-red-500 text-base font-semibold ml-3">Logout</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -421,170 +412,193 @@ export default function DashboardScreen({ navigation }: DashboardScreenProps) {
         </Modal>
 
         {/* Main Module Content */}
-        <ScrollView 
-          style={styles.moduleContainer}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.moduleContent}
-        >
+        <View className="flex-1">
           {renderModuleContent()}
-        </ScrollView>
+        </View>
       </View>
-    </Animated.View>
+    </View>
   );
 }
 
 // Premium Module Components
 const OverviewModule = ({ data }: any) => (
-  <View style={styles.module}>
-    {/* Welcome & Quick Stats */}
-    <View style={styles.welcomeSection}>
-      <View style={styles.welcomeText}>
-        <Text style={styles.welcomeTitle}>Welcome back, Sarah! 👋</Text>
-        <Text style={styles.welcomeSubtitle}>
-          Here's what's happening with {data.company.name} today.
-        </Text>
-      </View>
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickAction}>
-          <Feather name="plus" size={18} color={COLORS.white} />
-          <Text style={styles.quickActionText}>Add Expense</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickActionSecondary}>
-          <Feather name="bar-chart" size={18} color={COLORS.accent} />
-          <Text style={styles.quickActionTextSecondary}>Generate Report</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-
-    {/* Financial Overview Cards */}
-    <View style={styles.financialGrid}>
-      <FinancialCard
-        title="Total Revenue"
-        amount={data.financials.revenue.current}
-        change={data.financials.revenue.trend}
-        changeAmount={data.financials.revenue.current - data.financials.revenue.previous}
-        icon="trending-up"
-        color="#10B981"
-      />
-      <FinancialCard
-        title="Operating Expenses"
-        amount={data.financials.expenses.current}
-        change={data.financials.expenses.trend}
-        changeAmount={data.financials.expenses.current - data.financials.expenses.previous}
-        icon="trending-down"
-        color="#EF4444"
-      />
-      <FinancialCard
-        title="Net Profit"
-        amount={data.financials.profit.current}
-        change={data.financials.profit.trend}
-        changeAmount={data.financials.profit.current - data.financials.profit.previous}
-        icon="dollar-sign"
-        color="#8B5CF6"
-      />
-      <FinancialCard
-        title="Cash Flow"
-        amount={data.financials.cashFlow.current}
-        change={data.financials.cashFlow.trend}
-        changeAmount={data.financials.cashFlow.current - data.financials.cashFlow.previous}
-        icon="refresh-cw"
-        color="#06B6D4"
-      />
-    </View>
-
-    {/* Charts & Analytics Row */}
-    <View style={styles.analyticsRow}>
-      <View style={styles.chartContainer}>
-        <View style={styles.chartHeader}>
-          <Text style={styles.chartTitle}>Revenue Trend</Text>
-          <TouchableOpacity>
-            <Text style={styles.chartAction}>View Report →</Text>
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      {/* Welcome & Quick Stats */}
+      <View className="flex-row items-center justify-between mb-8">
+        <View className="flex-1">
+          <Text className="text-2xl font-extrabold text-gray-900 mb-2">Welcome back, Sarah! 👋</Text>
+          <Text className="text-gray-500 text-base font-medium">
+            Here's what's happening with {data.company.name} today.
+          </Text>
+        </View>
+        <View className="flex-row">
+          <TouchableOpacity className="flex-row items-center bg-green-500 px-5 py-3 rounded-xl shadow-lg shadow-green-500/30 mr-3">
+            <Feather name="plus" size={18} color="#FFFFFF" />
+            <Text className="text-white text-sm font-semibold ml-2">Add Expense</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-row items-center bg-white px-5 py-3 rounded-xl border border-gray-200">
+            <Feather name="bar-chart" size={18} color="#86C232" />
+            <Text className="text-green-500 text-sm font-semibold ml-2">Generate Report</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.chartPlaceholder}>
-          {/* Simulated chart with bars */}
-          <View style={styles.chartBars}>
-            {[60, 80, 45, 90, 75, 95, 70].map((height, index) => (
-              <View key={index} style={[styles.chartBar, { height: `${height}%` }]} />
-            ))}
+      </View>
+
+      {/* Financial Overview Cards */}
+      <View className="flex-row flex-wrap mb-8" style={{ gap: 16 }}>
+        <FinancialCard
+          title="Total Revenue"
+          amount={data.financials.revenue.current}
+          change={data.financials.revenue.trend}
+          changeAmount={data.financials.revenue.current - data.financials.revenue.previous}
+          icon="trending-up"
+          color="#10B981"
+        />
+        <FinancialCard
+          title="Operating Expenses"
+          amount={data.financials.expenses.current}
+          change={data.financials.expenses.trend}
+          changeAmount={data.financials.expenses.current - data.financials.expenses.previous}
+          icon="trending-down"
+          color="#EF4444"
+        />
+        <FinancialCard
+          title="Net Profit"
+          amount={data.financials.profit.current}
+          change={data.financials.profit.trend}
+          changeAmount={data.financials.profit.current - data.financials.profit.previous}
+          icon="dollar-sign"
+          color="#8B5CF6"
+        />
+        <FinancialCard
+          title="Cash Flow"
+          amount={data.financials.cashFlow.current}
+          change={data.financials.cashFlow.trend}
+          changeAmount={data.financials.cashFlow.current - data.financials.cashFlow.previous}
+          icon="refresh-cw"
+          color="#06B6D4"
+        />
+      </View>
+
+      {/* Charts & Analytics Row */}
+      <View className={`${width < 768 ? 'flex-col' : 'flex-row'} mb-8`} style={{ gap: 24 }}>
+        <View className={`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 ${
+          width < 768 ? 'flex-1 mb-6' : 'flex-2'
+        }`}>
+          <View className="flex-row items-center justify-between mb-5">
+            <Text className="text-lg font-bold text-gray-900">Revenue Trend</Text>
+            <TouchableOpacity>
+              <Text className="text-green-500 text-sm font-semibold">View Report →</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.chartLabels}>
-            {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].map((label, index) => (
-              <Text key={index} style={styles.chartLabel}>{label}</Text>
-            ))}
+          <View style={{ height: 200, justifyContent: 'space-between' }}>
+            {/* Simulated chart with bars */}
+            <View className="flex-1 flex-row items-end justify-between px-5">
+              {[60, 80, 45, 90, 75, 95, 70].map((height, index) => (
+                <View 
+                  key={index} 
+                  className="w-7 bg-green-500 rounded-lg mx-1"
+                  style={{ height: `${height}%` }}
+                />
+              ))}
+            </View>
+            <View className="flex-row justify-between px-5 mt-3">
+              {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].map((label, index) => (
+                <Text key={index} className="text-gray-500 text-xs font-medium">{label}</Text>
+              ))}
+            </View>
           </View>
+        </View>
+
+        <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex-1">
+          <View className="flex-row items-center justify-between mb-5">
+            <Text className="text-lg font-bold text-gray-900">Expense Breakdown</Text>
+            <Text className="text-green-500 text-base font-bold">{formatCurrency(data.financials.expenses.current)}</Text>
+          </View>
+          {data.expenses.map((expense: any) => (
+            <ExpenseItem key={expense.id} expense={expense} />
+          ))}
         </View>
       </View>
 
-      <View style={styles.expenseBreakdown}>
-        <View style={styles.expenseHeader}>
-          <Text style={styles.expenseTitle}>Expense Breakdown</Text>
-          <Text style={styles.expenseTotal}>{formatCurrency(data.financials.expenses.current)}</Text>
+      {/* Recent Activity */}
+      <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <View className="flex-row items-center justify-between mb-5">
+          <Text className="text-lg font-bold text-gray-900">Recent Transactions</Text>
+          <TouchableOpacity>
+            <Text className="text-green-500 text-sm font-semibold">View All →</Text>
+          </TouchableOpacity>
         </View>
-        {data.expenses.map((expense: any) => (
-          <ExpenseItem key={expense.id} expense={expense} />
+        {data.recentTransactions.map((transaction: any) => (
+          <TransactionItem key={transaction.id} transaction={transaction} />
         ))}
       </View>
     </View>
-
-    {/* Recent Activity */}
-    <View style={styles.recentActivity}>
-      <View style={styles.activityHeader}>
-        <Text style={styles.activityTitle}>Recent Transactions</Text>
-        <TouchableOpacity>
-          <Text style={styles.activityAction}>View All →</Text>
-        </TouchableOpacity>
-      </View>
-      {data.recentTransactions.map((transaction: any) => (
-        <TransactionItem key={transaction.id} transaction={transaction} />
-      ))}
-    </View>
-  </View>
+  </ScrollView>
 );
 
 const FinancialCard = ({ title, amount, change, changeAmount, icon, color }: any) => (
-  <View style={styles.financialCard}>
-    <View style={styles.financialCardBackground}>
-      <View style={styles.financialCardHeader}>
-        <View style={[styles.financialIcon, { backgroundColor: color + '20' }]}>
+  <View 
+    className="bg-white rounded-2xl shadow-lg overflow-hidden"
+    style={{ 
+      width: width < 768 ? '100%' : '48%',
+      minWidth: 280,
+      marginBottom: 16,
+    }}
+  >
+    <View className="p-6">
+      <View className="flex-row items-center justify-between mb-4">
+        <View 
+          className="w-12 h-12 rounded-xl justify-center items-center"
+          style={{ backgroundColor: `${color}20` }}
+        >
           <Feather name={icon} size={20} color={color} />
         </View>
-        <View style={styles.financialTrend}>
+        <View className="flex-row items-center">
           <Feather 
             name={change === 'up' ? 'trending-up' : 'trending-down'} 
             size={14} 
             color={change === 'up' ? '#10B981' : '#EF4444'} 
           />
-          <Text style={[
-            styles.trendText,
-            { color: change === 'up' ? '#10B981' : '#EF4444' }
-          ]}>
+          <Text 
+            className={`text-xs font-semibold ml-1.5 ${
+              change === 'up' ? 'text-green-500' : 'text-red-500'
+            }`}
+          >
             {change === 'up' ? '+' : ''}{formatCurrency(Math.abs(changeAmount))}
           </Text>
         </View>
       </View>
       
-      <Text style={styles.financialAmount}>{formatCurrency(amount)}</Text>
-      <Text style={styles.financialTitle}>{title}</Text>
+      <Text className="text-2xl font-extrabold text-gray-900 mb-1">{formatCurrency(amount)}</Text>
+      <Text className="text-gray-500 text-base font-semibold mb-2">{title}</Text>
       
-      <View style={styles.financialFooter}>
-        <Text style={styles.financialSubtitle}>Last 30 days</Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-gray-500 text-xs font-medium">Last 30 days</Text>
       </View>
     </View>
   </View>
 );
 
 const ExpenseItem = ({ expense }: any) => (
-  <View style={styles.expenseItem}>
-    <View style={styles.expenseLeft}>
-      <View style={[styles.expenseDot, { backgroundColor: expense.color }]} />
+  <View className="flex-row items-center justify-between py-3 border-b border-gray-50">
+    <View className="flex-row items-center">
+      <View 
+        className="w-3 h-3 rounded-full mr-3"
+        style={{ backgroundColor: expense.color }}
+      />
       <View>
-        <Text style={styles.expenseCategory}>{expense.category}</Text>
-        <Text style={styles.expensePercentage}>{expense.percentage}% of total</Text>
+        <Text className="text-gray-900 text-sm font-semibold mb-0.5">{expense.category}</Text>
+        <Text className="text-gray-500 text-xs font-medium">{expense.percentage}% of total</Text>
       </View>
     </View>
-    <View style={styles.expenseRight}>
-      <Text style={styles.expenseAmount}>{formatCurrency(expense.amount)}</Text>
+    <View className="flex-row items-center">
+      <Text className="text-gray-900 text-sm font-semibold mr-2">{formatCurrency(expense.amount)}</Text>
       <Feather 
         name={expense.trend === 'up' ? 'trending-up' : expense.trend === 'down' ? 'trending-down' : 'minus'}
         size={14} 
@@ -595,11 +609,13 @@ const ExpenseItem = ({ expense }: any) => (
 );
 
 const TransactionItem = ({ transaction }: any) => (
-  <View style={styles.transactionItem}>
-    <View style={[
-      styles.transactionIcon,
-      { backgroundColor: transaction.type === 'revenue' ? '#10B98120' : '#EF444420' }
-    ]}>
+  <View className="flex-row items-center py-4 border-b border-gray-50">
+    <View 
+      className="w-10 h-10 rounded-xl justify-center items-center mr-4"
+      style={{ 
+        backgroundColor: transaction.type === 'revenue' ? '#10B98120' : '#EF444420' 
+      }}
+    >
       <Feather 
         name={transaction.type === 'revenue' ? 'arrow-down-left' : 'arrow-up-right'} 
         size={16} 
@@ -607,817 +623,97 @@ const TransactionItem = ({ transaction }: any) => (
       />
     </View>
     
-    <View style={styles.transactionDetails}>
-      <Text style={styles.transactionDescription}>{transaction.description}</Text>
-      <Text style={styles.transactionDate}>
+    <View className="flex-1">
+      <Text className="text-gray-900 text-base font-semibold mb-1">{transaction.description}</Text>
+      <Text className="text-gray-500 text-xs font-medium">
         {new Date(transaction.date).toLocaleDateString()} • 
-        <Text style={[
-          styles.transactionStatus,
-          { color: transaction.status === 'completed' ? '#10B981' : '#F59E0B' }
-        ]}>
+        <Text 
+          className={`font-semibold ${
+            transaction.status === 'completed' ? 'text-green-500' : 'text-yellow-500'
+          }`}
+        >
           {transaction.status === 'completed' ? ' Completed' : ' Pending'}
         </Text>
       </Text>
     </View>
     
-    <Text style={[
-      styles.transactionAmount,
-      { color: transaction.type === 'revenue' ? '#10B981' : '#EF4444' }
-    ]}>
+    <Text 
+      className={`text-base font-bold ${
+        transaction.type === 'revenue' ? 'text-green-500' : 'text-red-500'
+      }`}
+    >
       {transaction.type === 'revenue' ? '+' : ''}{formatCurrency(transaction.amount)}
     </Text>
   </View>
 );
 
-// Placeholder modules for other sections (would be fully implemented similarly)
-const ExpensesModule = ({ data }: any) => (
-  <View style={styles.module}>
-    <Text style={styles.moduleTitle}>Expense Management</Text>
-    <Text style={styles.comingSoon}>Advanced expense tracking coming soon...</Text>
-  </View>
+// Placeholder modules for other sections
+const ExpensesModule = () => (
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6">Expense Management</Text>
+      <Text className="text-gray-500 text-base text-center mt-15 italic">Advanced expense tracking coming soon...</Text>
+    </View>
+  </ScrollView>
 );
 
-const PayrollModule = ({ data }: any) => (
-  <View style={styles.module}>
-    <Text style={styles.moduleTitle}>Payroll Management</Text>
-    <Text style={styles.comingSoon}>Payroll automation coming soon...</Text>
-  </View>
+const PayrollModule = () => (
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6">Payroll Management</Text>
+      <Text className="text-gray-500 text-base text-center mt-15 italic">Payroll automation coming soon...</Text>
+    </View>
+  </ScrollView>
 );
 
-const ShareholdersModule = ({ data }: any) => (
-  <View style={styles.module}>
-    <Text style={styles.moduleTitle}>Shareholder Management</Text>
-    <Text style={styles.comingSoon}>Equity management coming soon...</Text>
-  </View>
+const ShareholdersModule = () => (
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6">Shareholder Management</Text>
+      <Text className="text-gray-500 text-base text-center mt-15 italic">Equity management coming soon...</Text>
+    </View>
+  </ScrollView>
 );
 
-const ReportsModule = ({ data }: any) => (
-  <View style={styles.module}>
-    <Text style={styles.moduleTitle}>Advanced Analytics</Text>
-    <Text style={styles.comingSoon}>Deep analytics dashboard coming soon...</Text>
-  </View>
+const ReportsModule = () => (
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6">Advanced Analytics</Text>
+      <Text className="text-gray-500 text-base text-center mt-15 italic">Deep analytics dashboard coming soon...</Text>
+    </View>
+  </ScrollView>
 );
 
 const SettingsModule = () => (
-  <View style={styles.module}>
-    <Text style={styles.moduleTitle}>Settings</Text>
-    <Text style={styles.comingSoon}>Company settings coming soon...</Text>
-  </View>
+  <ScrollView 
+    className="flex-1"
+    contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6">Settings</Text>
+      <Text className="text-gray-500 text-base text-center mt-15 italic">Company settings coming soon...</Text>
+    </View>
+  </ScrollView>
 );
-
-// Ultra-Premium Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: COLORS.white,
-  },
-  sidebar: {
-    backgroundColor: COLORS.neutral,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
-    zIndex: 1000,
-  },
-  sidebarBackground: {
-    flex: 1,
-    backgroundColor: COLORS.neutral,
-  },
-  sidebarHeader: {
-    padding: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.1)",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  logoIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "rgba(134, 194, 50, 0.15)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "rgba(134, 194, 50, 0.3)",
-  },
-  logoText: {
-    color: COLORS.textLight,
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-  },
-  logoAccent: {
-    color: COLORS.accent,
-  },
-  companySubtitle: {
-    color: COLORS.accent,
-    fontSize: 10,
-    fontWeight: "700",
-    letterSpacing: 1,
-    marginTop: 2,
-  },
-  collapseButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-  },
-  sidebarContent: {
-    flex: 1,
-    paddingVertical: 20,
-  },
-  navItem: {
-    marginHorizontal: 12,
-    marginVertical: 4,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  navItemBackground: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  navItemActive: {
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  navIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  navLabel: {
-    color: COLORS.textLight,
-    fontSize: 15,
-    fontWeight: "600",
-    marginLeft: 12,
-    opacity: 0.9,
-  },
-  navLabelActive: {
-    color: COLORS.accent,
-    fontWeight: "700",
-  },
-  sidebarFooter: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.1)",
-  },
-  userProfile: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  userAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: COLORS.accent,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  userAvatarText: {
-    color: COLORS.white,
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    color: COLORS.textLight,
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 2,
-  },
-  userRole: {
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    borderRadius: 10,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(239, 68, 68, 0.2)",
-    gap: 8,
-  },
-  logoutText: {
-    color: "#ef4444",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  mainContent: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  header: {
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  headerContent: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    minWidth: 280,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    marginRight: 8,
-    fontSize: 14,
-    color: COLORS.textDark,
-  },
-  dateSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  dateText: {
-    fontSize: 14,
-    color: COLORS.textDark,
-    fontWeight: "600",
-  },
-  notificationButton: {
-    position: "relative",
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: COLORS.white,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  notificationBadge: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: "#EF4444",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  notificationCount: {
-    color: COLORS.white,
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  themeToggle: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  themeToggleBackground: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 12,
-  },
-  profileButton: {
-    marginLeft: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  profileAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: COLORS.accent,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  profileAvatarText: {
-    color: COLORS.white,
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  dropdownOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-start",
-    alignItems: "flex-end",
-    paddingTop: 100,
-    paddingRight: 24,
-  },
-  profileDropdown: {
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    width: 320,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 16,
-    overflow: "hidden",
-  },
-  dropdownHeader: {
-    padding: 24,
-    backgroundColor: COLORS.accent,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  dropdownAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 16,
-  },
-  dropdownAvatarText: {
-    color: COLORS.white,
-    fontWeight: "700",
-    fontSize: 20,
-  },
-  dropdownProfileInfo: {
-    flex: 1,
-  },
-  dropdownName: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 2,
-  },
-  dropdownRole: {
-    color: "rgba(255,255,255,0.9)",
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 2,
-  },
-  dropdownCompany: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  dropdownContent: {
-    padding: 16,
-  },
-  dropdownItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    gap: 12,
-  },
-  dropdownText: {
-    flex: 1,
-    fontSize: 15,
-    color: COLORS.textDark,
-    fontWeight: "500",
-  },
-  dropdownDivider: {
-    height: 1,
-    backgroundColor: "#f1f5f9",
-    marginVertical: 8,
-  },
-  logoutDropdownItem: {
-    marginTop: 4,
-  },
-  logoutDropdownText: {
-    flex: 1,
-    fontSize: 15,
-    color: "#ef4444",
-    fontWeight: "600",
-  },
-  moduleContainer: {
-    flex: 1,
-  },
-  moduleContent: {
-    padding: 24,
-  },
-  module: {
-    flex: 1,
-  },
-  moduleTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    marginBottom: 24,
-  },
-  comingSoon: {
-    fontSize: 16,
-    color: COLORS.tertiary,
-    textAlign: "center",
-    marginTop: 60,
-    fontStyle: "italic",
-  },
-  welcomeSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 32,
-  },
-  welcomeText: {
-    flex: 1,
-  },
-  welcomeTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    marginBottom: 8,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  quickActions: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  quickAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.accent,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 8,
-    shadowColor: COLORS.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  quickActionText: {
-    color: COLORS.white,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  quickActionSecondary: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  quickActionTextSecondary: {
-    color: COLORS.accent,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  financialGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-    marginBottom: 32,
-  },
-  financialCard: {
-    width: isMobile ? "100%" : "48%",
-    minWidth: 280,
-    flex: 1,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 8,
-    overflow: "hidden",
-  },
-  financialCardBackground: {
-    padding: 24,
-    backgroundColor: COLORS.white,
-  },
-  financialCardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  financialIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  financialTrend: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  trendText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  financialAmount: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    marginBottom: 4,
-  },
-  financialTitle: {
-    fontSize: 16,
-    color: COLORS.tertiary,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  financialFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  financialSubtitle: {
-    fontSize: 12,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  analyticsRow: {
-    flexDirection: isMobile ? "column" : "row",
-    gap: 24,
-    marginBottom: 32,
-  },
-  chartContainer: {
-    flex: 2,
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  chartHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  chartAction: {
-    fontSize: 14,
-    color: COLORS.accent,
-    fontWeight: "600",
-  },
-  chartPlaceholder: {
-    height: 200,
-    justifyContent: "space-between",
-  },
-  chartBars: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-  },
-  chartBar: {
-    width: 30,
-    backgroundColor: COLORS.accent,
-    borderRadius: 6,
-    marginHorizontal: 4,
-  },
-  chartLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 12,
-  },
-  chartLabel: {
-    fontSize: 12,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  expenseBreakdown: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  expenseHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  expenseTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  expenseTotal: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: COLORS.accent,
-  },
-  expenseItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f8fafc",
-  },
-  expenseLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  expenseDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  expenseCategory: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: COLORS.textDark,
-    marginBottom: 2,
-  },
-  expensePercentage: {
-    fontSize: 12,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  expenseRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  expenseAmount: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: COLORS.textDark,
-  },
-  recentActivity: {
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  activityHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  activityTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  activityAction: {
-    fontSize: 14,
-    color: COLORS.accent,
-    fontWeight: "600",
-  },
-  transactionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f8fafc",
-  },
-  transactionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 16,
-  },
-  transactionDetails: {
-    flex: 1,
-  },
-  transactionDescription: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: COLORS.textDark,
-    marginBottom: 4,
-  },
-  transactionDate: {
-    fontSize: 12,
-    color: COLORS.tertiary,
-    fontWeight: "500",
-  },
-  transactionStatus: {
-    fontWeight: "600",
-  },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
