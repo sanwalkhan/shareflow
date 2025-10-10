@@ -7,16 +7,20 @@ import {
   Animated,
   ScrollView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Alert
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, WINDOW, isMobile } from "../constants/theme";
+import OTPModal from "../components/OTPModal";
 
 export default function AuthScreen() {
   const navigation = useNavigation();
   const [isLogin, setIsLogin] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [formData, setFormData] = useState({
     // Company Details
     companyName: "",
@@ -90,9 +94,24 @@ export default function AuthScreen() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
+      setRegistrationSuccess(true);
+      setShowOTPModal(true);
     }, 2000);
+  };
+
+  const handleOTPVerify = () => {
+    setShowOTPModal(false);
+    Alert.alert("Welcome!", "Your account has been created and email verified successfully!");
+    // Navigate to dashboard or next screen
+  };
+
+  const handleOTPClose = () => {
+    setShowOTPModal(false);
+    Alert.alert("Welcome!", "Your account has been created successfully! You can verify your email later.");
+    // Navigate to dashboard or next screen
   };
 
   const handleBack = () => {
@@ -667,6 +686,14 @@ export default function AuthScreen() {
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* OTP Modal */}
+      <OTPModal
+        visible={showOTPModal}
+        onClose={handleOTPClose}
+        onVerify={handleOTPVerify}
+        email={formData.email}
+      />
     </View>
   );
 }
