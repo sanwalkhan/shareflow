@@ -16,9 +16,9 @@ export default function AppNavigator() {
         screenOptions={{
           headerShown: false,
         }}
-      >
-        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      > 
         <Stack.Screen name="Landing" component={LandingScreen} />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
       </Stack.Navigator>
     </NavigationContainer>

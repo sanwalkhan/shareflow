@@ -61,7 +61,7 @@ export default function SigninScreen() {
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert("Success", "Welcome back to ShareFlow!");
-      // Navigate to dashboard
+      navigation.navigate("Dashboard" as never);
     }, 2000);
   };
 
@@ -74,7 +74,7 @@ export default function SigninScreen() {
   };
 
   const handleSignUp = () => {
-    // Navigate to registration screen
+    navigation.navigate("Auth" as never);
   };
 
   return (
