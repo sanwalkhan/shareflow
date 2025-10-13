@@ -14,6 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
+<<<<<<< Updated upstream
 const { width, height } = Dimensions.get("window");
 const isMobile = width < 768;
 
@@ -32,10 +33,38 @@ const COLORS = {
   error: "#ef4444",
   success: "#10b981"
 };
+=======
+// 🔹 Components
+import AuthHeader from "../components/auth/AuthHeader";
+import LeftPanel from "../components/auth/AuthLeftPanel";
+import StepIndicator from "../components/auth/StepIndicator";
+import AuthActions from "../components/auth/AuthActions";
+import AuthStep1 from "../components/auth/steps/AuthStep1";
+import AuthStep2 from "../components/auth/steps/AuthStep2";
+import AuthStep3 from "../components/auth/steps/AuthStep3";
+import AuthStep4 from "../components/auth/steps/AuthStep4";
+
+// API Configuration
+const API_BASE_URL = "http://localhost:9000/api";
+
+export default function AuthScreen() {
+  const navigation = useNavigation();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 900;
+>>>>>>> Stashed changes
 
 export default function AuthScreen({ onBack }: { onBack: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
+<<<<<<< Updated upstream
+=======
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+>>>>>>> Stashed changes
   const [formData, setFormData] = useState({
     // Company Details
     companyName: "",
@@ -95,6 +124,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
     }));
   };
 
+<<<<<<< Updated upstream
   const handleNextStep = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
@@ -106,9 +136,135 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
       setCurrentStep(currentStep - 1);
     }
   };
+=======
+  // Validation function
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        if (!formData.companyName?.trim()) {
+          Alert.alert("Validation Error", "Company name is required");
+          return false;
+        }
+        if (!formData.companyType?.trim()) {
+          Alert.alert("Validation Error", "Company type is required");
+          return false;
+        }
+        if (!formData.industry?.trim()) {
+          Alert.alert("Validation Error", "Industry is required");
+          return false;
+        }
+        if (!formData.companySize) {
+          Alert.alert("Validation Error", "Company size is required");
+          return false;
+        }
+        if (!formData.taxId?.trim()) {
+          Alert.alert("Validation Error", "Tax ID is required");
+          return false;
+        }
+        break;
+      
+      case 2:
+        if (!formData.email?.trim()) {
+          Alert.alert("Validation Error", "Business email is required");
+          return false;
+        }
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(formData.email)) {
+          Alert.alert("Validation Error", "Please enter a valid business email");
+          return false;
+        }
+        if (!formData.phone?.trim()) {
+          Alert.alert("Validation Error", "Phone number is required");
+          return false;
+        }
+        if (!formData.address?.trim()) {
+          Alert.alert("Validation Error", "Address is required");
+          return false;
+        }
+        if (!formData.city?.trim()) {
+          Alert.alert("Validation Error", "City is required");
+          return false;
+        }
+        if (!formData.country?.trim()) {
+          Alert.alert("Validation Error", "Country is required");
+          return false;
+        }
+        if (!formData.postalCode?.trim()) {
+          Alert.alert("Validation Error", "Postal code is required");
+          return false;
+        }
+        break;
+      
+      case 3:
+        if (!formData.firstName?.trim()) {
+          Alert.alert("Validation Error", "First name is required");
+          return false;
+        }
+        if (!formData.lastName?.trim()) {
+          Alert.alert("Validation Error", "Last name is required");
+          return false;
+        }
+        if (!formData.jobTitle?.trim()) {
+          Alert.alert("Validation Error", "Job title is required");
+          return false;
+        }
+        if (!formData.adminEmail?.trim()) {
+          Alert.alert("Validation Error", "Admin email is required");
+          return false;
+        }
+        const adminEmailRegex = /^\S+@\S+\.\S+$/;
+        if (!adminEmailRegex.test(formData.adminEmail)) {
+          Alert.alert("Validation Error", "Please enter a valid admin email");
+          return false;
+        }
+        break;
+      
+      case 4:
+        if (!formData.password?.trim()) {
+          Alert.alert("Validation Error", "Password is required");
+          return false;
+        }
+        if (formData.password.length < 6) {
+          Alert.alert("Validation Error", "Password must be at least 6 characters");
+          return false;
+        }
+        if (!formData.confirmPassword?.trim()) {
+          Alert.alert("Validation Error", "Please confirm your password");
+          return false;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          Alert.alert("Validation Error", "Passwords do not match");
+          return false;
+        }
+        if (!formData.acceptTerms) {
+          Alert.alert("Validation Error", "You must accept the Terms of Service and Privacy Policy");
+          return false;
+        }
+        break;
+    }
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
+    }
+  };
+
+  const handlePrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+>>>>>>> Stashed changes
 
   const handleSubmit = async () => {
+    // Final validation of all steps
+    for (let step = 1; step <= 4; step++) {
+      if (!validateStep(step)) {
+        setCurrentStep(step);
+        return;
+      }
+    }
+
     setIsLoading(true);
+<<<<<<< Updated upstream
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
@@ -141,6 +297,140 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
       ))}
     </View>
   );
+=======
+
+    // Prepare clean data for API
+    const registrationData = {
+      // Step 1: Company Information
+      companyName: formData.companyName.trim(),
+      companyType: formData.companyType.trim(),
+      industry: formData.industry.trim(),
+      companySize: formData.companySize,
+      foundedYear: formData.foundedYear?.trim() || "",
+      taxId: formData.taxId.trim(),
+      registrationNumber: formData.registrationNumber?.trim() || "",
+      
+      // Step 2: Contact Details
+      email: formData.email.trim().toLowerCase(),
+      phone: formData.phone.trim(),
+      address: formData.address.trim(),
+      city: formData.city.trim(),
+      country: formData.country.trim(),
+      postalCode: formData.postalCode.trim(),
+      
+      // Step 3: Administrator Details
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      jobTitle: formData.jobTitle.trim(),
+      adminEmail: formData.adminEmail.trim().toLowerCase(),
+      
+      // Step 4: Security & Preferences
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      acceptTerms: formData.acceptTerms,
+      newsletter: formData.newsletter,
+    };
+
+    console.log("📤 Sending registration data to:", `${API_BASE_URL}/auth/register`);
+    console.log("📋 Data:", {
+      ...registrationData,
+      password: "***hidden***",
+      confirmPassword: "***hidden***"
+    });
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      console.log("📥 Response status:", response.status);
+      
+      const data = await response.json();
+      console.log("📥 Response data:", data);
+
+      if (response.ok && data.success) {
+        console.log("✅ Registration successful!");
+        
+        // Store token if needed
+        // await AsyncStorage.setItem('authToken', data.data.token);
+        
+        Alert.alert(
+          "Success! 🎉",
+          `Welcome ${data.data.admin.firstName} ${data.data.admin.lastName}!\n\nYour company "${data.data.company.companyName}" has been registered successfully.`,
+          [
+            {
+              text: "Continue to Dashboard",
+              onPress: () => {
+                console.log("Token:", data.data.token);
+                // Navigate to dashboard
+                // navigation.navigate('Dashboard', { 
+                //   admin: data.data.admin,
+                //   company: data.data.company 
+                // });
+                
+                // Reset form
+                setFormData({
+                  companyName: "",
+                  companyType: "",
+                  industry: "",
+                  companySize: "",
+                  foundedYear: "",
+                  taxId: "",
+                  registrationNumber: "",
+                  email: "",
+                  phone: "",
+                  address: "",
+                  city: "",
+                  country: "",
+                  postalCode: "",
+                  firstName: "",
+                  lastName: "",
+                  jobTitle: "",
+                  adminEmail: "",
+                  password: "",
+                  confirmPassword: "",
+                  acceptTerms: false,
+                  newsletter: true,
+                });
+                setCurrentStep(1);
+              },
+            },
+          ]
+        );
+      } else {
+        console.error("❌ Registration failed:", data);
+        
+        let errorMessage = data.message || "Registration failed. Please try again.";
+        
+        if (data.errors && Array.isArray(data.errors)) {
+          errorMessage = data.errors.join("\n");
+        }
+        
+        Alert.alert(
+          "Registration Failed",
+          errorMessage,
+          [{ text: "OK" }]
+        );
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+      Alert.alert(
+        "Connection Error",
+        `Unable to connect to the server.\n\nPlease check:\n• Backend is running on port 9000\n• MongoDB is connected\n• Network connection is active\n\nURL: ${API_BASE_URL}/auth/register\n\nError: ${error.message}`,
+        [{ text: "OK" }]
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBack = () => navigation.goBack();
+>>>>>>> Stashed changes
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -459,6 +749,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
     }
   };
 
+<<<<<<< Updated upstream
   return (
     <LinearGradient
       colors={[COLORS.primary, COLORS.secondary, "#6a6375"]}
@@ -470,6 +761,95 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
         <View style={[styles.floatingOrb, styles.orb2]} />
         <View style={[styles.geometricShape, styles.shape1]} />
         <View style={[styles.geometricShape, styles.shape2]} />
+=======
+  // ✅ WEB VERSION
+  if (Platform.OS === "web") {
+    return (
+      <View className="flex flex-col h-screen bg-primary overflow-hidden">
+        <View className="absolute top-0 left-0 right-0 bottom-0">
+          <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
+          <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
+          <View className="absolute w-[100px] h-[100px] rounded-[25px] bg-secondary/30 border border-secondary/50 top-1/5 right-1/10 transform rotate-45" />
+          <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
+        </View>
+
+        <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
+          <Animated.View
+            className="flex-1"
+            style={{
+              minHeight: WINDOW.height,
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}
+          >
+            <AuthHeader onBack={handleBack} />
+
+            <View
+              className={`flex-1 ${
+                isMobile ? "flex-col px-4 pb-10" : "flex-row px-10 pb-5"
+              } items-stretch w-full`}
+            >
+              {!isMobile && <LeftPanel />}
+
+              <View
+                className={`flex-1 rounded-3xl overflow-hidden bg-white ${
+                  isMobile ? "mt-4" : "ml-5"
+                }`}
+                style={{
+                  shadowColor: COLORS.black,
+                  shadowOffset: { width: 0, height: 20 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 30,
+                  elevation: 15,
+                }}
+              >
+                <View
+                  className={`flex-1 ${
+                    isMobile ? "p-5" : "p-8"
+                  } justify-between`}
+                >
+                  <View>
+                    <StepIndicator currentStep={currentStep} />
+                    <View className="flex-1 mt-4">{renderStepContent()}</View>
+                  </View>
+
+                  <AuthActions
+                    currentStep={currentStep}
+                    isLoading={isLoading}
+                    handlePrevStep={handlePrevStep}
+                    handleNextStep={handleNextStep}
+                    handleSubmit={handleSubmit}
+                  />
+
+                  <View className="items-center pt-5 border-t border-gray-300 mt-6">
+                    <Text className="text-secondary text-sm text-center">
+                      Already have an account?{" "}
+                      <Text
+                        className="text-accent font-bold"
+                        onPress={() => Alert.alert("Login", "Navigate to login")}
+                      >
+                        Sign in here
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        </View>
+      </View>
+    );
+  }
+
+  // ✅ MOBILE APP VERSION
+  return (
+    <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
+      <View className="absolute top-0 left-0 right-0 bottom-0">
+        <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
+        <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
+        <View className="absolute w-[100px] h-[100px] rounded-[25px] bg-secondary/30 border border-secondary/50 top-1/5 right-1/10 transform rotate-45" />
+        <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
+>>>>>>> Stashed changes
       </View>
 
       <KeyboardAvoidingView 
@@ -665,6 +1045,7 @@ export default function AuthScreen({ onBack }: { onBack: () => void }) {
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
+<<<<<<< Updated upstream
     </LinearGradient>
   );
 }
@@ -1146,3 +1527,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+=======
+    </View>
+  );
+}
+>>>>>>> Stashed changes

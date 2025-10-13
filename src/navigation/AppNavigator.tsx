@@ -14,7 +14,11 @@ export default function AppNavigator() {
       <Tab.Navigator
 =======
       <Stack.Navigator
+<<<<<<< Updated upstream
         initialRouteName="Dashboard"
+>>>>>>> Stashed changes
+=======
+        initialRouteName="Landing"
 >>>>>>> Stashed changes
         screenOptions={{
           headerShown: true,
