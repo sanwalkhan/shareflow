@@ -8,11 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#222629", // dark purple
-        secondary: "#5a5560",
-        accent: "#faed26", // yellow
-        neutral: "#9b986f",
-        tertiary: "#9d8d8f",
+         accent: "#86c232",      // Highlight color (for buttons, important text)
+         primary: "#61892f",     // Dark version of main color
+         secondary: "#474b4f",   // Slightly darker secondary color
+         tertiary: "#6b6e70",    // Text color for smaller text
+         neutral: "#222629",     // Overlay / background color
+         white: "#ffffff",
+         black: "#000000",
+         textLight: "#f8f9fa",
+         textDark: "#222629",
       },
     },
   },
