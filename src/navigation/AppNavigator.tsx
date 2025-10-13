@@ -10,7 +10,12 @@ const Tab = createBottomTabNavigator();
 export default function AppNavigator() {
   return (
     <NavigationContainer>
+<<<<<<< Updated upstream
       <Tab.Navigator
+=======
+      <Stack.Navigator
+        initialRouteName="Dashboard"
+>>>>>>> Stashed changes
         screenOptions={{
           headerShown: true,
           tabBarStyle: { backgroundColor: '#fff' },
