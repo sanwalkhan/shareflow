@@ -15,7 +15,11 @@ export default function AppNavigator() {
 =======
       <Stack.Navigator
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         initialRouteName="Dashboard"
+>>>>>>> Stashed changes
+=======
+        initialRouteName="Landing"
 >>>>>>> Stashed changes
 =======
         initialRouteName="Landing"
