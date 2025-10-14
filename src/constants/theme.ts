@@ -1,3 +1,4 @@
+//src/constants/theme.ts
 import { Dimensions } from "react-native";
 
 const { width, height } = Dimensions.get("window");
@@ -15,6 +16,11 @@ export const COLORS = {
   black: "#000000",
   textLight: "#f8f9fa",
   textDark: "#222629",
+  gray: "#6c757d",
+  success: "#28a745",
+  warning: "#ffc107",
+  danger: "#dc3545",
+  error: "#dc3545",
 };
 
 export const WINDOW = { width, height };
