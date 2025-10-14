@@ -39,16 +39,26 @@ const DEMO_DATA = {
 };
 
 export default function AdminDashboardScreen({ navigation }: DashboardScreenProps) {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 900;
+  const { width, height } = useWindowDimensions();
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  const isDesktop = width >= 1024;
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(isMobile);
   const [activeModule, setActiveModule] = useState("overview");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
-  const sidebarWidth = useRef(new Animated.Value(isMobile ? 0 : 280)).current;
+  // Responsive sidebar widths
+  const getSidebarWidth = () => {
+    if (isMobile) return width * 0.85;
+    if (isTablet) return 280;
+    return 300;
+  };
+
+  const sidebarWidth = useRef(new Animated.Value(isMobile ? 0 : getSidebarWidth())).current;
   const sidebarOpacity = useRef(new Animated.Value(isMobile ? 0 : 1)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -60,15 +70,67 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
     ]).start();
   }, []);
 
+  useEffect(() => {
+    // Update sidebar width when screen size changes
+    if (!isMobile && !isSidebarCollapsed) {
+      Animated.parallel([
+        Animated.spring(sidebarWidth, { 
+          toValue: getSidebarWidth(), 
+          friction: 8, 
+          tension: 40, 
+          useNativeDriver: false 
+        }),
+        Animated.timing(sidebarOpacity, { 
+          toValue: 1, 
+          duration: 300, 
+          useNativeDriver: false 
+        }),
+      ]).start();
+    }
+  }, [width, isMobile]);
+
   const toggleSidebar = () => {
-    const next = !isSidebarCollapsed;
-    const toValue = next ? 0 : 280;
-    const opacityValue = next ? 0 : 1;
-    Animated.parallel([
-      Animated.spring(sidebarWidth, { toValue, friction: 8, tension: 40, useNativeDriver: false }),
-      Animated.timing(sidebarOpacity, { toValue: opacityValue, duration: 300, useNativeDriver: false }),
-    ]).start();
-    setIsSidebarCollapsed(next);
+    if (isMobile) {
+      // Mobile: toggle between hidden and full overlay
+      const next = !isSidebarCollapsed;
+      const toValue = next ? 0 : getSidebarWidth();
+      const opacityValue = next ? 0 : 1;
+      
+      Animated.parallel([
+        Animated.spring(sidebarWidth, { 
+          toValue, 
+          friction: 8, 
+          tension: 40, 
+          useNativeDriver: false 
+        }),
+        Animated.timing(sidebarOpacity, { 
+          toValue: opacityValue, 
+          duration: 300, 
+          useNativeDriver: false 
+        }),
+      ]).start();
+      setIsSidebarCollapsed(next);
+    } else {
+      // Desktop/Tablet: regular collapse/expand
+      const next = !isSidebarCollapsed;
+      const toValue = next ? 0 : getSidebarWidth();
+      const opacityValue = next ? 0 : 1;
+      
+      Animated.parallel([
+        Animated.spring(sidebarWidth, { 
+          toValue, 
+          friction: 8, 
+          tension: 40, 
+          useNativeDriver: false 
+        }),
+        Animated.timing(sidebarOpacity, { 
+          toValue: opacityValue, 
+          duration: 300, 
+          useNativeDriver: false 
+        }),
+      ]).start();
+      setIsSidebarCollapsed(next);
+    }
   };
 
   const handleLogout = () => {
@@ -106,36 +168,72 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
     }
   };
 
-  // ──────────────────────────────
-  // 🌐 WEB & 📱 MOBILE Responsive UI
-  // ──────────────────────────────
+  // Enhanced Responsive Header
   const HeaderBar = () => (
-    <View className="bg-white border-b border-gray-200 shadow-sm px-6 py-5 flex-row items-center justify-between">
-      <View className="flex-1">
-        <Text className="text-2xl font-extrabold text-gray-900 mb-1">
+    <View 
+      className="bg-white border-b border-gray-200 shadow-sm px-4 py-4 flex-row items-center justify-between"
+      style={{
+        paddingHorizontal: isMobile ? 16 : 24,
+        paddingVertical: isMobile ? 12 : 20,
+      }}
+    >
+      {/* Left Section - Title and Breadcrumb */}
+      <View 
+        className="flex-1"
+        style={{
+          marginRight: isMobile ? 12 : 24,
+          maxWidth: isMobile ? "60%" : "auto",
+        }}
+      >
+        <Text 
+          className="text-gray-900 mb-1 font-extrabold"
+          style={{
+            fontSize: isMobile ? 20 : isTablet ? 22 : 24,
+            lineHeight: isMobile ? 24 : 28,
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {sidebarItems.find((i) => i.id === activeModule)?.label}
         </Text>
-        <Text className="text-gray-500 text-sm font-medium">
+        <Text 
+          className="text-gray-500 font-medium"
+          style={{
+            fontSize: isMobile ? 12 : 14,
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {DEMO_DATA.company.name} •{" "}
           {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
+            weekday: isMobile ? "short" : "long",
             year: "numeric",
-            month: "long",
+            month: isMobile ? "short" : "long",
             day: "numeric",
           })}
         </Text>
       </View>
 
       {/* Right Actions */}
-      <View className="flex-row items-center">
-        {/* Search */}
-        {!isMobile && (
-          <View className="flex-row items-center bg-white px-4 py-2.5 rounded-xl border border-gray-200 min-w-72 shadow-sm mr-4">
+      <View className="flex-row items-center flex-shrink-0">
+        {/* Search Bar - Responsive Behavior */}
+        {!isMobile ? (
+          // Desktop/Tablet Search
+          <View 
+            className="flex-row items-center bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm mr-4"
+            style={{
+              minWidth: isTablet ? 200 : 280,
+              marginRight: isTablet ? 16 : 24,
+            }}
+          >
             <Feather name="search" size={18} color="#6B7280" />
             <TextInput
               placeholder="Search transactions, reports..."
               placeholderTextColor="#9CA3AF"
-              className="flex-1 ml-3 mr-2 text-sm text-gray-900"
+              className="flex-1 ml-3 mr-2 text-gray-900"
+              style={{
+                fontSize: isTablet ? 14 : 16,
+              }}
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -145,38 +243,96 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
               </TouchableOpacity>
             )}
           </View>
+        ) : (
+          // Mobile Search - Expandable
+          <View className="flex-row items-center mr-3">
+            {isSearchExpanded ? (
+              <View className="flex-row items-center bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm">
+                <Feather name="search" size={16} color="#6B7280" />
+                <TextInput
+                  placeholder="Search..."
+                  placeholderTextColor="#9CA3AF"
+                  className="flex-1 ml-2 mr-2 text-gray-900"
+                  style={{ fontSize: 14, width: 120 }}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  autoFocus
+                />
+                <TouchableOpacity 
+                  onPress={() => {
+                    setSearchQuery("");
+                    setIsSearchExpanded(false);
+                  }}
+                >
+                  <Feather name="x" size={14} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity 
+                onPress={() => setIsSearchExpanded(true)}
+                className="bg-gray-100 rounded-full w-8 h-8 justify-center items-center"
+              >
+                <Feather name="search" size={16} color="#374151" />
+              </TouchableOpacity>
+            )}
+          </View>
         )}
 
-        {/* Theme toggle */}
+        {/* Theme Toggle */}
         <TouchableOpacity
-          className="w-10 h-10 rounded-xl overflow-hidden shadow-sm mr-4"
+          className="rounded-xl overflow-hidden shadow-sm mr-4"
           onPress={() => setIsDarkMode(!isDarkMode)}
+          style={{
+            width: isMobile ? 36 : 40,
+            height: isMobile ? 36 : 40,
+            marginRight: isMobile ? 12 : 16,
+          }}
         >
           <View
             className={`w-full h-full justify-center items-center ${
               isDarkMode ? "bg-gray-600" : "bg-yellow-400"
             }`}
           >
-            <Feather name={isDarkMode ? "moon" : "sun"} size={16} color="#FFFFFF" />
+            <Feather 
+              name={isDarkMode ? "moon" : "sun"} 
+              size={isMobile ? 14 : 16} 
+              color="#FFFFFF" 
+            />
           </View>
         </TouchableOpacity>
 
-        {/* Profile */}
-        <TouchableOpacity onPress={() => setIsProfileDropdownOpen(true)}>
-          <View className="w-10 h-10 rounded-xl bg-green-500 justify-center items-center">
-            <Text className="text-white font-bold text-sm">SC</Text>
+        {/* Profile Avatar */}
+        <TouchableOpacity 
+          onPress={() => setIsProfileDropdownOpen(true)}
+          style={{
+            width: isMobile ? 36 : 40,
+            height: isMobile ? 36 : 40,
+          }}
+        >
+          <View className="w-full h-full rounded-xl bg-green-500 justify-center items-center">
+            <Text 
+              className="text-white font-bold"
+              style={{ fontSize: isMobile ? 12 : 14 }}
+            >
+              SC
+            </Text>
           </View>
         </TouchableOpacity>
 
-        {/* Sidebar toggle on mobile */}
-        {isMobile && (
+        {/* Sidebar toggle on mobile/tablet */}
+        {(isMobile || isTablet) && (
           <TouchableOpacity
             onPress={toggleSidebar}
-            className="ml-3 bg-gray-100 rounded-full w-9 h-9 justify-center items-center"
+            className="bg-gray-100 rounded-full justify-center items-center ml-3"
+            style={{
+              width: isMobile ? 32 : 36,
+              height: isMobile ? 32 : 36,
+              marginLeft: isMobile ? 8 : 12,
+            }}
           >
             <Feather
               name={isSidebarCollapsed ? "menu" : "x"}
-              size={20}
+              size={isMobile ? 18 : 20}
               color="#374151"
             />
           </TouchableOpacity>
@@ -187,23 +343,53 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
 
   return (
     <View className="flex-1 flex-row bg-gray-50">
-      {/* Sidebar (hidden/collapsible for mobile) */}
-      {!isMobile && (
-        <Animated.View
-          className="bg-gray-800 shadow-xl z-40"
-          style={{ width: sidebarWidth, opacity: sidebarOpacity }}
-        >
-          <Sidebar
-            isCollapsed={isSidebarCollapsed}
-            onToggle={toggleSidebar}
-            activeModule={activeModule}
-            setActiveModule={setActiveModule}
-          />
-        </Animated.View>
+      {/* Sidebar - Enhanced Responsive Behavior */}
+      <Animated.View
+        className="bg-gray-800 shadow-xl z-40"
+        style={[
+          { 
+            width: sidebarWidth, 
+            opacity: sidebarOpacity,
+          },
+          isMobile && {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            zIndex: 50,
+          }
+        ]}
+      >
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={toggleSidebar}
+          activeModule={activeModule}
+          setActiveModule={setActiveModule}
+          isMobile={isMobile}
+        />
+      </Animated.View>
+
+      {/* Mobile Sidebar Backdrop */}
+      {isMobile && !isSidebarCollapsed && (
+        <TouchableOpacity
+          className="absolute inset-0 bg-black/50 z-30"
+          onPress={toggleSidebar}
+          activeOpacity={1}
+        />
       )}
 
-      {/* Main content */}
-      <View className="flex-1">
+      {/* Main Content Area */}
+      <View 
+        className="flex-1"
+        style={{
+          marginLeft: 0,
+          width: isMobile
+            ? '100%'
+            : isSidebarCollapsed
+              ? '100%'
+              : width - getSidebarWidth(),
+        }}
+      >
         <Animated.View
           style={{
             opacity: fadeAnim,
@@ -213,65 +399,126 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
         >
           <HeaderBar />
 
-          {/* Scrollable area */}
+          {/* Scrollable Content Area */}
           <KeyboardAvoidingView
             className="flex-1"
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
           >
             <ScrollView
               className="flex-1"
-              contentContainerStyle={{ flexGrow: 1 }}
+              contentContainerStyle={{ 
+                flexGrow: 1,
+                paddingBottom: isMobile ? 20 : 40,
+              }}
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
             >
-              {renderModuleContent()}
+              <View 
+                style={{
+                  paddingHorizontal: isMobile ? 16 : 24,
+                  paddingVertical: isMobile ? 16 : 24,
+                }}
+              >
+                {renderModuleContent()}
+              </View>
             </ScrollView>
           </KeyboardAvoidingView>
         </Animated.View>
       </View>
 
-      {/* Profile Dropdown */}
+      {/* Enhanced Responsive Profile Dropdown */}
       <Modal
         visible={isProfileDropdownOpen}
         transparent
         animationType="fade"
         onRequestClose={() => setIsProfileDropdownOpen(false)}
+        statusBarTranslucent
       >
         <TouchableOpacity
-          className="flex-1 bg-black/40 justify-start items-end pt-24 pr-6"
+          className="flex-1 bg-black/40 justify-start items-end"
+          style={[
+            { paddingTop: Platform.OS === 'web' ? 0 : (isMobile ? 60 : 100) },
+            isMobile ? { justifyContent: 'flex-start', alignItems: 'center', padding: 16 } : { justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: 24 }
+          ]}
           activeOpacity={1}
           onPress={() => setIsProfileDropdownOpen(false)}
         >
-          <View className="bg-white rounded-2xl w-80 shadow-xl overflow-hidden">
+          <View 
+            className="bg-white rounded-2xl shadow-xl overflow-hidden"
+            style={[
+              { width: isMobile ? '100%' : 320 },
+              isMobile && { maxWidth: 400 }
+            ]}
+            onStartShouldSetResponder={() => true}
+          >
             <View className="p-6 bg-green-500 flex-row items-center">
-              <View className="w-14 h-14 rounded-2xl bg-white/20 justify-center items-center mr-4">
-                <Text className="text-white font-bold text-lg">SC</Text>
+              <View 
+                className="rounded-2xl bg-white/20 justify-center items-center mr-4"
+                style={{
+                  width: isMobile ? 50 : 56,
+                  height: isMobile ? 50 : 56,
+                }}
+              >
+                <Text 
+                  className="text-white font-bold"
+                  style={{ fontSize: isMobile ? 16 : 18 }}
+                >
+                  SC
+                </Text>
               </View>
               <View className="flex-1">
-                <Text className="text-white text-lg font-bold mb-0.5">Sarah Chen</Text>
-                <Text className="text-white/90 text-sm font-semibold mb-0.5">
+                <Text 
+                  className="text-white font-bold mb-0.5"
+                  style={{ fontSize: isMobile ? 16 : 18 }}
+                  numberOfLines={1}
+                >
+                  Sarah Chen
+                </Text>
+                <Text 
+                  className="text-white/90 font-semibold mb-0.5"
+                  style={{ fontSize: isMobile ? 12 : 14 }}
+                  numberOfLines={1}
+                >
                   Chief Technology Officer
                 </Text>
-                <Text className="text-white/70 text-xs font-medium">
+                <Text 
+                  className="text-white/70 font-medium"
+                  style={{ fontSize: isMobile ? 11 : 12 }}
+                  numberOfLines={1}
+                >
                   {DEMO_DATA.company.name}
                 </Text>
               </View>
             </View>
 
             <View className="p-4">
-              <TouchableOpacity className="flex-row items-center py-3.5 px-3 rounded-lg">
-                <Feather name="user" size={18} color="#6B7280" />
-                <Text className="flex-1 text-gray-900 text-base font-medium ml-3">
+              <TouchableOpacity 
+                className="flex-row items-center py-3.5 px-3 rounded-lg"
+                onPress={() => {
+                  setIsProfileDropdownOpen(false);
+                  // Navigate to profile
+                }}
+              >
+                <Feather name="user" size={isMobile ? 16 : 18} color="#6B7280" />
+                <Text 
+                  className="flex-1 text-gray-900 font-medium ml-3"
+                  style={{ fontSize: isMobile ? 14 : 16 }}
+                >
                   My Profile
                 </Text>
-                <Feather name="chevron-right" size={16} color="#6B7280" />
+                <Feather name="chevron-right" size={isMobile ? 14 : 16} color="#6B7280" />
               </TouchableOpacity>
 
               <TouchableOpacity
                 className="flex-row items-center py-3.5 px-3 rounded-lg mt-1"
                 onPress={handleLogout}
               >
-                <Feather name="log-out" size={18} color="#ef4444" />
-                <Text className="flex-1 text-red-500 text-base font-semibold ml-3">
+                <Feather name="log-out" size={isMobile ? 16 : 18} color="#ef4444" />
+                <Text 
+                  className="flex-1 text-red-500 font-semibold ml-3"
+                  style={{ fontSize: isMobile ? 14 : 16 }}
+                >
                   Logout
                 </Text>
               </TouchableOpacity>
@@ -279,6 +526,15 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Mobile Search Backdrop */}
+      {isMobile && isSearchExpanded && (
+        <TouchableOpacity
+          className="absolute inset-0 bg-black/0 z-40"
+          onPress={() => setIsSearchExpanded(false)}
+          activeOpacity={1}
+        />
+      )}
     </View>
   );
 }

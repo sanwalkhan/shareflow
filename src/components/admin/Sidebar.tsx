@@ -1,12 +1,14 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+// In your Sidebar component
 interface Props {
-  isCollapsed?: boolean;
-  onToggle?: () => void;
-  activeModule?: string;
-  setActiveModule?: (m: string) => void;
+  isCollapsed: boolean;
+  onToggle: () => void;
+  activeModule: string;
+  setActiveModule: Dispatch<SetStateAction<string>>;
+  isMobile?: boolean; // Optional prop for mobile-specific behavior
 }
 
 export default function Sidebar({ isCollapsed=false, onToggle, activeModule="overview", setActiveModule }: Props) {
