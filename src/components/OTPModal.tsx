@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS, isMobile } from "../constants/theme";
@@ -16,24 +17,33 @@ import { COLORS, isMobile } from "../constants/theme";
 interface OTPModalProps {
   visible: boolean;
   onClose: () => void;
-  onVerify: () => void;
+  onVerify: (otp: string) => Promise<void>;
+  onResend: () => Promise<{ success: boolean }>;
   email?: string;
 }
 
-export default function OTPModal({ visible, onClose, onVerify, email }: OTPModalProps) {
+export default function OTPModal({ 
+  visible, 
+  onClose, 
+  onVerify, 
+  onResend,
+  email 
+}: OTPModalProps) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(600); // 10 minutes
   const [isResending, setIsResending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
     if (visible) {
-      setTimer(60);
+      setTimer(600); // Reset to 10 minutes
       setOtp(["", "", "", "", "", ""]);
+      setCanResend(false);
       startAnimation();
-      startTimer();
     }
   }, [visible]);
 
@@ -41,7 +51,13 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
     let interval: NodeJS.Timeout;
     if (visible && timer > 0) {
       interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
+        setTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -65,12 +81,8 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
     ]).start();
   };
 
-  const startTimer = () => {
-    setTimer(60);
-  };
-
   const handleOtpChange = (value: string, index: number) => {
-    if (value.length <= 1) {
+    if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
@@ -79,8 +91,9 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
         inputRefs.current[index + 1]?.focus();
       }
 
+      // Auto-submit when all fields are filled
       if (newOtp.every((digit) => digit !== "") && index === 5) {
-        handleVerify();
+        handleVerify(newOtp.join(""));
       }
     }
   };
@@ -92,33 +105,57 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
   };
 
   const handleResendOTP = async () => {
-    if (timer > 0 || isResending) return;
+    if (!canResend || isResending) return;
 
     setIsResending(true);
-    setTimeout(() => {
+    try {
+      const result = await onResend();
+      if (result.success) {
+        setTimer(600); // Reset timer to 10 minutes
+        setCanResend(false);
+        setOtp(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.focus();
+        Alert.alert("Success", "A new verification code has been sent to your email.");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to resend code. Please try again.");
+    } finally {
       setIsResending(false);
-      startTimer();
-      Alert.alert("OTP Sent", "A new verification code has been sent to your email.");
-    }, 1500);
+    }
   };
 
-  const handleVerify = () => {
-    const otpCode = otp.join("");
-    if (otpCode.length === 6) {
-      setTimeout(() => {
-        onVerify();
-        Alert.alert("Success", "Your email has been verified successfully!");
-      }, 1000);
+  const handleVerify = async (otpCode?: string) => {
+    const code = otpCode || otp.join("");
+    
+    if (code.length !== 6) {
+      Alert.alert("Invalid OTP", "Please enter all 6 digits");
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      await onVerify(code);
+      // Success - modal will be closed by parent component
+    } catch (error: any) {
+      Alert.alert("Verification Failed", error.message || "Invalid verification code. Please try again.");
+      setOtp(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   const handleSkip = () => {
     Alert.alert(
-      "Skip Verification",
-      "You can verify your email later from your account settings. Continue to dashboard?",
+      "Cancel Registration",
+      "Are you sure you want to cancel? Your registration will not be completed.",
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Continue", onPress: onClose },
+        { text: "No, Continue", style: "cancel" },
+        { 
+          text: "Yes, Cancel", 
+          style: "destructive",
+          onPress: onClose 
+        },
       ]
     );
   };
@@ -171,11 +208,12 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
               >
                 <Feather name="shield" size={14} color={COLORS.accent} />
                 <Text style={{ color: COLORS.accent, fontSize: 12, fontWeight: "700" }}>
-                  SECURE VERIFICATION
+                  EMAIL VERIFICATION
                 </Text>
               </View>
               <TouchableOpacity
                 onPress={handleSkip}
+                disabled={isVerifying}
                 style={{
                   width: 32,
                   height: 32,
@@ -214,7 +252,7 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
                   Verify Your Email
                 </Text>
                 <Text style={{ color: COLORS.secondary, fontSize: 14 }}>
-                  Enter the 6-digit code sent to your email
+                  Enter the 6-digit code we sent
                 </Text>
               </View>
             </View>
@@ -256,6 +294,7 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
                     onKeyPress={(e) => handleKeyPress(e, index)}
                     keyboardType="numeric"
                     maxLength={1}
+                    editable={!isVerifying}
                     style={{
                       color: COLORS.textDark,
                       fontSize: 20,
@@ -271,17 +310,24 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
 
             {/* Timer */}
             <View className="flex-row justify-center items-center mb-6">
-              <Feather name="clock" size={16} color={COLORS.secondary} />
-              <Text style={{ color: COLORS.secondary, fontSize: 14, marginLeft: 6 }}>
-                Code expires in{" "}
-                <Text
-                  style={{
-                    fontWeight: "600",
-                    color: timer < 10 ? COLORS.primary : COLORS.textDark,
-                  }}
-                >
-                  {formatTime(timer)}
-                </Text>
+              <Feather name="clock" size={16} color={timer < 60 ? COLORS.primary : COLORS.secondary} />
+              <Text style={{ color: timer < 60 ? COLORS.primary : COLORS.secondary, fontSize: 14, marginLeft: 6 }}>
+                {timer > 0 ? (
+                  <>Code expires in{" "}
+                    <Text
+                      style={{
+                        fontWeight: "600",
+                        color: timer < 60 ? COLORS.primary : COLORS.textDark,
+                      }}
+                    >
+                      {formatTime(timer)}
+                    </Text>
+                  </>
+                ) : (
+                  <Text style={{ fontWeight: "600", color: COLORS.primary }}>
+                    Code expired
+                  </Text>
+                )}
               </Text>
             </View>
 
@@ -289,6 +335,7 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={handleSkip}
+                disabled={isVerifying}
                 style={{
                   flex: 1,
                   flexDirection: "row",
@@ -299,17 +346,18 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
                   borderRadius: 12,
                   borderWidth: 1.5,
                   borderColor: COLORS.tertiary + "60",
+                  opacity: isVerifying ? 0.5 : 1,
                 }}
               >
-                <Feather name="skip-forward" size={18} color={COLORS.secondary} />
+                <Feather name="x-circle" size={18} color={COLORS.secondary} />
                 <Text style={{ color: COLORS.secondary, fontWeight: "600" }}>
-                  Verify Later
+                  Cancel
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={handleVerify}
-                disabled={otp.join("").length !== 6}
+                onPress={() => handleVerify()}
+                disabled={otp.join("").length !== 6 || isVerifying}
                 style={{
                   flex: 1,
                   flexDirection: "row",
@@ -324,11 +372,17 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
                   shadowOpacity: 0.3,
                   shadowRadius: 16,
                   elevation: 8,
-                  opacity: otp.join("").length === 6 ? 1 : 0.6,
+                  opacity: otp.join("").length === 6 && !isVerifying ? 1 : 0.6,
                 }}
               >
-                <Feather name="check-circle" size={18} color={COLORS.white} />
-                <Text style={{ color: COLORS.white, fontWeight: "700" }}>Verify</Text>
+                {isVerifying ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Feather name="check-circle" size={18} color={COLORS.white} />
+                    <Text style={{ color: COLORS.white, fontWeight: "700" }}>Verify</Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
 
@@ -336,7 +390,7 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
             <View className="flex-row justify-center mt-6">
               <TouchableOpacity
                 onPress={handleResendOTP}
-                disabled={timer > 0 || isResending}
+                disabled={!canResend || isResending || isVerifying}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -344,20 +398,20 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
                   paddingVertical: 8,
                   paddingHorizontal: 12,
                   borderRadius: 8,
-                  opacity: timer > 0 || isResending ? 0.5 : 1,
+                  opacity: canResend && !isResending && !isVerifying ? 1 : 0.5,
                 }}
               >
-                <Feather
-                  name={isResending ? "loader" : "refresh-cw"}
-                  size={16}
-                  color={COLORS.accent}
-                />
+                {isResending ? (
+                  <ActivityIndicator size="small" color={COLORS.accent} />
+                ) : (
+                  <Feather name="refresh-cw" size={16} color={COLORS.accent} />
+                )}
                 <Text style={{ color: COLORS.accent, fontWeight: "600" }}>
                   {isResending
                     ? "Sending..."
-                    : timer > 0
-                    ? `Resend in ${formatTime(timer)}`
-                    : "Resend Code"}
+                    : canResend
+                    ? "Resend Code"
+                    : "Wait to resend"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -378,8 +432,7 @@ export default function OTPModal({ visible, onClose, onVerify, email }: OTPModal
             <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
               <Feather name="info" size={14} color={COLORS.tertiary} />
               <Text style={{ color: COLORS.tertiary, fontSize: 12, flex: 1 }}>
-                For security reasons, this code will expire in 10 minutes. You can
-                verify your email later from account settings.
+                This verification ensures the security of your business email. The code expires in 10 minutes.
               </Text>
             </View>
           </View>
