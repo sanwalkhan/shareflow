@@ -1,12 +1,6 @@
-// src/components/admin/Sidebar.tsx
+// src/components/shareholder/ShareholderSidebar.tsx
 import React, { Dispatch, SetStateAction } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 interface Props {
@@ -17,18 +11,18 @@ interface Props {
   isMobile?: boolean;
 }
 
-export default function Sidebar({
+export default function ShareholderSidebar({
   isCollapsed = false,
   onToggle,
   activeModule = "overview",
   setActiveModule,
 }: Props) {
   const sidebarItems = [
-    { id: "overview", icon: "home", label: "Dashboard", color: "#86C232" },
-    { id: "expenses", icon: "credit-card", label: "Expenses", color: "#8B5CF6" },
-    { id: "payroll", icon: "users", label: "Payroll", color: "#06B6D4" },
-    { id: "shareholders", icon: "pie-chart", label: "Shareholders", color: "#10B981" },
-    { id: "reports", icon: "bar-chart-2", label: "Analytics", color: "#F59E0B" },
+    { id: "overview", icon: "home", label: "Overview", color: "#86C232" },
+    { id: "investments", icon: "trending-up", label: "My Investments", color: "#3B82F6" },
+    { id: "requests", icon: "file-plus", label: "Investment Requests", color: "#F59E0B" },
+    { id: "dividends", icon: "dollar-sign", label: "Dividends", color: "#10B981" },
+    { id: "reports", icon: "bar-chart-2", label: "Reports", color: "#06B6D4" },
     { id: "settings", icon: "settings", label: "Settings", color: "#6B7280" },
   ];
 
@@ -49,9 +43,7 @@ export default function Sidebar({
         >
           <View
             className={`w-9 h-9 rounded-xl justify-center items-center ${
-              activeModule === item.id
-                ? "bg-[rgba(134,194,50,1)]"
-                : "bg-transparent"
+              activeModule === item.id ? "bg-[rgba(134,194,50,1)]" : "bg-transparent"
             }`}
           >
             <Feather
@@ -81,11 +73,12 @@ export default function Sidebar({
         </View>
         <View className="flex-1">
           <Text className="text-white text-base font-bold mb-0.5">Sarah Chen</Text>
-          <Text className="text-gray-400 text-xs font-medium">Administrator</Text>
+          <Text className="text-gray-400 text-xs font-medium">Shareholder</Text>
         </View>
       </View>
 
       <TouchableOpacity
+        onPress={onToggle}
         className="flex-row items-center justify-center py-3 rounded-xl bg-red-100 border border-red-200"
         activeOpacity={0.8}
       >
@@ -133,7 +126,7 @@ export default function Sidebar({
                 marginRight: 12,
               }}
             >
-              <Feather name="trending-up" size={28} color="#86C232" />
+              <Feather name="pie-chart" size={26} color="#86C232" />
             </div>
             {!isCollapsed && (
               <div>
@@ -145,8 +138,7 @@ export default function Sidebar({
                     letterSpacing: -0.5,
                   }}
                 >
-                  Share
-                  <Text style={{ color: "#86C232" }}>Flow</Text>
+                  Share<Text style={{ color: "#86C232" }}>Flow</Text>
                 </Text>
                 <Text
                   style={{
@@ -156,14 +148,14 @@ export default function Sidebar({
                     marginTop: 2,
                   }}
                 >
-                  ENTERPRISE
+                  SHAREHOLDER
                 </Text>
               </div>
             )}
           </div>
         </div>
 
-        {/* Scrollable section (no scrollbar visible) */}
+        {/* Scrollable section (hidden scrollbar) */}
         <div
           style={{
             flex: 1,
@@ -171,15 +163,15 @@ export default function Sidebar({
             overflowX: "hidden",
             paddingTop: 8,
             paddingBottom: 8,
-            scrollbarWidth: "none", // Firefox
-            msOverflowStyle: "none", // IE/Edge
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
           }}
           className="hide-scrollbar"
         >
           {renderMenuItems()}
         </div>
 
-        {/* Hide scrollbar (for Chrome/WebKit) */}
+        {/* Hide scrollbar for Chrome/WebKit */}
         <style>{`
           .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -191,7 +183,7 @@ export default function Sidebar({
     );
   }
 
-  // ✅ Native (Android/iOS)
+  // ✅ Mobile version
   return (
     <View
       className="bg-gray-800 flex-1"
@@ -203,7 +195,7 @@ export default function Sidebar({
       <View className="p-6 border-b border-gray-700 flex-row items-center justify-between">
         <View className="flex-row items-center">
           <View className="w-11 h-11 rounded-xl bg-green-100 border border-green-200 justify-center items-center mr-3">
-            <Feather name="trending-up" size={28} color="#86C232" />
+            <Feather name="pie-chart" size={26} color="#86C232" />
           </View>
           {!isCollapsed && (
             <View>
@@ -211,18 +203,15 @@ export default function Sidebar({
                 Share<Text className="text-green-500">Flow</Text>
               </Text>
               <Text className="text-green-500 text-xs font-bold tracking-wide mt-0.5">
-                ENTERPRISE
+                SHAREHOLDER
               </Text>
             </View>
           )}
         </View>
       </View>
 
-      {/* Scrollable Menu (no indicator) */}
-      <ScrollView
-        contentContainerStyle={{ paddingVertical: 10 }}
-        showsVerticalScrollIndicator={false}
-      >
+      {/* Scrollable items (no scroll indicator) */}
+      <ScrollView contentContainerStyle={{ paddingVertical: 10 }} showsVerticalScrollIndicator={false}>
         {renderMenuItems()}
       </ScrollView>
 

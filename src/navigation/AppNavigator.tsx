@@ -7,6 +7,7 @@ import AuthScreen from "../screens/AuthScreen";
 import AdminDashboardScreen from "../screens/admin/AdminDashboardScreen";
 import SigninScreen from "../components/SigninScreen";
 import  ForgetPassword from "../components/ForgetPassword";
+import ShareholderDashboardScreen from "../screens/shareholder/ShareholderDashboardScreen";
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Landing"
+        initialRouteName="AdminDashboard"
         screenOptions={{
           headerShown: false,
         }}
@@ -24,6 +25,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+        <Stack.Screen name="ShareholderDashboard" component={ShareholderDashboardScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

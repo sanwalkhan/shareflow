@@ -21,6 +21,9 @@ import PayrollModule from "../../components/admin/PayrollModule";
 import ShareholdersModule from "../../components/admin/ShareholdersModule";
 import ReportsModule from "../../components/admin/ReportsModule";
 import SettingsModule from "../../components/admin/SettingsModule";
+import NotificationBell from "../../components/notifications/NotificationBell";
+import NotificationModal from "../../components/notifications/NotificationModal";
+import { useNotifications } from "../../components/notifications/useNotifications";
 import { COLORS, WINDOW } from "../../constants/theme";
 
 interface DashboardScreenProps {
@@ -48,8 +51,12 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
   const [activeModule, setActiveModule] = useState("overview");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+
+  // 🔔 Notifications System
+  const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
 
   // Responsive sidebar widths
   const getSidebarWidth = () => {
@@ -88,6 +95,45 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
       ]).start();
     }
   }, [width, isMobile]);
+
+  // 🧾 Preload demo notifications for admin
+  useEffect(() => {
+    addNotification({
+      id: "1",
+      title: "New Investment Request",
+      message: "Sarah Chen submitted a new investment request of $50,000 for 'Marketing Expansion'.",
+      type: "investment",
+      date: "Oct 16, 2025, 10:30 AM",
+      isRead: false,
+    });
+
+    addNotification({
+      id: "2",
+      title: "Payroll Processing Complete",
+      message: "Monthly payroll for 47 employees has been processed successfully.",
+      type: "general",
+      date: "Oct 15, 2025, 02:45 PM",
+      isRead: false,
+    });
+
+    addNotification({
+      id: "3",
+      title: "Expense Approval Required",
+      message: "3 pending expenses totaling $2,450 require your approval.",
+      type: "general",
+      date: "Oct 14, 2025, 09:15 AM",
+      isRead: true,
+    });
+
+    addNotification({
+      id: "4",
+      title: "System Maintenance Scheduled",
+      message: "Scheduled maintenance this Saturday from 2:00 AM to 4:00 AM.",
+      type: "general",
+      date: "Oct 13, 2025, 04:20 PM",
+      isRead: true,
+    });
+  }, []);
 
   const toggleSidebar = () => {
     if (isMobile) {
@@ -168,7 +214,7 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
     }
   };
 
-  // Enhanced Responsive Header
+  // Enhanced Responsive Header with Notification Bell
   const HeaderBar = () => (
     <View 
       className="bg-white border-b border-gray-200 shadow-sm px-4 py-4 flex-row items-center justify-between"
@@ -277,6 +323,12 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
             )}
           </View>
         )}
+
+        {/* 🔔 Notification Bell */}
+        <NotificationBell
+          count={notifications.filter((n) => !n.isRead).length}
+          onPress={() => setIsNotificationModalOpen(true)}
+        />
 
         {/* Theme Toggle */}
         <TouchableOpacity
@@ -426,6 +478,15 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
           </KeyboardAvoidingView>
         </Animated.View>
       </View>
+
+      {/* 🔔 Notification Modal */}
+      <NotificationModal
+        visible={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={markAsRead}
+        onClearAll={clearAll}
+      />
 
       {/* Enhanced Responsive Profile Dropdown */}
       <Modal

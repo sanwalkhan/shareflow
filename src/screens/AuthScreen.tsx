@@ -319,8 +319,7 @@ export default function AuthScreen() {
             {
               text: "OK",
               onPress: () => {
-                // Navigate to login or dashboard
-                // navigation.navigate("Login");
+                navigation.navigate("Signin" as never)
               },
             },
           ]
@@ -449,7 +448,7 @@ export default function AuthScreen() {
                         Already have an account?{" "}
                         <Text
                           className="text-accent font-bold"
-                          onPress={() => Alert.alert("Login", "Navigate to login")}
+                          onPress={() => navigation.navigate("Signin" as never)}
                         >
                           Sign in here
                         </Text>
@@ -536,7 +535,7 @@ export default function AuthScreen() {
                         Already have an account?{" "}
                         <Text
                           className="text-accent font-bold"
-                          onPress={() => Alert.alert("Login", "Navigate to login")}
+                          onPress={() => navigation.navigate("Signin" as never)}
                         >
                           Sign in here
                         </Text>
