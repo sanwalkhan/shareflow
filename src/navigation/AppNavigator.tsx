@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 import LandingScreen from "../screens/LandingScreen";
 import AuthScreen from "../screens/AuthScreen";
 import AdminDashboardScreen from "../screens/admin/AdminDashboardScreen";
-import ShareholderDashboardScreen from "../screens/ShareholderDashboardScreen";
+import ShareholderDashboardScreen from "../screens/shareholder/ShareholderDashboardScreen";
 import SigninScreen from "../components/SigninScreen";
 import ForgetPassword from "../components/ForgetPassword";
 
@@ -31,7 +31,7 @@ export default function AppNavigator() {
   }
 
   const getInitialRoute = () => {
-    if (!isAuthenticated) return "ShareholderDashboard";
+    if (!isAuthenticated) return "Landing";
     if (user?.role === 'admin') return "AdminDashboard";
     if (user?.role === 'shareholder') return "ShareholderDashboard";
     return "Landing";

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   Animated,
   ScrollView,
   Platform,
@@ -14,7 +13,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import ShareholderSidebar from "../../components/shareholder/ShareholderSidebar";
-import ShareholderOverview from "../../components/shareholder/ShareholderOverview";
+import ShareholderOverview from "../../components/shareholder/ShareholderOverview"; // ✅ correct import
 import InvestmentsModule from "../../components/shareholder/InvestmentsModule";
 import InvestmentRequestsModule from "../../components/shareholder/InvestmentRequestsModule";
 import DividendsModule from "../../components/shareholder/DividendsModule";
@@ -23,22 +22,10 @@ import SettingsModule from "../../components/admin/SettingsModule";
 import NotificationBell from "../../components/notifications/NotificationBell";
 import NotificationModal from "../../components/notifications/NotificationModal";
 import { useNotifications } from "../../components/notifications/useNotifications";
-import { COLORS } from "../../constants/theme";
 
 interface DashboardScreenProps {
   navigation: any;
 }
-
-const DEMO_DATA = {
-  shareholder: {
-    name: "Sarah Chen",
-    company: "TechNova Solutions",
-    equity: 12.5,
-    totalInvestment: 250000,
-    dividendsReceived: 12000,
-    roi: 18.4,
-  },
-};
 
 export default function ShareholderDashboardScreen({ navigation }: DashboardScreenProps) {
   const { width } = useWindowDimensions();
@@ -49,8 +36,6 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const [activeModule, setActiveModule] = useState("overview");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // 🔔 Notifications
   const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
@@ -74,34 +59,15 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
     ]).start();
   }, []);
 
-  // 🧾 Preload demo notifications (as if sent by admin)
+  // 🧾 Preload demo notifications
   useEffect(() => {
     addNotification({
       id: "1",
       title: "Investment Request Approved",
-      message: "Your recent investment request of $50,000 has been approved by the admin.",
+      message: "Your recent investment request of $1,000 has been approved.",
       type: "approval",
-      date: "Oct 15, 2025, 09:42 AM",
+      date: "Oct 23, 2025, 09:00 AM",
       isRead: false,
-    });
-
-    addNotification({
-      id: "2",
-      title: "Dividend Payment Processed",
-      message: "Your Q3 dividend payment of $3,200 has been processed successfully.",
-      type: "general",
-      date: "Oct 12, 2025, 02:17 PM",
-      isRead: false,
-    });
-
-    addNotification({
-      id: "3",
-      title: "Investment Request Rejected",
-      message:
-        "Your investment request of $25,000 for 'Marketing Expansion' was rejected by the admin.",
-      type: "approval",
-      date: "Oct 09, 2025, 11:08 AM",
-      isRead: true,
     });
   }, []);
 
@@ -130,16 +96,12 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const handleLogout = () => {
     Alert.alert("Logout Confirmation", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive", onPress: () => navigation.navigate("Landing") },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => navigation.navigate("Signin"),
+      },
     ]);
-  };
-
-  // 💼 Shareholder submits investment request (no notification to self)
-  const handleInvestmentRequest = (amount: number, description: string) => {
-    Alert.alert(
-      "Request Sent",
-      "Your investment request has been submitted for admin approval."
-    );
   };
 
   const sidebarItems = [
@@ -154,17 +116,11 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const renderModuleContent = () => {
     switch (activeModule) {
       case "overview":
-        return <ShareholderOverview data={DEMO_DATA} />;
+        return <ShareholderOverview />; // ✅ no props now
       case "investments":
         return <InvestmentsModule />;
       case "requests":
-        return (
-          <InvestmentRequestsModule
-            onSubmitRequest={(amount: number, description: string) =>
-              handleInvestmentRequest(amount, description)
-            }
-          />
-        );
+        return <InvestmentRequestsModule />;
       case "dividends":
         return <DividendsModule />;
       case "reports":
@@ -172,7 +128,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
       case "settings":
         return <SettingsModule />;
       default:
-        return <ShareholderOverview data={DEMO_DATA} />;
+        return <ShareholderOverview />;
     }
   };
 
@@ -183,7 +139,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
           {sidebarItems.find((i) => i.id === activeModule)?.label}
         </Text>
         <Text className="text-gray-500 text-sm font-medium">
-          {DEMO_DATA.shareholder.company} •{" "}
+          24Loops •{" "}
           {new Date().toLocaleDateString("en-US", {
             weekday: "short",
             year: "numeric",
@@ -194,13 +150,11 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
       </View>
 
       <View className="flex-row items-center">
-        {/* 🔔 Notification Bell */}
         <NotificationBell
           count={notifications.filter((n) => !n.isRead).length}
           onPress={() => setIsNotificationModalOpen(true)}
         />
 
-        {/* Theme Toggle */}
         <TouchableOpacity
           className="rounded-xl overflow-hidden shadow-sm ml-4"
           onPress={() => setIsDarkMode(!isDarkMode)}
@@ -214,32 +168,24 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
               isDarkMode ? "bg-gray-600" : "bg-yellow-400"
             }`}
           >
-            <Feather
-              name={isDarkMode ? "moon" : "sun"}
-              size={isMobile ? 14 : 16}
-              color="#FFFFFF"
-            />
+            <Feather name={isDarkMode ? "moon" : "sun"} size={isMobile ? 14 : 16} color="#FFFFFF" />
           </View>
         </TouchableOpacity>
 
-        {/* Avatar */}
+        {/* Avatar / Logout */}
         <TouchableOpacity
           className="ml-4 w-9 h-9 rounded-xl bg-green-500 justify-center items-center"
+          onPress={handleLogout}
         >
           <Text className="text-white font-bold">SC</Text>
         </TouchableOpacity>
 
-        {/* Sidebar toggle (mobile) */}
         {isMobile && (
           <TouchableOpacity
             onPress={toggleSidebar}
             className="bg-gray-100 rounded-full justify-center items-center ml-3 w-8 h-8"
           >
-            <Feather
-              name={isSidebarCollapsed ? "menu" : "x"}
-              size={18}
-              color="#374151"
-            />
+            <Feather name={isSidebarCollapsed ? "menu" : "x"} size={18} color="#374151" />
           </TouchableOpacity>
         )}
       </View>
@@ -265,7 +211,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
         />
       </Animated.View>
 
-      {/* Main */}
+      {/* Main Content */}
       <View className="flex-1">
         <Animated.View
           style={{
@@ -285,6 +231,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
                 padding: isMobile ? 16 : 24,
               }}
               showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
             >
               {renderModuleContent()}
             </ScrollView>

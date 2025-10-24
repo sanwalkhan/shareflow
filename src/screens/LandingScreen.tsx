@@ -11,23 +11,37 @@ import { COLORS } from "../constants/theme";
 
 export default function LandingScreen() {
   if (Platform.OS === "web") {
-    // ✅ Web version using div for scroll
+    // ✅ Web version using div for scroll (hidden scrollbar)
     return (
-      <View className="flex flex-col h-screen bg-black overflow-hidden">
+      <View
+        className="flex flex-col h-screen bg-black overflow-hidden web-scroll"
+      >
         {/* Header - Fixed at top */}
         <View className="w-full flex-shrink-0">
           <Header />
         </View>
-        
-        {/* Main Content - Scrollable */}
-        <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
-          <View className="w-full">
-            <Hero />
+
+        {/* Main Content - Scrollable without scrollbar */}
+        <View
+          className="flex-1 overflow-y-auto overflow-x-hidden web-scroll"
+        >
+          {/* Hide scrollbar for all browsers */}
+          <style>
+            {`
+              .web-scroll {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+              }
+              .web-scroll::-webkit-scrollbar {
+                display: none;
+              }
+            `}
+          </style>
+          <Hero />
             <Features />
             <CTA />
             <Testimonials />
             <Footer />
-          </View>
         </View>
       </View>
     );
@@ -41,11 +55,11 @@ export default function LandingScreen() {
         <Header />
       </View>
 
-      {/* Main Content - Scrollable */}
+      {/* Main Content - Scrollable (no scroll indicators) */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         alwaysBounceVertical={true}
         bounces={true}
