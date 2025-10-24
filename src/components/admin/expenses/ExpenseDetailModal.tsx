@@ -1,19 +1,77 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Modal } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput, Alert } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../../constants/theme";
 import { Expense } from "./types";
+import { updateExpense } from "../../../../utils/api";
+import ProgressBar from "../../feedback/ProgressBar";
+import { useStatus } from "../../feedback/StatusProvider";
 
 interface ExpenseDetailModalProps {
   expense: Expense | null;
   onClose: () => void;
+  onUpdated?: (updated: Expense) => void;
 }
 
 export default function ExpenseDetailModal({
   expense,
   onClose,
+  onUpdated,
 }: ExpenseDetailModalProps) {
   if (!expense) return null;
+
+  const [title, setTitle] = useState(expense.title)
+  const [amount, setAmount] = useState(String(expense.amount))
+  const [category, setCategory] = useState(expense.category)
+  const [saving, setSaving] = useState(false)
+  const { showLoader, hideLoader, showStatus } = useStatus()
+
+  const handleSave = async () => {
+    const newAmount = parseFloat(amount)
+    if (!title || isNaN(newAmount) || newAmount <= 0) {
+      Alert.alert("Invalid", "Please enter valid title and amount")
+      return
+    }
+    try {
+      setSaving(true)
+      showLoader("Saving changes...")
+      const res = await updateExpense(String((expense as any).id || (expense as any)._id), { title, amount: newAmount, category, _originalAmount: expense.amount })
+      const e = res.data
+      const mapped: Expense = {
+        id: e._id,
+        title: e.title,
+        amount: e.amount,
+        type: e.type,
+        category: e.category,
+        date: new Date(e.date || e.createdAt),
+        description: e.description || "",
+        receipt: e.receipt || null,
+        status: e.status,
+        createdBy: e.createdBy,
+        createdAt: new Date(e.createdAt),
+        shareholders: (e.allocations || []).map((a: any) => ({
+          id: a.shareholder || a.email,
+          name: a.name,
+          email: a.email,
+          sharePercentage: a.sharePercentage || 0,
+          allocatedAmount: a.allocatedAmount || 0,
+        })),
+        taxDeductible: !!e.taxDeductible,
+        recurring: !!e.recurring,
+        recurrence: e.recurrence,
+        budgetCategory: e.budgetCategory || "",
+      }
+      onUpdated && onUpdated(mapped)
+      onClose()
+      hideLoader()
+      showStatus("success", "Expense updated")
+    } catch (err: any) {
+      hideLoader()
+      showStatus("error", err?.message || "Could not update expense")
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <Modal visible={!!expense} animationType="slide" transparent={false}>
@@ -29,14 +87,21 @@ export default function ExpenseDetailModal({
             </TouchableOpacity>
           </View>
 
-          {/* Expense Summary */}
+          {/* Expense Summary (editable) */}
           <View className="bg-gray-50 rounded-xl p-4 mb-6">
-            <Text className="text-xl font-bold text-gray-800 mb-2">
-              {expense.title}
-            </Text>
-            <Text className="text-2xl font-bold text-accent mb-4">
-              ${expense.amount.toLocaleString()}
-            </Text>
+            <TextInput
+              className="text-xl font-bold text-gray-800 mb-2"
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Title"
+            />
+            <TextInput
+              className="text-2xl font-bold text-accent mb-4"
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="decimal-pad"
+              placeholder="0.00"
+            />
 
             <View className="flex-row flex-wrap">
               <View className="w-1/2 mb-3">
@@ -47,9 +112,7 @@ export default function ExpenseDetailModal({
               </View>
               <View className="w-1/2 mb-3">
                 <Text className="text-gray-500 text-sm">Category</Text>
-                <Text className="font-medium text-gray-800">
-                  {expense.category}
-                </Text>
+                <TextInput className="font-medium text-gray-800" value={category} onChangeText={setCategory} />
               </View>
               <View className="w-1/2 mb-3">
                 <Text className="text-gray-500 text-sm">Date</Text>
@@ -98,6 +161,14 @@ export default function ExpenseDetailModal({
             ))}
           </View>
         </ScrollView>
+        <View className="p-4 border-t border-gray-200 flex-row justify-end gap-3">
+          <TouchableOpacity className="px-4 py-3 border border-gray-300 rounded-xl" onPress={onClose}>
+            <Text className="text-gray-700 font-medium">Close</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="px-4 py-3 bg-accent rounded-xl" onPress={handleSave} disabled={saving}>
+            <Text className="text-white font-semibold">{saving ? "Saving..." : "Save Changes"}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </Modal>
   );

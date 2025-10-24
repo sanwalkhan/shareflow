@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../../constants/theme";
 import { Expense } from "./types";
+import { useCurrency } from "../../feedback/CurrencyProvider";
 
 interface ExpenseItemProps {
   item: Expense;
@@ -11,6 +12,7 @@ interface ExpenseItemProps {
 }
 
 export default function ExpenseItem({ item, onPress, onDelete }: ExpenseItemProps) {
+  const { format } = useCurrency()
   return (
     <TouchableOpacity
       className="bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-200"
@@ -23,7 +25,7 @@ export default function ExpenseItem({ item, onPress, onDelete }: ExpenseItemProp
         </View>
         <View className="items-end">
           <Text className="font-bold text-lg text-gray-800">
-            ${item.amount.toLocaleString()}
+            {format(item.amount)}
           </Text>
           <View
             className={`px-2 py-1 rounded-full mt-1 ${

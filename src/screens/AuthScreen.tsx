@@ -13,6 +13,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, WINDOW } from "../constants/theme";
+import { useAuth } from "../contexts/AuthContext";
 
 // Components
 import AuthHeader from "../components/auth/AuthHeader";
@@ -26,9 +27,11 @@ import AuthStep4 from "../components/auth/steps/AuthStep4";
 import OTPModal from "../components/OTPModal";
 import { Toast } from "toastify-react-native";
 import { API_BASE_URL } from "../../config";
+import Button from "../UI/Button";
 
 export default function AuthScreen() {
   const navigation = useNavigation();
+  const { login } = useAuth();
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
 
@@ -262,9 +265,9 @@ export default function AuthScreen() {
       if (response.ok && data.success) {
         console.log("✅ OTP sent successfully");
         setTempRegistrationId(data.data.tempRegistrationId);
-        setRegistrationEmail(data.data.email);
+        setRegistrationEmail(formData.adminEmail); // Use admin email for verification
         setShowOTPModal(true);
-        Toast.success("Verification code sent to your email!");
+        Toast.success("Verification code sent to your admin email!");
       } else {
         console.error("❌ Registration failed:", data);
         
@@ -312,18 +315,28 @@ export default function AuthScreen() {
         console.log("✅ Registration completed!");
         setShowOTPModal(false);
         
-        Alert.alert(
-          "Success!",
-          "Registration completed successfully. You can now login.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.navigate("Signin" as never)
+        // Auto-login after successful registration
+        if (data.data.token && data.data.user) {
+          await login(data.data.token, data.data.user);
+          Alert.alert(
+            "Success!",
+            "Registration completed successfully. Welcome to ShareFlow!",
+            [{ text: "OK" }]
+          );
+        } else {
+          Alert.alert(
+            "Success!",
+            "Registration completed successfully. You can now login.",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.navigate("Signin" as never);
+                },
               },
-            },
-          ]
-        );
+            ]
+          );
+        }
       } else {
         throw new Error(data.message || "OTP verification failed");
       }
@@ -533,12 +546,12 @@ export default function AuthScreen() {
                     <View className="items-center pt-5 border-t border-gray-300 mt-6">
                       <Text className="text-secondary text-sm text-center">
                         Already have an account?{" "}
-                        <Text
+                        <Button
                           className="text-accent font-bold"
                           onPress={() => navigation.navigate("Signin" as never)}
                         >
                           Sign in here
-                        </Text>
+                        </Button>
                       </Text>
                     </View>
                   </View>

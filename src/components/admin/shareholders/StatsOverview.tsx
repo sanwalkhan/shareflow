@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { StatsOverviewProps } from "./types";
 import { COLORS } from "../../../constants/theme";
+import { useCurrency } from "../../feedback/CurrencyProvider";
 
 export default function StatsOverview({
   totalEquity,
@@ -13,6 +14,7 @@ export default function StatsOverview({
   totalShareholders,
 }: StatsOverviewProps) {
   const profitAfterExpenses = totalProfit - totalOtherMoney;
+  const { format } = useCurrency()
 
   return (
     <View
@@ -32,7 +34,7 @@ export default function StatsOverview({
         <View className="items-center flex-1 mb-3">
           <Text className="text-white text-sm opacity-90">Total Investment</Text>
           <Text className="text-white text-xl font-bold">
-            ${totalInvestment.toLocaleString()}
+            {format(totalInvestment)}
           </Text>
         </View>
 
@@ -40,7 +42,7 @@ export default function StatsOverview({
         <View className="items-center flex-1 mb-3">
           <Text className="text-white text-sm opacity-90">Total Profit</Text>
           <Text className="text-white text-xl font-bold">
-            ${totalProfit.toLocaleString()}
+            {format(totalProfit)}
           </Text>
         </View>
 
@@ -48,7 +50,7 @@ export default function StatsOverview({
         <View className="items-center flex-1 mb-3">
           <Text className="text-white text-sm opacity-90">Total Expenses</Text>
           <Text className="text-white text-xl font-bold">
-            ${totalOtherMoney.toLocaleString()}
+            {format(totalOtherMoney)}
           </Text>
         </View>
 
@@ -56,7 +58,7 @@ export default function StatsOverview({
         <View className="items-center flex-1 mb-3">
           <Text className="text-white text-sm opacity-90">Profit After Expenses</Text>
           <Text className="text-white text-xl font-bold">
-            ${profitAfterExpenses.toLocaleString()}
+            {format(profitAfterExpenses)}
           </Text>
         </View>
 
@@ -77,8 +79,8 @@ export default function StatsOverview({
         {totalEquity > 0 ? (
           <Text className="text-white text-sm">
             Each shareholder receives profit proportional to equity.{"\n"}
-            Example: If total profit after expenses is ${profitAfterExpenses.toLocaleString()}, 
-            shareholder with 25% equity gets ${(profitAfterExpenses * 0.25).toLocaleString()}.
+            Example: If total profit after expenses is {format(profitAfterExpenses)}, 
+            shareholder with 25% equity gets {format(profitAfterExpenses * 0.25)}.
           </Text>
         ) : (
           <Text className="text-white text-sm">No shareholders to distribute profit.</Text>

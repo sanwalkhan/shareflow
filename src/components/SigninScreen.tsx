@@ -9,14 +9,22 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  useWindowDimensions
+  useWindowDimensions,
+  ActivityIndicator
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Toast } from "toastify-react-native";
 import { COLORS, WINDOW } from "../constants/theme";
+import { API_BASE_URL } from "../../config";
+import { useStatus } from "./feedback/StatusProvider";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SigninScreen() {
   const navigation = useNavigation();
+  const { login } = useAuth();
+  const { showLoader, hideLoader, showStatus } = useStatus();
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
 
@@ -45,7 +53,24 @@ export default function SigninScreen() {
         useNativeDriver: true,
       })
     ]).start();
+
+    // Check if user is already logged in
+    checkAuthStatus();
   }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      const userData = await AsyncStorage.getItem('userData');
+      
+      if (token && userData) {
+        console.log('✅ User already authenticated, redirecting to dashboard');
+        navigation.navigate("AdminDashboard" as never);
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+    }
+  };
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -54,20 +79,97 @@ export default function SigninScreen() {
     }));
   };
 
-  const handleSignIn = async () => {
-    if (!formData.email || !formData.password) {
-      Alert.alert("Error", "Please enter both email and password");
-      return;
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      Alert.alert("Validation Error", "Email is required");
+      return false;
     }
 
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Welcome back to ShareFlow!");
-      navigation.navigate("Dashboard" as never);
-    }, 2000);
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(formData.email)) {
+      Alert.alert("Validation Error", "Please enter a valid email address");
+      return false;
+    }
+
+    if (!formData.password.trim()) {
+      Alert.alert("Validation Error", "Password is required");
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      Alert.alert("Validation Error", "Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
   };
+
+ const handleSignIn = async () => {
+  if (!validateForm()) {
+    return;
+  }
+
+  setIsLoading(true);
+  showLoader("Signing in...");
+
+  const loginData = {
+    email: formData.email.trim().toLowerCase(), // ✅ Changed from adminEmail
+    password: formData.password,
+  };
+
+  console.log("📤 Attempting login...");
+  console.log("📧 Email:", loginData.email);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(loginData),
+    });
+
+    const data = await response.json();
+    console.log("📥 Response:", data);
+
+    if (response.ok && data.success) {
+      console.log("✅ Login successful!");
+      
+      // Handle unified response structure
+      const userData = data.user || data.admin;
+      
+      // Use auth context for login
+      await login(data.token, userData);
+      
+      if (formData.rememberMe) {
+        await AsyncStorage.setItem('rememberMe', 'true');
+        await AsyncStorage.setItem('savedEmail', formData.email);
+      } else {
+        await AsyncStorage.removeItem('rememberMe');
+        await AsyncStorage.removeItem('savedEmail');
+      }
+
+      const userName = userData.fullName || 
+                       `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 
+                       'User';
+      
+      Toast.success(`Welcome back, ${userName}!`);
+      hideLoader();
+      showStatus("success", "Login successful");
+    } else {
+      console.error("❌ Login failed:", data);
+      hideLoader();
+      showStatus("error", data.message || "Invalid email or password");
+    }
+  } catch (error) {
+    console.error("❌ Network error:", error);
+    hideLoader();
+    showStatus("error", "Unable to connect to server");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleBack = () => {
     navigation.goBack();
@@ -81,7 +183,29 @@ export default function SigninScreen() {
     navigation.navigate("Auth" as never);
   };
 
-  // ✅ WEB VERSION (scroll + responsive)
+  // Load saved email if remember me was checked
+  useEffect(() => {
+    loadSavedCredentials();
+  }, []);
+
+  const loadSavedCredentials = async () => {
+    try {
+      const rememberMe = await AsyncStorage.getItem('rememberMe');
+      const savedEmail = await AsyncStorage.getItem('savedEmail');
+      
+      if (rememberMe === 'true' && savedEmail) {
+        setFormData(prev => ({
+          ...prev,
+          email: savedEmail,
+          rememberMe: true,
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading saved credentials:', error);
+    }
+  };
+
+  // ✅ WEB VERSION
   if (Platform.OS === "web") {
     return (
       <View className="flex flex-col h-screen bg-primary overflow-hidden">
@@ -131,66 +255,68 @@ export default function SigninScreen() {
             {/* Responsive main content */}
             <View className={`flex-1 ${isMobile ? "flex-col px-5 pb-10" : "flex-row px-10 pb-5"} items-stretch w-full`}>
               {/* Left Panel - Branding */}
-              <View 
-                className={`flex-1 ${isMobile ? "mb-5" : "mr-5"} rounded-3xl overflow-hidden`}
-                style={{
-                  backgroundColor: COLORS.secondary,
-                  shadowColor: COLORS.black,
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 40,
-                  elevation: 20,
-                  borderWidth: 1.5,
-                  borderColor: "rgba(255, 255, 255, 0.1)",
-                }}
-              >
-                <View className="flex-1 p-8 justify-center">
-                  <View className="flex-row items-center gap-2 bg-accent/12 px-4 py-2 rounded-full border border-accent/25 mb-8 self-start">
-                    <Feather name="award" size={20} color={COLORS.accent} />
-                    <Text className="text-accent text-xs font-bold tracking-wider">ENTERPRISE SECURE</Text>
-                  </View>
-                  
-                  <Text className="text-textLight text-4xl font-extrabold leading-[44px] tracking-tight mb-8">
-                    Welcome Back to{"\n"}
-                    <Text style={{ color: COLORS.accent }}>Financial Intelligence</Text>{"\n"}
-                    Reimagined
-                  </Text>
-                  
-                  <View className="mb-10">
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="shield" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Bank-Grade Security</Text>
+              {!isMobile && (
+                <View 
+                  className="flex-1 mr-5 rounded-3xl overflow-hidden"
+                  style={{
+                    backgroundColor: COLORS.secondary,
+                    shadowColor: COLORS.black,
+                    shadowOffset: { width: 0, height: 20 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 40,
+                    elevation: 20,
+                    borderWidth: 1.5,
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                  }}
+                >
+                  <View className="flex-1 p-8 justify-center">
+                    <View className="flex-row items-center gap-2 bg-accent/12 px-4 py-2 rounded-full border border-accent/25 mb-8 self-start">
+                      <Feather name="award" size={20} color={COLORS.accent} />
+                      <Text className="text-accent text-xs font-bold tracking-wider">ENTERPRISE SECURE</Text>
                     </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="zap" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Instant Dashboard Access</Text>
+                    
+                    <Text className="text-textLight text-4xl font-extrabold leading-[44px] tracking-tight mb-8">
+                      Welcome Back to{"\n"}
+                      <Text style={{ color: COLORS.accent }}>Financial Intelligence</Text>{"\n"}
+                      Reimagined
+                    </Text>
+                    
+                    <View className="mb-10">
+                      <View className="flex-row items-center gap-3 mb-4">
+                        <Feather name="shield" size={18} color={COLORS.accent} />
+                        <Text className="text-textLight text-base font-semibold">Bank-Grade Security</Text>
+                      </View>
+                      <View className="flex-row items-center gap-3 mb-4">
+                        <Feather name="zap" size={18} color={COLORS.accent} />
+                        <Text className="text-textLight text-base font-semibold">Instant Dashboard Access</Text>
+                      </View>
+                      <View className="flex-row items-center gap-3 mb-4">
+                        <Feather name="bar-chart" size={18} color={COLORS.accent} />
+                        <Text className="text-textLight text-base font-semibold">Real-time Analytics</Text>
+                      </View>
+                      <View className="flex-row items-center gap-3 mb-4">
+                        <Feather name="users" size={18} color={COLORS.accent} />
+                        <Text className="text-textLight text-base font-semibold">Multi-user Collaboration</Text>
+                      </View>
                     </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="bar-chart" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Real-time Analytics</Text>
-                    </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="users" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Multi-user Collaboration</Text>
-                    </View>
-                  </View>
 
-                  <View className="flex-row justify-around">
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">500+</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Companies</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">99.9%</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Uptime</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">24/7</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Support</Text>
+                    <View className="flex-row justify-around">
+                      <View className="items-center">
+                        <Text className="text-accent text-2xl font-extrabold mb-1">500+</Text>
+                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Companies</Text>
+                      </View>
+                      <View className="items-center">
+                        <Text className="text-accent text-2xl font-extrabold mb-1">99.9%</Text>
+                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Uptime</Text>
+                      </View>
+                      <View className="items-center">
+                        <Text className="text-accent text-2xl font-extrabold mb-1">24/7</Text>
+                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Support</Text>
+                      </View>
                     </View>
                   </View>
                 </View>
-              </View>
+              )}
 
               {/* Right Panel - Sign In Form */}
               <View 
@@ -223,7 +349,7 @@ export default function SigninScreen() {
                     {/* Sign In Form */}
                     <View className="space-y-5">
                       {/* Email Input */}
-                      <View>
+                      <View className="mb-5">
                         <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
                         <TextInput
                           placeholder="name@company.com"
@@ -234,11 +360,12 @@ export default function SigninScreen() {
                           keyboardType="email-address"
                           autoCapitalize="none"
                           autoComplete="email"
+                          editable={!isLoading}
                         />
                       </View>
 
                       {/* Password Input */}
-                      <View>
+                      <View className="mb-5">
                         <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
                         <View className="relative">
                           <TextInput
@@ -250,10 +377,13 @@ export default function SigninScreen() {
                             secureTextEntry={!showPassword}
                             autoCapitalize="none"
                             autoComplete="password"
+                            editable={!isLoading}
+                            onSubmitEditing={handleSignIn}
                           />
                           <TouchableOpacity 
                             className="absolute right-4 top-3.5 p-1"
                             onPress={() => setShowPassword(!showPassword)}
+                            disabled={isLoading}
                           >
                             <Feather 
                               name={showPassword ? "eye-off" : "eye"} 
@@ -265,10 +395,11 @@ export default function SigninScreen() {
                       </View>
 
                       {/* Remember Me & Forgot Password */}
-                      <View className="flex-row justify-between items-center">
+                      <View className="flex-row justify-between items-center mb-5">
                         <TouchableOpacity 
                           className="flex-row items-center gap-3"
                           onPress={() => handleInputChange('rememberMe', !formData.rememberMe)}
+                          disabled={isLoading}
                         >
                           <View className={`w-5 h-5 rounded border justify-center items-center ${
                             formData.rememberMe 
@@ -282,14 +413,14 @@ export default function SigninScreen() {
                           <Text className="text-secondary text-sm font-medium">Remember me</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={handleForgotPassword}>
+                        <TouchableOpacity onPress={handleForgotPassword} disabled={isLoading}>
                           <Text className="text-accent text-sm font-semibold">Forgot password?</Text>
                         </TouchableOpacity>
                       </View>
 
                       {/* Sign In Button */}
                       <TouchableOpacity 
-                        className="rounded-xl overflow-hidden py-4 mt-2"
+                        className="rounded-xl overflow-hidden py-4"
                         style={{
                           backgroundColor: COLORS.accent,
                           shadowColor: COLORS.accent,
@@ -297,6 +428,7 @@ export default function SigninScreen() {
                           shadowOpacity: 0.3,
                           shadowRadius: 16,
                           elevation: 8,
+                          opacity: isLoading ? 0.7 : 1,
                         }}
                         onPress={handleSignIn}
                         disabled={isLoading}
@@ -304,273 +436,7 @@ export default function SigninScreen() {
                         <View className="flex-row items-center justify-center gap-3">
                           {isLoading ? (
                             <>
-                              <Feather name="loader" size={20} color={COLORS.white} />
-                              <Text className="text-white text-[15px] font-bold">Signing In...</Text>
-                            </>
-                          ) : (
-                            <>
-                              <Feather name="lock" size={20} color={COLORS.white} />
-                              <Text className="text-white text-[15px] font-bold">Sign In to Dashboard</Text>
-                            </>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {/* Footer Note */}
-                  <View className="items-center pt-5 border-t border-gray-300">
-                    <Text className="text-secondary text-sm text-center mb-3">
-                      Don't have an enterprise account?
-                    </Text>
-                    <TouchableOpacity 
-                      className="flex-row items-center gap-2 px-4 py-2 rounded-lg border border-gray-300"
-                      onPress={handleSignUp}
-                    >
-                      <Feather name="user-plus" size={16} color={COLORS.accent} />
-                      <Text className="text-accent font-semibold">Create Company Account</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </Animated.View>
-        </View>
-      </View>
-    );
-  }
-
-  // ✅ MOBILE APP VERSION
-  return (
-    <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
-      {/* Background Elements */}
-      <View className="absolute top-0 left-0 right-0 bottom-0">
-        <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
-        <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
-        <View className="absolute w-[100px] h-[100px] rounded-[25px] bg-secondary/30 border border-secondary/50 top-1/5 right-1/10 transform rotate-45" />
-        <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
-      </View>
-
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.View
-            className="flex-1"
-            style={{
-              minHeight: WINDOW.height,
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}
-          >
-            {/* Header Section */}
-            <View className="px-5 pt-5 mb-5">
-              <TouchableOpacity onPress={handleBack} className="self-start mb-5 rounded-xl overflow-hidden">
-                <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
-                  borderColor: "rgba(134, 194, 50, 0.3)",
-                  backgroundColor: "rgba(134, 194, 50, 0.1)" 
-                }}>
-                  <Feather name="arrow-left" size={20} color={COLORS.accent} />
-                  <Text className="text-accent text-[15px] font-semibold">Back to Home</Text>
-                </View>
-              </TouchableOpacity>
-
-              <View className="flex-row items-center gap-3 justify-center">
-                <View className="w-13 h-13 rounded-[16px] justify-center items-center border" style={{
-                  backgroundColor: "rgba(134, 194, 50, 0.15)",
-                  borderColor: "rgba(134, 194, 50, 0.3)",
-                }}>
-                  <Feather name="trending-up" size={28} color={COLORS.accent} />
-                </View>
-                <Text className="text-textLight text-3xl font-extrabold tracking-tight">
-                  Share<Text style={{ color: COLORS.accent }}>Flow</Text>
-                </Text>
-              </View>
-            </View>
-
-            {/* Main Auth Container */}
-            <View className="flex-col px-5 pb-5">
-              {/* Left Panel - Branding */}
-              <View 
-                className="mb-5 rounded-3xl overflow-hidden"
-                style={{
-                  backgroundColor: COLORS.secondary,
-                  shadowColor: COLORS.black,
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 40,
-                  elevation: 20,
-                  borderWidth: 1.5,
-                  borderColor: "rgba(255, 255, 255, 0.1)",
-                }}
-              >
-                <View className="flex-1 p-8 justify-center">
-                  <View className="flex-row items-center gap-2 bg-accent/12 px-4 py-2 rounded-full border border-accent/25 mb-8 self-start">
-                    <Feather name="award" size={20} color={COLORS.accent} />
-                    <Text className="text-accent text-xs font-bold tracking-wider">ENTERPRISE SECURE</Text>
-                  </View>
-                  
-                  <Text className="text-textLight text-4xl font-extrabold leading-[44px] tracking-tight mb-8">
-                    Welcome Back to{"\n"}
-                    <Text style={{ color: COLORS.accent }}>Financial Intelligence</Text>{"\n"}
-                    Reimagined
-                  </Text>
-                  
-                  <View className="mb-10">
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="shield" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Bank-Grade Security</Text>
-                    </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="zap" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Instant Dashboard Access</Text>
-                    </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="bar-chart" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Real-time Analytics</Text>
-                    </View>
-                    <View className="flex-row items-center gap-3 mb-4">
-                      <Feather name="users" size={18} color={COLORS.accent} />
-                      <Text className="text-textLight text-base font-semibold">Multi-user Collaboration</Text>
-                    </View>
-                  </View>
-
-                  <View className="flex-row justify-around">
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">500+</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Companies</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">99.9%</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Uptime</Text>
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-accent text-2xl font-extrabold mb-1">24/7</Text>
-                      <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Support</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* Right Panel - Sign In Form */}
-              <View 
-                className="rounded-3xl overflow-hidden bg-white"
-                style={{
-                  shadowColor: COLORS.black,
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 30,
-                  elevation: 15,
-                }}
-              >
-                <View className="flex-1 p-6 justify-between">
-                  <View>
-                    <View className="mb-6">
-                      <View className="flex-row items-center gap-2 bg-accent/10 px-3.5 py-1.5 rounded-full border border-accent/20 mb-4 self-start">
-                        <Feather name="log-in" size={16} color={COLORS.accent} />
-                        <Text className="text-accent text-xs font-bold tracking-wider">SECURE SIGN IN</Text>
-                      </View>
-                      
-                      <Text className="text-textDark text-2xl font-extrabold tracking-tight mb-2">
-                        Welcome Back
-                      </Text>
-                      
-                      <Text className="text-secondary text-base font-medium">
-                        Sign in to your ShareFlow Enterprise account
-                      </Text>
-                    </View>
-
-                    {/* Sign In Form */}
-                    <View className="space-y-5">
-                      {/* Email Input */}
-                      <View>
-                        <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
-                        <TextInput
-                          placeholder="name@company.com"
-                          placeholderTextColor={COLORS.tertiary + "80"}
-                          className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
-                          value={formData.email}
-                          onChangeText={(value) => handleInputChange('email', value)}
-                          keyboardType="email-address"
-                          autoCapitalize="none"
-                          autoComplete="email"
-                        />
-                      </View>
-
-                      {/* Password Input */}
-                      <View>
-                        <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
-                        <View className="relative">
-                          <TextInput
-                            placeholder="Enter your password"
-                            placeholderTextColor={COLORS.tertiary + "80"}
-                            className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
-                            value={formData.password}
-                            onChangeText={(value) => handleInputChange('password', value)}
-                            secureTextEntry={!showPassword}
-                            autoCapitalize="none"
-                            autoComplete="password"
-                          />
-                          <TouchableOpacity 
-                            className="absolute right-4 top-3.5 p-1"
-                            onPress={() => setShowPassword(!showPassword)}
-                          >
-                            <Feather 
-                              name={showPassword ? "eye-off" : "eye"} 
-                              size={18} 
-                              color={COLORS.tertiary} 
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      {/* Remember Me & Forgot Password */}
-                      <View className="flex-row justify-between items-center">
-                        <TouchableOpacity 
-                          className="flex-row items-center gap-3"
-                          onPress={() => handleInputChange('rememberMe', !formData.rememberMe)}
-                        >
-                          <View className={`w-5 h-5 rounded border justify-center items-center ${
-                            formData.rememberMe 
-                              ? "bg-accent border-accent" 
-                              : "bg-gray-50 border-gray-300"
-                          }`}>
-                            {formData.rememberMe && (
-                              <Feather name="check" size={14} color={COLORS.white} />
-                            )}
-                          </View>
-                          <Text className="text-secondary text-sm font-medium">Remember me</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={handleForgotPassword}>
-                          <Text className="text-accent text-sm font-semibold">Forgot password?</Text>
-                        </TouchableOpacity>
-                      </View>
-
-                      {/* Sign In Button */}
-                      <TouchableOpacity 
-                        className="rounded-xl overflow-hidden py-4 mt-2"
-                        style={{
-                          backgroundColor: COLORS.accent,
-                          shadowColor: COLORS.accent,
-                          shadowOffset: { width: 0, height: 8 },
-                          shadowOpacity: 0.3,
-                          shadowRadius: 16,
-                          elevation: 8,
-                        }}
-                        onPress={handleSignIn}
-                        disabled={isLoading}
-                      >
-                        <View className="flex-row items-center justify-center gap-3">
-                          {isLoading ? (
-                            <>
-                              <Feather name="loader" size={20} color={COLORS.white} />
+                              <ActivityIndicator size="small" color={COLORS.white} />
                               <Text className="text-white text-[15px] font-bold">Signing In...</Text>
                             </>
                           ) : (
@@ -592,11 +458,141 @@ export default function SigninScreen() {
                     <TouchableOpacity 
                       className="flex-row items-center gap-2 px-4 py-2 rounded-lg border border-gray-300"
                       onPress={handleSignUp}
+                      disabled={isLoading}
                     >
                       <Feather name="user-plus" size={16} color={COLORS.accent} />
                       <Text className="text-accent font-semibold">Create Company Account</Text>
                     </TouchableOpacity>
                   </View>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        </View>
+      </View>
+    );
+  }
+
+  // ✅ MOBILE APP VERSION - Similar structure with mobile-optimized layout
+  return (
+    <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
+      {/* Background Elements */}
+      <View className="absolute top-0 left-0 right-0 bottom-0">
+        <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
+        <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
+      </View>
+
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View
+            className="flex-1"
+            style={{
+              minHeight: WINDOW.height,
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}
+          >
+            {/* Mobile content with same form structure */}
+            <View className="px-5 pt-5 pb-5">
+              <TouchableOpacity onPress={handleBack} className="mb-5">
+                <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
+                  borderColor: "rgba(134, 194, 50, 0.3)",
+                  backgroundColor: "rgba(134, 194, 50, 0.1)" 
+                }}>
+                  <Feather name="arrow-left" size={20} color={COLORS.accent} />
+                  <Text className="text-accent text-[15px] font-semibold">Back</Text>
+                </View>
+              </TouchableOpacity>
+
+              <View 
+                className="rounded-3xl overflow-hidden bg-white p-6"
+                style={{
+                  shadowColor: COLORS.black,
+                  shadowOffset: { width: 0, height: 20 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 30,
+                  elevation: 15,
+                }}
+              >
+                {/* Same form content as web version */}
+                <View className="mb-6">
+                  <Text className="text-textDark text-2xl font-extrabold mb-2">Welcome Back</Text>
+                  <Text className="text-secondary text-base">Sign in to your account</Text>
+                </View>
+
+                <View className="mb-5">
+                  <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
+                  <TextInput
+                    placeholder="name@company.com"
+                    placeholderTextColor={COLORS.tertiary + "80"}
+                    className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
+                    value={formData.email}
+                    onChangeText={(value) => handleInputChange('email', value)}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    editable={!isLoading}
+                  />
+                </View>
+
+                <View className="mb-5">
+                  <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
+                  <View className="relative">
+                    <TextInput
+                      placeholder="Enter your password"
+                      placeholderTextColor={COLORS.tertiary + "80"}
+                      className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
+                      value={formData.password}
+                      onChangeText={(value) => handleInputChange('password', value)}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      editable={!isLoading}
+                      onSubmitEditing={handleSignIn}
+                    />
+                    <TouchableOpacity 
+                      className="absolute right-4 top-3.5"
+                      onPress={() => setShowPassword(!showPassword)}
+                      disabled={isLoading}
+                    >
+                      <Feather name={showPassword ? "eye-off" : "eye"} size={18} color={COLORS.tertiary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <TouchableOpacity 
+                  className="rounded-xl py-4"
+                  style={{
+                    backgroundColor: COLORS.accent,
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                  onPress={handleSignIn}
+                  disabled={isLoading}
+                >
+                  <View className="flex-row items-center justify-center gap-3">
+                    {isLoading ? (
+                      <>
+                        <ActivityIndicator size="small" color={COLORS.white} />
+                        <Text className="text-white text-[15px] font-bold">Signing In...</Text>
+                      </>
+                    ) : (
+                      <>
+                        <Feather name="lock" size={20} color={COLORS.white} />
+                        <Text className="text-white text-[15px] font-bold">Sign In</Text>
+                      </>
+                    )}
+                  </View>
+                </TouchableOpacity>
+
+                <View className="items-center pt-5 mt-5 border-t border-gray-300">
+                  <TouchableOpacity onPress={handleSignUp} disabled={isLoading}>
+                    <Text className="text-accent font-semibold">Create Company Account</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>

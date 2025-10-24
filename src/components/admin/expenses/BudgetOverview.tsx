@@ -1,14 +1,17 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../../constants/theme";
 import { Budget } from "./types";
+import { useCurrency } from "../../feedback/CurrencyProvider";
 
 interface BudgetOverviewProps {
   budget: Budget;
+  onSetBudget?: () => void;
 }
 
-export default function BudgetOverview({ budget }: BudgetOverviewProps) {
+export default function BudgetOverview({ budget, onSetBudget }: BudgetOverviewProps) {
+  const { format } = useCurrency()
   return (
     <View className="bg-white rounded-2xl p-6 mb-6 shadow-lg">
       {/* Header */}
@@ -17,9 +20,14 @@ export default function BudgetOverview({ budget }: BudgetOverviewProps) {
         <View className="flex-row items-center">
           <Feather name="dollar-sign" size={20} color={COLORS.accent} />
           <Text className="text-lg font-semibold text-accent ml-2">
-            ${budget.remaining.toLocaleString()}
+            {format(budget.remaining)}
           </Text>
-          <Text className="text-gray-500 ml-2">/ ${budget.total.toLocaleString()}</Text>
+          <Text className="text-gray-500 ml-2">/ {format(budget.total)}</Text>
+          {onSetBudget ? (
+            <TouchableOpacity className="ml-3 px-3 py-1.5 rounded-lg" style={{ backgroundColor: COLORS.accent }} onPress={onSetBudget}>
+              <Text className="text-white text-xs font-semibold">Set Budget</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
 

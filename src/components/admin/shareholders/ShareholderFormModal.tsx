@@ -21,67 +21,111 @@ export default function ShareholderFormModal({
   onClose,
 }: ShareholderFormModalProps) {
   const [formData, setFormData] = useState<ShareholderFormData>({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    equity: "",
-    investment: "",
-    profit: "",
-    returns: "",
-    otherMoney: "",
+    phone: "",
+    address: "",
+    equity: "0",
+    investment: "0",
+    profit: "0",
+    returns: "0",
+    otherMoney: "0",
     joinDate: new Date().toISOString().split("T")[0],
+    password: "",
   });
 
-  // Prefill when editing
+  // Prefill when editing existing shareholder
   useEffect(() => {
-    if (shareholder) {
+    if (shareholder && mode === "edit") {
       setFormData({
-        name: shareholder.name,
-        email: shareholder.email,
-        equity: shareholder.equity.toString(),
-        investment: shareholder.investment.toString(),
+        firstName: shareholder.firstName || "",
+        lastName: shareholder.lastName || "",
+        email: shareholder.email || "",
+        phone: shareholder.phone || "",
+        address: shareholder.address || "",
+        equity: shareholder.equity?.toString() || "0",
+        investment: shareholder.investment?.toString() || "0",
         profit: shareholder.profit?.toString() || "0",
         returns: shareholder.returns?.toString() || "0",
         otherMoney: shareholder.otherMoney?.toString() || "0",
-        joinDate: shareholder.joinDate,
+        joinDate: shareholder.joinDate || new Date().toISOString().split("T")[0],
+        password: "",
+      });
+    } else if (mode === "add") {
+      // Reset form for add mode
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        equity: "0",
+        investment: "0",
+        profit: "0",
+        returns: "0",
+        otherMoney: "0",
+        joinDate: new Date().toISOString().split("T")[0],
+        password: "",
       });
     }
-  }, [shareholder]);
+  }, [shareholder, mode, visible]);
 
   const handleSave = () => {
-    if (!formData.name.trim() || !formData.email.trim()) {
-      Alert.alert("Error", "Please fill in all required fields.");
+    // Validation
+    if (!formData.firstName.trim()) {
+      Alert.alert("Error", "First name is required");
       return;
     }
 
-    if (
-      parseFloat(formData.equity as string) < 0 ||
-      parseFloat(formData.investment as string) < 0 ||
-      parseFloat(formData.profit as string) < 0 ||
-      parseFloat(formData.returns as string) < 0 ||
-      parseFloat(formData.otherMoney as string) < 0
-    ) {
-      Alert.alert("Error", "Values cannot be negative.");
+    if (!formData.lastName.trim()) {
+      Alert.alert("Error", "Last name is required");
       return;
     }
 
+    if (!formData.email.trim()) {
+      Alert.alert("Error", "Email is required");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(formData.email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    // Password validation for add mode
+    if (mode === "add" && !formData.password.trim()) {
+      Alert.alert("Error", "Password is required for new shareholders");
+      return;
+    }
+
+    if (mode === "add" && formData.password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters");
+      return;
+    }
+
+    // Validate numeric fields
+    const numericFields = ["investment", "profit", "returns", "otherMoney"] as const;
+    for (const key of numericFields) {
+      const val = parseFloat(formData[key] as string);
+      if (isNaN(val) || val < 0) {
+        Alert.alert("Error", `Invalid value for ${key}. Must be a non-negative number.`);
+        return;
+      }
+    }
+
+    // Send data upward
     onSave(formData);
-
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      equity: "",
-      investment: "",
-      profit: "",
-      returns: "",
-      otherMoney: "",
-      joinDate: new Date().toISOString().split("T")[0],
-    });
   };
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <View
+        className="flex-1 justify-center items-center p-6"
+        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      >
         <View className="bg-white rounded-3xl p-6 w-full max-w-md">
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6">
@@ -96,14 +140,25 @@ export default function ShareholderFormModal({
           {/* Form */}
           <ScrollView className="max-h-96">
             <View className="space-y-4">
-              {/* Name */}
+              {/* First Name */}
               <View>
-                <Text className="text-gray-700 font-medium mb-2">Full Name *</Text>
+                <Text className="text-gray-700 font-medium mb-2">First Name *</Text>
                 <TextInput
                   className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                  value={formData.name}
-                  onChangeText={(t) => setFormData({ ...formData, name: t })}
-                  placeholder="Enter full name"
+                  value={formData.firstName}
+                  onChangeText={(t) => setFormData({ ...formData, firstName: t })}
+                  placeholder="Enter first name"
+                />
+              </View>
+
+              {/* Last Name */}
+              <View>
+                <Text className="text-gray-700 font-medium mb-2">Last Name *</Text>
+                <TextInput
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                  value={formData.lastName}
+                  onChangeText={(t) => setFormData({ ...formData, lastName: t })}
+                  placeholder="Enter last name"
                 />
               </View>
 
@@ -117,37 +172,67 @@ export default function ShareholderFormModal({
                   placeholder="Enter email address"
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  editable={mode === "add"}
                 />
               </View>
 
-              {/* Equity + Investment */}
-              <View className="flex-row space-x-4">
-                <View className="flex-1">
-                  <Text className="text-gray-700 font-medium mb-2">Equity %</Text>
+              {/* Phone */}
+              <View>
+                <Text className="text-gray-700 font-medium mb-2">Phone</Text>
+                <TextInput
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                  value={formData.phone}
+                  onChangeText={(t) => setFormData({ ...formData, phone: t })}
+                  placeholder="Enter phone number"
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              {/* Address */}
+              <View>
+                <Text className="text-gray-700 font-medium mb-2">Address</Text>
+                <TextInput
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                  value={formData.address}
+                  onChangeText={(t) => setFormData({ ...formData, address: t })}
+                  placeholder="Enter address"
+                />
+              </View>
+
+              {/* Password (for shareholder login) - Only for Add */}
+              {mode === "add" && (
+                <View>
+                  <Text className="text-gray-700 font-medium mb-2">Password *</Text>
                   <TextInput
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                    value={formData.equity.toString()}
-                    onChangeText={(t) => setFormData({ ...formData, equity: t })}
-                    placeholder="0.0"
-                    keyboardType="decimal-pad"
+                    value={formData.password}
+                    onChangeText={(t) => setFormData({ ...formData, password: t })}
+                    placeholder="Set initial password (min 6 characters)"
+                    secureTextEntry
+                    autoCapitalize="none"
                   />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-gray-700 font-medium mb-2">Investment $</Text>
-                  <TextInput
-                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                    value={formData.investment.toString()}
-                    onChangeText={(t) => setFormData({ ...formData, investment: t })}
-                    placeholder="0"
-                    keyboardType="decimal-pad"
-                  />
-                </View>
+              )}
+
+              {/* Investment */}
+              <View>
+                <Text className="text-gray-700 font-medium mb-2">Investment Amount</Text>
+                <TextInput
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                  value={formData.investment.toString()}
+                  onChangeText={(t) => setFormData({ ...formData, investment: t })}
+                  placeholder="0"
+                  keyboardType="decimal-pad"
+                />
+                <Text className="text-xs text-gray-500 mt-1">
+                  Equity will be calculated automatically based on total investments
+                </Text>
               </View>
 
               {/* Profit, Returns, Other Contributions */}
               <View className="flex-row space-x-4">
                 <View className="flex-1">
-                  <Text className="text-gray-700 font-medium mb-2">Profit $</Text>
+                  <Text className="text-gray-700 font-medium mb-2">Profit</Text>
                   <TextInput
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
                     value={formData.profit.toString()}
@@ -157,7 +242,7 @@ export default function ShareholderFormModal({
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-gray-700 font-medium mb-2">Returns $</Text>
+                  <Text className="text-gray-700 font-medium mb-2">Returns</Text>
                   <TextInput
                     className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
                     value={formData.returns.toString()}
@@ -169,7 +254,7 @@ export default function ShareholderFormModal({
               </View>
 
               <View>
-                <Text className="text-gray-700 font-medium mb-2">Other Contributions $</Text>
+                <Text className="text-gray-700 font-medium mb-2">Other Contributions</Text>
                 <TextInput
                   className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
                   value={formData.otherMoney.toString()}
@@ -201,7 +286,8 @@ export default function ShareholderFormModal({
               <Text className="text-gray-700 font-medium">Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="px-6 py-3 bg-accent rounded-xl"
+              className="px-6 py-3 rounded-xl"
+              style={{ backgroundColor: COLORS.accent }}
               onPress={handleSave}
             >
               <Text className="text-white font-medium">

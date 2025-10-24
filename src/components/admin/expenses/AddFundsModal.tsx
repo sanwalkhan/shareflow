@@ -101,7 +101,7 @@ export default function AddFundsModal({
           }}
         >
           <Text style={{ fontSize: 22, fontWeight: "700", color: "#111827" }}>
-            Add Funds
+            Add Budget Allocation
           </Text>
           <TouchableOpacity onPress={onClose}>
             <Feather name="x" size={22} color={COLORS.gray} />
@@ -142,12 +142,12 @@ export default function AddFundsModal({
                     marginBottom: 10,
                   }}
                 >
-                  Amount to Add *
+                  Budget Amount *
                 </Text>
                 <TextInput
                   value={amount}
                   onChangeText={setAmount}
-                  placeholder="Enter amount (USD)"
+                  placeholder="Enter budget amount (USD)"
                   keyboardType="decimal-pad"
                   style={{
                     backgroundColor: "#f8fafc",
@@ -170,7 +170,7 @@ export default function AddFundsModal({
                     marginBottom: 10,
                   }}
                 >
-                  Add To (Category)
+                  Allocate To (Category)
                 </Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                   <TouchableOpacity
@@ -196,7 +196,7 @@ export default function AddFundsModal({
                         fontWeight: !selectedCategory ? "600" : "400",
                       }}
                     >
-                      Total Budget
+                      Total Budget (no category)
                     </Text>
                   </TouchableOpacity>
 
@@ -238,7 +238,7 @@ export default function AddFundsModal({
                 </View>
               </View>
 
-              {/* Fund Source */}
+              {/* Optional Details */}
               <View style={{ marginBottom: 24 }}>
                 <Text
                   style={{
@@ -248,7 +248,7 @@ export default function AddFundsModal({
                     marginBottom: 10,
                   }}
                 >
-                  Fund Source
+                  Source (optional)
                 </Text>
                 <TextInput
                   value={fundSource}
@@ -302,7 +302,7 @@ export default function AddFundsModal({
                     marginBottom: 10,
                   }}
                 >
-                  Reference / Transaction ID
+                  Reference / Transaction ID (optional)
                 </Text>
                 <TextInput
                   value={referenceId}
@@ -329,7 +329,7 @@ export default function AddFundsModal({
                     marginBottom: 10,
                   }}
                 >
-                  Notes / Description
+                  Notes / Description (optional)
                 </Text>
                 <TextInput
                   value={notes}
@@ -371,7 +371,7 @@ export default function AddFundsModal({
                     fontSize: 16,
                   }}
                 >
-                  Add Funds
+                  Add Budget
                 </Text>
               </TouchableOpacity>
             </View>
@@ -402,7 +402,7 @@ export default function AddFundsModal({
             {/* Same inner structure */}
             <View className="flex-row justify-between items-center mb-6">
               <Text className="text-2xl font-bold text-gray-900">
-                Add Funds
+                Add Budget Allocation
               </Text>
               <TouchableOpacity onPress={onClose} className="p-2">
                 <Feather name="x" size={24} color={COLORS.gray} />
@@ -419,7 +419,7 @@ export default function AddFundsModal({
             >
               <Feather name="check" size={20} color="white" />
               <Text className="text-white font-semibold text-lg ml-2">
-                Add Funds
+                Add Budget
               </Text>
             </TouchableOpacity>
           </ScrollView>

@@ -311,24 +311,23 @@ export default function OTPModal({
             {/* Timer */}
             <View className="flex-row justify-center items-center mb-6">
               <Feather name="clock" size={16} color={timer < 60 ? COLORS.primary : COLORS.secondary} />
-              <Text style={{ color: timer < 60 ? COLORS.primary : COLORS.secondary, fontSize: 14, marginLeft: 6 }}>
-                {timer > 0 ? (
-                  <>Code expires in{" "}
-                    <Text
-                      style={{
-                        fontWeight: "600",
-                        color: timer < 60 ? COLORS.primary : COLORS.textDark,
-                      }}
-                    >
-                      {formatTime(timer)}
-                    </Text>
-                  </>
-                ) : (
-                  <Text style={{ fontWeight: "600", color: COLORS.primary }}>
-                    Code expired
+              {timer > 0 ? (
+                <Text style={{ color: timer < 60 ? COLORS.primary : COLORS.secondary, fontSize: 14, marginLeft: 6 }}>
+                  Code expires in
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      color: timer < 60 ? COLORS.primary : COLORS.textDark,
+                    }}
+                  >
+                    {` ${formatTime(timer)}`}
                   </Text>
-                )}
-              </Text>
+                </Text>
+              ) : (
+                <Text style={{ fontWeight: "600", color: COLORS.primary, marginLeft: 6 }}>
+                  Code expired
+                </Text>
+              )}
             </View>
 
             {/* Action Buttons */}
