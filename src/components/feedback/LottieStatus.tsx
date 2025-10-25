@@ -36,13 +36,13 @@ export default function LottieStatus({ visible, type, message, onDone }: LottieS
 			}}
 		>
 			<View style={{ width: 160, height: 160, borderRadius: 16, overflow: "hidden", backgroundColor: "#00000020" }}>
-        <LottieView
-          ref={(r) => (animationRef.current = r)}
-          source={type === "success" ? require("../../../assets/Success.json") : require("../../../assets/Cross.json")}
-          autoPlay
-          loop={false}
-          onAnimationFinish={onDone}
-        />
+		<LottieView
+		  ref={(r) => { animationRef.current = r; }}
+		  source={type === "success" ? require("../../../assets/Success.json") : require("../../../assets/Cross.json")}
+		  autoPlay
+		  loop={false}
+		  onAnimationFinish={onDone}
+		/>
       </View>
 			{message ? (
 				<Text style={{ marginTop: 12, color: "#fff", fontWeight: "700" }}>{message}</Text>

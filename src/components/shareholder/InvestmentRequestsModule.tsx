@@ -1,4 +1,3 @@
-// src/modules/InvestmentRequestsModule.tsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -6,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  Alert,
   ActivityIndicator,
   ScrollView,
   Platform,
@@ -14,30 +12,33 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { Toast } from "toastify-react-native";
 import { COLORS, WINDOW } from "../../constants/theme";
 
 interface InvestmentRequest {
   _id: string;
   amount: number;
   reason: string;
-  status: "Approved" | "Pending" | "Rejected";
+  status: string;
 }
 
 export default function InvestmentRequestsModule() {
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
+  const BASE_URL = "https://shareflow-backend-production.up.railway.app/api";
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
+
+  // 🔑 Hardcoded token (from your example)
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjliM2QzMTgzMWM5NTkxOTQ2ZGI5ZCIsImVtYWlsIjoic2FtNThtYWxpa0BnbWFpbC5jb20iLCJyb2xlIjoic2hhcmVob2xkZXIiLCJpYXQiOjE3NjEyODcxMjAsImV4cCI6MTc2Mzg3OTEyMH0._9aQbMF6aAsB4Px-1Ftpjz3qAqorzkWd3P1dMbWi_hE";
 
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [requests, setRequests] = useState<InvestmentRequest[]>([]);
-
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjliM2QzMTgzMWM5NTkxOTQ2ZGI5ZCIsImVtYWlsIjoic2FtNThtYWxpa0BnbWFpbC5jb20iLCJyb2xlIjoic2hhcmVob2xkZXIiLCJpYXQiOjE3NjEyODcxMjAsImV4cCI6MTc2Mzg3OTEyMH0._9aQbMF6aAsB4Px-1Ftpjz3qAqorzkWd3P1dMbWi_hE";
 
   useEffect(() => {
     Animated.parallel([
@@ -47,100 +48,98 @@ export default function InvestmentRequestsModule() {
     fetchRequests();
   }, []);
 
+  // 📡 Fetch all requests (shareholder)
   const fetchRequests = async () => {
     try {
       setFetching(true);
-      const res = await fetch(
-        "https://shareflow-backend-production.up.railway.app/api/investment-requests/dashboard",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(`${BASE_URL}/investment-requests/my-requests`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load requests");
-      setRequests(data.requests || []);
+      if (!res.ok) throw new Error(data.message || "Failed to fetch requests");
+
+      setRequests(data.data || []);
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Unable to fetch requests");
+      Toast.error(error.message || "Unable to fetch requests.");
     } finally {
       setFetching(false);
     }
   };
 
+  // 📝 Submit new investment request
   const handleSubmit = async () => {
     if (!amount.trim() || !reason.trim()) {
-      Alert.alert("Missing Fields", "Please fill in all fields before submitting.");
+      Toast.error("Please fill in all fields before submitting.");
       return;
     }
 
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-      Alert.alert("Invalid Amount", "Please enter a valid positive amount.");
+      Toast.error("Invalid amount. Please enter a positive number.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "https://shareflow-backend-production.up.railway.app/api/investment-requests/request",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: numericAmount, reason }),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to submit request");
+      const res = await fetch(`${BASE_URL}/investment-requests/request`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: numericAmount, reason }),
+      });
 
-      Alert.alert("Success", "Investment request submitted successfully!");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Request submission failed");
+
+      Toast.success("Investment request submitted successfully!");
       setAmount("");
       setReason("");
-      fetchRequests(); // refresh list
+      fetchRequests();
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Unable to submit request");
+      Toast.error(error.message || "Unable to submit request.");
     } finally {
       setLoading(false);
     }
   };
 
+  // 💳 Render individual request card
   const renderItem = ({ item }: { item: InvestmentRequest }) => (
     <View className="bg-white p-4 rounded-2xl mb-3 border border-gray-100 shadow-sm">
       <View className="flex-row justify-between items-center mb-2">
         <Text className="text-gray-900 font-semibold">
-          ${item.amount.toLocaleString()}
+          ${item.amount?.toLocaleString() || 0}
         </Text>
         <View
           className={`px-3 py-1 rounded-full ${
-            item.status === "Approved"
+            item.status === "approved"
               ? "bg-green-100"
-              : item.status === "Pending"
+              : item.status === "pending"
               ? "bg-yellow-100"
               : "bg-red-100"
           }`}
         >
           <Text
             className={`text-xs font-semibold ${
-              item.status === "Approved"
+              item.status === "approved"
                 ? "text-green-700"
-                : item.status === "Pending"
+                : item.status === "pending"
                 ? "text-yellow-700"
                 : "text-red-700"
             }`}
           >
-            {item.status}
+            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
           </Text>
         </View>
       </View>
       <Text className="text-gray-600 text-sm mb-2">{item.reason}</Text>
-      <View className="flex-row justify-between items-center">
-        <Text className="text-gray-400 text-xs">Request ID: {item._id}</Text>
-      </View>
+      <Text className="text-gray-400 text-xs">Request ID: {item._id}</Text>
     </View>
   );
 
@@ -161,11 +160,11 @@ export default function InvestmentRequestsModule() {
           Investment Requests
         </Text>
         <Text className="text-gray-500 text-base">
-          Generate and track your investment requests for approval.
+          Submit and track your investment requests.
         </Text>
       </View>
 
-      {/* Form */}
+      {/* New Request Form */}
       <View className="px-6 pt-5">
         <View className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
           <View className="p-5">
@@ -236,44 +235,10 @@ export default function InvestmentRequestsModule() {
     </Animated.View>
   );
 
-  if (Platform.OS === "web") {
-    return (
-      <View className="flex flex-col h-screen bg-gray-50 overflow-hidden">
-        <ScrollView
-          className="flex-1 overflow-y-auto overflow-x-hidden web-scroll"
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        >
-          <style>
-            {`
-              .web-scroll {
-                scrollbar-width: none;
-                -ms-overflow-style: none;
-              }
-              .web-scroll::-webkit-scrollbar {
-                display: none;
-              }
-            `}
-          </style>
-          {Content}
-        </ScrollView>
-      </View>
-    );
-  }
-
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingTop: 16,
-          paddingBottom: 100,
-        }}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        {Content}
-      </ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>{Content}</ScrollView>
+      {/* Toast is used programmatically via Toast.success / Toast.error; no JSX container required */}
     </View>
   );
 }

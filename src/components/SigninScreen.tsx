@@ -54,18 +54,32 @@ export default function SigninScreen() {
       })
     ]).start();
 
-    // Check if user is already logged in
     checkAuthStatus();
   }, []);
 
+  // ✅ Auto redirect if already logged in
   const checkAuthStatus = async () => {
     try {
       const token = await AsyncStorage.getItem('authToken');
       const userData = await AsyncStorage.getItem('userData');
       
       if (token && userData) {
+        const parsedUser = JSON.parse(userData);
         console.log('✅ User already authenticated, redirecting to dashboard');
-        navigation.navigate("AdminDashboard" as never);
+
+        if (parsedUser?.role === "admin") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AdminDashboard" as never }],
+          });
+        } else if (parsedUser?.role === "shareholder") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "ShareholderDashboard" as never }],
+          });
+        } else {
+          navigation.navigate("Landing" as never);
+        }
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -104,86 +118,89 @@ export default function SigninScreen() {
     return true;
   };
 
- const handleSignIn = async () => {
-  if (!validateForm()) {
-    return;
-  }
+  // ✅ Login and redirect based on role
+  const handleSignIn = async () => {
+    if (!validateForm()) return;
 
-  setIsLoading(true);
-  showLoader("Signing in...");
+    setIsLoading(true);
+    showLoader("Signing in...");
 
-  const loginData = {
-    email: formData.email.trim().toLowerCase(), // ✅ Changed from adminEmail
-    password: formData.password,
-  };
+    const loginData = {
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+    };
 
-  console.log("📤 Attempting login...");
-  console.log("📧 Email:", loginData.email);
+    console.log("📤 Attempting login...");
+    console.log("📧 Email:", loginData.email);
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(loginData),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
 
-    const data = await response.json();
-    console.log("📥 Response:", data);
+      const data = await response.json();
+      console.log("📥 Response:", data);
 
-    if (response.ok && data.success) {
-      console.log("✅ Login successful!");
-      
-      // Handle unified response structure
-      const userData = data.user || data.admin;
-      
-      // Use auth context for login
-      await login(data.token, userData);
-      
-      if (formData.rememberMe) {
-        await AsyncStorage.setItem('rememberMe', 'true');
-        await AsyncStorage.setItem('savedEmail', formData.email);
+      if (response.ok && data.success) {
+        console.log("✅ Login successful!");
+        
+        const userData = data.user || data.admin;
+        await login(data.token, userData);
+
+        if (formData.rememberMe) {
+          await AsyncStorage.setItem('rememberMe', 'true');
+          await AsyncStorage.setItem('savedEmail', formData.email);
+        } else {
+          await AsyncStorage.removeItem('rememberMe');
+          await AsyncStorage.removeItem('savedEmail');
+        }
+
+        const userName =
+          userData.fullName ||
+          `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
+          "User";
+
+        Toast.success(`Welcome back, ${userName}!`);
+        hideLoader();
+        showStatus("success", "Login successful");
+
+        // ✅ Role-based navigation
+        if (userData.role === "admin") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AdminDashboard" as never }],
+          });
+        } else if (userData.role === "shareholder") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "ShareholderDashboard" as never }],
+          });
+        } else {
+          navigation.navigate("Landing" as never);
+        }
       } else {
-        await AsyncStorage.removeItem('rememberMe');
-        await AsyncStorage.removeItem('savedEmail');
+        console.error("❌ Login failed:", data);
+        hideLoader();
+        showStatus("error", data.message || "Invalid email or password");
       }
-
-      const userName = userData.fullName || 
-                       `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 
-                       'User';
-      
-      Toast.success(`Welcome back, ${userName}!`);
+    } catch (error) {
+      console.error("❌ Network error:", error);
       hideLoader();
-      showStatus("success", "Login successful");
-    } else {
-      console.error("❌ Login failed:", data);
-      hideLoader();
-      showStatus("error", data.message || "Invalid email or password");
+      showStatus("error", "Unable to connect to server");
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("❌ Network error:", error);
-    hideLoader();
-    showStatus("error", "Unable to connect to server");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-  const handleBack = () => {
-    navigation.goBack();
   };
 
-  const handleForgotPassword = () => {
-    navigation.navigate("ForgetPassword" as never);
-  };
+  const handleBack = () => navigation.goBack();
+  const handleForgotPassword = () => navigation.navigate("ForgetPassword" as never);
+  const handleSignUp = () => navigation.navigate("Auth" as never);
 
-  const handleSignUp = () => {
-    navigation.navigate("Auth" as never);
-  };
-
-  // Load saved email if remember me was checked
   useEffect(() => {
     loadSavedCredentials();
   }, []);
@@ -209,7 +226,6 @@ export default function SigninScreen() {
   if (Platform.OS === "web") {
     return (
       <View className="flex flex-col h-screen bg-primary overflow-hidden">
-        {/* Background Elements */}
         <View className="absolute top-0 left-0 right-0 bottom-0">
           <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
           <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
@@ -217,7 +233,6 @@ export default function SigninScreen() {
           <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
         </View>
 
-        {/* Scrollable content */}
         <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
           <Animated.View
             className="flex-1"
@@ -227,7 +242,6 @@ export default function SigninScreen() {
               transform: [{ translateY: slideAnim }],
             }}
           >
-            {/* Header Section */}
             <View className={`${isMobile ? "px-5" : "px-10"} pt-5 mb-5`}>
               <TouchableOpacity onPress={handleBack} className="self-start mb-5 rounded-xl overflow-hidden">
                 <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
@@ -252,9 +266,7 @@ export default function SigninScreen() {
               </View>
             </View>
 
-            {/* Responsive main content */}
             <View className={`flex-1 ${isMobile ? "flex-col px-5 pb-10" : "flex-row px-10 pb-5"} items-stretch w-full`}>
-              {/* Left Panel - Branding */}
               {!isMobile && (
                 <View 
                   className="flex-1 mr-5 rounded-3xl overflow-hidden"
@@ -299,26 +311,10 @@ export default function SigninScreen() {
                         <Text className="text-textLight text-base font-semibold">Multi-user Collaboration</Text>
                       </View>
                     </View>
-
-                    <View className="flex-row justify-around">
-                      <View className="items-center">
-                        <Text className="text-accent text-2xl font-extrabold mb-1">500+</Text>
-                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Companies</Text>
-                      </View>
-                      <View className="items-center">
-                        <Text className="text-accent text-2xl font-extrabold mb-1">99.9%</Text>
-                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Uptime</Text>
-                      </View>
-                      <View className="items-center">
-                        <Text className="text-accent text-2xl font-extrabold mb-1">24/7</Text>
-                        <Text className="text-textLight text-sm font-semibold uppercase tracking-wider">Support</Text>
-                      </View>
-                    </View>
                   </View>
                 </View>
               )}
 
-              {/* Right Panel - Sign In Form */}
               <View 
                 className="flex-1 rounded-3xl overflow-hidden bg-white"
                 style={{
@@ -346,9 +342,7 @@ export default function SigninScreen() {
                       </Text>
                     </View>
 
-                    {/* Sign In Form */}
                     <View className="space-y-5">
-                      {/* Email Input */}
                       <View className="mb-5">
                         <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
                         <TextInput
@@ -364,7 +358,6 @@ export default function SigninScreen() {
                         />
                       </View>
 
-                      {/* Password Input */}
                       <View className="mb-5">
                         <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
                         <View className="relative">
@@ -394,7 +387,6 @@ export default function SigninScreen() {
                         </View>
                       </View>
 
-                      {/* Remember Me & Forgot Password */}
                       <View className="flex-row justify-between items-center mb-5">
                         <TouchableOpacity 
                           className="flex-row items-center gap-3"
@@ -418,7 +410,6 @@ export default function SigninScreen() {
                         </TouchableOpacity>
                       </View>
 
-                      {/* Sign In Button */}
                       <TouchableOpacity 
                         className="rounded-xl overflow-hidden py-4"
                         style={{
@@ -450,7 +441,6 @@ export default function SigninScreen() {
                     </View>
                   </View>
 
-                  {/* Footer Note */}
                   <View className="items-center pt-5 border-t border-gray-300 mt-6">
                     <Text className="text-secondary text-sm text-center mb-3">
                       Don't have an enterprise account?
@@ -473,10 +463,9 @@ export default function SigninScreen() {
     );
   }
 
-  // ✅ MOBILE APP VERSION - Similar structure with mobile-optimized layout
+  // ✅ MOBILE VERSION (unchanged)
   return (
     <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
-      {/* Background Elements */}
       <View className="absolute top-0 left-0 right-0 bottom-0">
         <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
         <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
@@ -499,7 +488,6 @@ export default function SigninScreen() {
               transform: [{ translateY: slideAnim }],
             }}
           >
-            {/* Mobile content with same form structure */}
             <View className="px-5 pt-5 pb-5">
               <TouchableOpacity onPress={handleBack} className="mb-5">
                 <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
@@ -521,7 +509,6 @@ export default function SigninScreen() {
                   elevation: 15,
                 }}
               >
-                {/* Same form content as web version */}
                 <View className="mb-6">
                   <Text className="text-textDark text-2xl font-extrabold mb-2">Welcome Back</Text>
                   <Text className="text-secondary text-base">Sign in to your account</Text>

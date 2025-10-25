@@ -9,11 +9,13 @@ import {
   KeyboardAvoidingView,
   Alert,
   useWindowDimensions,
+  Modal,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import ShareholderSidebar from "../../components/shareholder/ShareholderSidebar";
-import ShareholderOverview from "../../components/shareholder/ShareholderOverview"; // ✅ correct import
+import ShareholderOverview from "../../components/shareholder/ShareholderOverview";
 import InvestmentsModule from "../../components/shareholder/InvestmentsModule";
 import InvestmentRequestsModule from "../../components/shareholder/InvestmentRequestsModule";
 import DividendsModule from "../../components/shareholder/DividendsModule";
@@ -36,6 +38,10 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const [activeModule, setActiveModule] = useState("overview");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
+  const [companyData, setCompanyData] = useState<any>(null);
 
   // 🔔 Notifications
   const { notifications, addNotification, markAsRead, clearAll } = useNotifications();
@@ -52,6 +58,26 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
+  // 🌟 Load user data from AsyncStorage
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const data = await AsyncStorage.getItem("userData");
+      if (data) {
+        const parsed = JSON.parse(data);
+        setUserData(parsed);
+        setCompanyData(parsed.company);
+        console.log("👤 Shareholder loaded:", parsed);
+      }
+    } catch (err) {
+      console.error("Error loading user data:", err);
+    }
+  };
+
+  // 🌟 Animations on mount
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
@@ -59,7 +85,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
     ]).start();
   }, []);
 
-  // 🧾 Preload demo notifications
+  // Demo notification
   useEffect(() => {
     addNotification({
       id: "1",
@@ -77,31 +103,35 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
     const opacityValue = next ? 0 : 1;
 
     Animated.parallel([
-      Animated.spring(sidebarWidth, {
-        toValue,
-        friction: 8,
-        tension: 40,
-        useNativeDriver: false,
-      }),
-      Animated.timing(sidebarOpacity, {
-        toValue: opacityValue,
-        duration: 300,
-        useNativeDriver: false,
-      }),
+      Animated.spring(sidebarWidth, { toValue, friction: 8, tension: 40, useNativeDriver: false }),
+      Animated.timing(sidebarOpacity, { toValue: opacityValue, duration: 300, useNativeDriver: false }),
     ]).start();
 
     setIsSidebarCollapsed(next);
   };
 
-  const handleLogout = () => {
-    Alert.alert("Logout Confirmation", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: () => navigation.navigate("Signin"),
-      },
-    ]);
+  // 🚪 Logout logic
+  const handleLogoutClick = () => {
+    setIsProfileDropdownOpen(false);
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    try {
+      await AsyncStorage.clear();
+      if (Platform.OS === "web") {
+        localStorage.clear();
+        window.location.reload();
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Signin" }],
+        });
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+      Alert.alert("Error", "Failed to logout. Please try again.");
+    }
   };
 
   const sidebarItems = [
@@ -116,7 +146,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
   const renderModuleContent = () => {
     switch (activeModule) {
       case "overview":
-        return <ShareholderOverview />; // ✅ no props now
+        return <ShareholderOverview />;
       case "investments":
         return <InvestmentsModule />;
       case "requests":
@@ -132,6 +162,9 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
     }
   };
 
+  // ────────────────────────────────
+  // Header Bar with Profile Dropdown
+  // ────────────────────────────────
   const HeaderBar = () => (
     <View className="bg-white border-b border-gray-200 shadow-sm px-4 py-4 flex-row items-center justify-between">
       <View className="flex-1 mr-3">
@@ -139,7 +172,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
           {sidebarItems.find((i) => i.id === activeModule)?.label}
         </Text>
         <Text className="text-gray-500 text-sm font-medium">
-          24Loops •{" "}
+          {companyData?.name || "My Company"} •{" "}
           {new Date().toLocaleDateString("en-US", {
             weekday: "short",
             year: "numeric",
@@ -155,6 +188,7 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
           onPress={() => setIsNotificationModalOpen(true)}
         />
 
+        {/* Theme toggle */}
         <TouchableOpacity
           className="rounded-xl overflow-hidden shadow-sm ml-4"
           onPress={() => setIsDarkMode(!isDarkMode)}
@@ -172,14 +206,17 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
           </View>
         </TouchableOpacity>
 
-        {/* Avatar / Logout */}
+        {/* Profile Avatar */}
         <TouchableOpacity
+          onPress={() => setIsProfileDropdownOpen(true)}
           className="ml-4 w-9 h-9 rounded-xl bg-green-500 justify-center items-center"
-          onPress={handleLogout}
         >
-          <Text className="text-white font-bold">SC</Text>
+          <Text className="text-white font-bold">
+            {userData?.firstName?.charAt(0)?.toUpperCase() || "U"}
+          </Text>
         </TouchableOpacity>
 
+        {/* Sidebar toggle on mobile */}
         {isMobile && (
           <TouchableOpacity
             onPress={toggleSidebar}
@@ -211,16 +248,11 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
         />
       </Animated.View>
 
-      {/* Main Content */}
+      {/* Main content */}
       <View className="flex-1">
-        <Animated.View
-          style={{
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-            flex: 1,
-          }}
-        >
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }], flex: 1 }}>
           <HeaderBar />
+
           <KeyboardAvoidingView
             className="flex-1"
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -231,7 +263,6 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
                 padding: isMobile ? 16 : 24,
               }}
               showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
             >
               {renderModuleContent()}
             </ScrollView>
@@ -247,6 +278,104 @@ export default function ShareholderDashboardScreen({ navigation }: DashboardScre
         onMarkAsRead={markAsRead}
         onClearAll={clearAll}
       />
+
+      {/* 👤 Profile Dropdown */}
+      <Modal
+        visible={isProfileDropdownOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsProfileDropdownOpen(false)}
+      >
+        <TouchableOpacity
+          className="flex-1 bg-black/40 justify-start items-end pt-24 pr-6"
+          activeOpacity={1}
+          onPress={() => setIsProfileDropdownOpen(false)}
+        >
+          <View className="bg-white rounded-2xl w-80 shadow-xl overflow-hidden">
+            <View className="p-6 bg-green-500 flex-row items-center">
+              <View className="w-14 h-14 rounded-2xl bg-white/20 justify-center items-center mr-4">
+                <Text className="text-white font-bold text-lg">
+                  {userData?.firstName?.charAt(0)?.toUpperCase() || "U"}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-white text-lg font-bold mb-0.5">
+                  {`${userData?.firstName || ""} ${userData?.lastName || ""}`.trim() || "User"}
+                </Text>
+                <Text className="text-white/90 text-sm font-semibold mb-0.5">
+                  {userData?.role || "Shareholder"}
+                </Text>
+                <Text className="text-white/70 text-xs font-medium">
+                  {companyData?.name || "Company"}
+                </Text>
+              </View>
+            </View>
+
+            <View className="p-4">
+              <TouchableOpacity className="flex-row items-center py-3.5 px-3 rounded-lg">
+                <Feather name="user" size={18} color="#6B7280" />
+                <Text className="flex-1 text-gray-900 text-base font-medium ml-3">
+                  My Profile
+                </Text>
+                <Feather name="chevron-right" size={16} color="#6B7280" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-row items-center py-3.5 px-3 rounded-lg mt-1"
+                onPress={handleLogoutClick}
+              >
+                <Feather name="log-out" size={18} color="#ef4444" />
+                <Text className="flex-1 text-red-500 text-base font-semibold ml-3">
+                  Logout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* 🔐 Logout Confirmation */}
+      <Modal
+        visible={isLogoutModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsLogoutModalOpen(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-center items-center p-6">
+          <View className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+            <View className="items-center pt-8 pb-6 px-6">
+              <View className="w-16 h-16 rounded-full bg-red-100 justify-center items-center mb-4">
+                <Feather name="log-out" size={28} color="#ef4444" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900 mb-2">
+                Logout Confirmation
+              </Text>
+              <Text className="text-gray-600 text-center text-base">
+                Are you sure you want to logout? All your session data will be cleared.
+              </Text>
+            </View>
+
+            <View className="flex-row border-t border-gray-200">
+              <TouchableOpacity
+                className="flex-1 py-4 items-center border-r border-gray-200"
+                onPress={() => setIsLogoutModalOpen(false)}
+              >
+                <Text className="text-gray-700 font-semibold text-base">
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 py-4 items-center bg-red-50"
+                onPress={handleLogoutConfirm}
+              >
+                <Text className="text-red-600 font-bold text-base">
+                  Logout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
