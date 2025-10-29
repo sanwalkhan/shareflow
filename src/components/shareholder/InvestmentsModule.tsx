@@ -1,5 +1,4 @@
-// src/components/shareholder/InvestmentsModule.tsx
-import React, { useMemo, useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +12,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, WINDOW } from "../../constants/theme";
+import { API_BASE } from "@env"; // ✅ using .env for backend base URL
 
 export interface Investment {
   id: string;
@@ -23,12 +24,10 @@ export interface Investment {
   createdAt: string;
 }
 
-const API_URL =
-  "https://shareflow-backend-production.up.railway.app/api/investment-requests/dashboard";
-
 export default function InvestmentsModule() {
   const { width } = useWindowDimensions();
-  const isMobile = width < 900;
+  const isTablet = width < 1200 && width >= 768;
+  const isMobile = width < 768;
 
   // animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -53,18 +52,27 @@ export default function InvestmentsModule() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // fetch from backend
+  // ✅ fetch from backend securely
   useEffect(() => {
     const fetchInvestments = async () => {
       try {
         setLoading(true);
-        const res = await fetch(API_URL, {
+        setError(null);
+
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) throw new Error("No auth token found. Please sign in again.");
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const res = await fetch(`${API_BASE}/investment-requests/dashboard`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjliM2QzMTgzMWM5NTkxOTQ2ZGI5ZCIsImVtYWlsIjoic2FtNThtYWxpa0BnbWFpbC5jb20iLCJyb2xlIjoic2hhcmVob2xkZXIiLCJpYXQiOjE3NjEyODcxMjAsImV4cCI6MTc2Mzg3OTEyMH0._9aQbMF6aAsB4Px-1Ftpjz3qAqorzkWd3P1dMbWi_hE",
+            Authorization: `Bearer ${token}`,
           },
+          signal: controller.signal,
         });
+        clearTimeout(timeout);
 
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const json = await res.json();
@@ -83,7 +91,7 @@ export default function InvestmentsModule() {
         setInvestments(mapped);
         setStats(statsData);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "Failed to fetch investments.");
       } finally {
         setLoading(false);
       }
@@ -102,7 +110,7 @@ export default function InvestmentsModule() {
 
   const renderInvestmentCard = ({ item }: { item: Investment }) => (
     <View className="bg-white p-4 rounded-2xl mb-3 border border-gray-100 shadow-sm">
-      <View className="flex-row justify-between items-start mb-2">
+      <View className="flex-row justify-between items-start mb-2 flex-wrap">
         <View style={{ flex: 1, paddingRight: 8 }}>
           <Text className="text-gray-900 font-semibold text-lg">
             ${item.amount.toLocaleString()}
@@ -181,11 +189,18 @@ export default function InvestmentsModule() {
             {/* Header */}
             <View
               style={{ backgroundColor: COLORS.white }}
-              className="px-6 pt-6 pb-4 border-b border-gray-200 shadow-sm"
+              className="px-4 sm:px-6 pt-6 pb-4 border-b border-gray-200 shadow-sm"
             >
-              <View className="flex-row justify-between items-start mb-4">
-                <View className="flex-1 mr-4">
-                  <Text className="text-3xl font-bold" style={{ color: COLORS.textDark }}>
+              <View
+                className={`flex-row flex-wrap ${
+                  isMobile ? "flex-col" : "justify-between"
+                } items-start mb-4`}
+              >
+                <View className="flex-1 mb-3">
+                  <Text
+                    className={`font-bold ${isMobile ? "text-2xl" : "text-3xl"}`}
+                    style={{ color: COLORS.textDark }}
+                  >
                     My Investment Requests
                   </Text>
                   <Text className="text-base mt-1" style={{ color: COLORS.tertiary }}>
@@ -193,24 +208,27 @@ export default function InvestmentsModule() {
                   </Text>
                 </View>
 
-                <View className="flex-row items-center">
-                  <View className="bg-white rounded-xl px-3 py-2 border border-gray-200 flex-row items-center mr-3">
-                    <Feather name="search" size={16} color="#9CA3AF" />
-                    <TextInput
-                      placeholder="Search reason..."
-                      placeholderTextColor="#9CA3AF"
-                      className="ml-2 flex-1 text-gray-900"
-                      value={query}
-                      onChangeText={setQuery}
-                      style={{ width: 220 }}
-                    />
-                  </View>
+                {/* Responsive Search Bar */}
+                <View
+                  className={`bg-white rounded-xl px-3 py-2 border border-gray-200 flex-row items-center ${
+                    isMobile ? "w-full" : ""
+                  }`}
+                >
+                  <Feather name="search" size={16} color="#9CA3AF" />
+                  <TextInput
+                    placeholder="Search reason..."
+                    placeholderTextColor="#9CA3AF"
+                    className="ml-2 flex-1 text-gray-900"
+                    value={query}
+                    onChangeText={setQuery}
+                    style={{ width: isMobile ? "100%" : 220 }}
+                  />
                 </View>
               </View>
 
               {/* Stats Summary */}
-              <View className="flex-row flex-wrap">
-                {[
+              <View className="flex-row flex-wrap justify-start gap-3">
+                {[ 
                   { label: "Total Requests", value: stats.totalRequests },
                   { label: "Pending", value: stats.pendingRequests },
                   { label: "Approved", value: stats.approvedRequests },
@@ -218,8 +236,10 @@ export default function InvestmentsModule() {
                 ].map((s, i) => (
                   <View
                     key={i}
-                    className="bg-white p-3 rounded-2xl mr-3 mb-2 shadow-sm border border-gray-100"
-                    style={{ minWidth: 180 }}
+                    className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100"
+                    style={{
+                      flexBasis: isMobile ? "48%" : isTablet ? "23%" : "22%",
+                    }}
                   >
                     <Text className="text-gray-500 text-sm">{s.label}</Text>
                     <Text className="text-green-700 text-xl font-bold mt-1">
@@ -231,7 +251,7 @@ export default function InvestmentsModule() {
             </View>
 
             {/* Content list */}
-            <View className="px-6 pt-4 pb-10">
+            <View className="px-4 sm:px-6 pt-4 pb-10">
               <Text style={{ color: COLORS.textDark }} className="font-medium mb-3">
                 Requests ({visible.length})
               </Text>
@@ -246,7 +266,7 @@ export default function InvestmentsModule() {
                   data={visible}
                   keyExtractor={(i) => i.id}
                   renderItem={renderInvestmentCard}
-                  contentContainerStyle={{ paddingBottom: 80 }}
+                  contentContainerStyle={{ paddingBottom: 100 }}
                   showsVerticalScrollIndicator={false}
                 />
               )}
@@ -261,9 +281,12 @@ export default function InvestmentsModule() {
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 80 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 16,
+          paddingBottom: 80,
+        }}
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
       >
         <Animated.View
           style={{

@@ -1,6 +1,13 @@
 // src/components/shareholder/ShareholderSidebar.tsx
 import React, { Dispatch, SetStateAction } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 interface Props {
@@ -8,7 +15,6 @@ interface Props {
   onToggle: () => void;
   activeModule: string;
   setActiveModule: Dispatch<SetStateAction<string>>;
-  isMobile?: boolean;
 }
 
 export default function ShareholderSidebar({
@@ -17,6 +23,10 @@ export default function ShareholderSidebar({
   activeModule = "overview",
   setActiveModule,
 }: Props) {
+  const { width } = useWindowDimensions();
+  const isTablet = width < 1200 && width >= 768;
+  const isMobile = width < 768;
+
   const sidebarItems = [
     { id: "overview", icon: "home", label: "Overview", color: "#86C232" },
     { id: "investments", icon: "trending-up", label: "My Investments", color: "#3B82F6" },
@@ -88,7 +98,7 @@ export default function ShareholderSidebar({
     </View>
   );
 
-  // ✅ Web version
+  // 🌐 Web version (responsive)
   if (Platform.OS === "web") {
     return (
       <div
@@ -97,15 +107,18 @@ export default function ShareholderSidebar({
           flexDirection: "column",
           height: "100vh",
           backgroundColor: "#1F2937", // gray-800
-          transition: "width 0.3s ease",
-          width: isCollapsed ? 0 : 300,
+          transition: "width 0.3s ease, transform 0.3s ease",
+          width: isCollapsed ? (isMobile ? 0 : 70) : isMobile ? "100%" : isTablet ? 240 : 300,
+          transform: isMobile && isCollapsed ? "translateX(-100%)" : "translateX(0)",
           overflow: "hidden",
+          position: isMobile ? "absolute" : "relative",
+          zIndex: 50,
         }}
       >
         {/* Header */}
         <div
           style={{
-            padding: 24,
+            padding: isMobile ? 16 : 24,
             borderBottom: "1px solid #374151",
             display: "flex",
             alignItems: "center",
@@ -128,7 +141,7 @@ export default function ShareholderSidebar({
             >
               <Feather name="pie-chart" size={26} color="#86C232" />
             </div>
-            {!isCollapsed && (
+            {!isCollapsed && !isMobile && (
               <div>
                 <Text
                   style={{
@@ -159,7 +172,7 @@ export default function ShareholderSidebar({
         <div
           style={{
             flex: 1,
-            overflowY: "scroll",
+            overflowY: "auto",
             overflowX: "hidden",
             paddingTop: 8,
             paddingBottom: 8,
@@ -171,11 +184,8 @@ export default function ShareholderSidebar({
           {renderMenuItems()}
         </div>
 
-        {/* Hide scrollbar for Chrome/WebKit */}
         <style>{`
-          .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-          }
+          .hide-scrollbar::-webkit-scrollbar { display: none; }
         `}</style>
 
         {FooterBlock}
@@ -183,12 +193,14 @@ export default function ShareholderSidebar({
     );
   }
 
-  // ✅ Mobile version
+  // 📱 Mobile version
   return (
     <View
-      className="bg-gray-800 flex-1"
+      className="bg-gray-800 flex-1 absolute top-0 left-0 z-50"
       style={{
-        width: isCollapsed ? 0 : 300,
+        width: isCollapsed ? 0 : 280,
+        height: "100%",
+        transform: [{ translateX: isCollapsed ? -300 : 0 }],
       }}
     >
       {/* Header */}
@@ -210,8 +222,11 @@ export default function ShareholderSidebar({
         </View>
       </View>
 
-      {/* Scrollable items (no scroll indicator) */}
-      <ScrollView contentContainerStyle={{ paddingVertical: 10 }} showsVerticalScrollIndicator={false}>
+      {/* Scrollable items */}
+      <ScrollView
+        contentContainerStyle={{ paddingVertical: 10, paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
         {renderMenuItems()}
       </ScrollView>
 

@@ -1,23 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
   Animated,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   Alert,
   useWindowDimensions,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "toastify-react-native";
 import { COLORS, WINDOW } from "../constants/theme";
-import { API_BASE_URL } from "../../config";
+import { API_BASE } from "@env";
 import { useStatus } from "./feedback/StatusProvider";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -31,7 +31,7 @@ export default function SigninScreen() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -51,45 +51,49 @@ export default function SigninScreen() {
         toValue: 0,
         duration: 600,
         useNativeDriver: true,
-      })
+      }),
     ]).start();
 
     checkAuthStatus();
+    loadSavedCredentials();
   }, []);
 
-  // ✅ Auto redirect if already logged in
+  // ✅ Check auth and redirect if valid token exists
   const checkAuthStatus = async () => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      const userData = await AsyncStorage.getItem('userData');
-      
-      if (token && userData) {
-        const parsedUser = JSON.parse(userData);
-        console.log('✅ User already authenticated, redirecting to dashboard');
+      const token = await AsyncStorage.getItem("authToken");
+      const userData = await AsyncStorage.getItem("userData");
 
+      if (token && userData) {
+        const [, payload] = token.split(".");
+        if (payload) {
+          try {
+            const decoded = JSON.parse(atob(payload));
+            if (decoded?.exp && Date.now() >= decoded.exp * 1000) {
+              await AsyncStorage.clear();
+              return;
+            }
+          } catch {}
+        }
+
+        const parsedUser = JSON.parse(userData);
         if (parsedUser?.role === "admin") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "AdminDashboard" as never }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "AdminDashboard" as never }] });
         } else if (parsedUser?.role === "shareholder") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "ShareholderDashboard" as never }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "ShareholderDashboard" as never }] });
         } else {
           navigation.navigate("Landing" as never);
         }
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error("Auth check error:", error);
     }
   };
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -98,23 +102,19 @@ export default function SigninScreen() {
       Alert.alert("Validation Error", "Email is required");
       return false;
     }
-
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(formData.email)) {
       Alert.alert("Validation Error", "Please enter a valid email address");
       return false;
     }
-
     if (!formData.password.trim()) {
       Alert.alert("Validation Error", "Password is required");
       return false;
     }
-
     if (formData.password.length < 6) {
       Alert.alert("Validation Error", "Password must be at least 6 characters");
       return false;
     }
-
     return true;
   };
 
@@ -130,34 +130,33 @@ export default function SigninScreen() {
       password: formData.password,
     };
 
-    console.log("📤 Attempting login...");
-    console.log("📧 Email:", loginData.email);
-
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+      const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(loginData),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeout);
       const data = await response.json();
-      console.log("📥 Response:", data);
 
       if (response.ok && data.success) {
-        console.log("✅ Login successful!");
-        
         const userData = data.user || data.admin;
         await login(data.token, userData);
 
+        await AsyncStorage.setItem("authToken", data.token);
+        await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
         if (formData.rememberMe) {
-          await AsyncStorage.setItem('rememberMe', 'true');
-          await AsyncStorage.setItem('savedEmail', formData.email);
+          await AsyncStorage.setItem("rememberMe", "true");
+          await AsyncStorage.setItem("savedEmail", formData.email);
         } else {
-          await AsyncStorage.removeItem('rememberMe');
-          await AsyncStorage.removeItem('savedEmail');
+          await AsyncStorage.removeItem("rememberMe");
+          await AsyncStorage.removeItem("savedEmail");
         }
 
         const userName =
@@ -169,29 +168,25 @@ export default function SigninScreen() {
         hideLoader();
         showStatus("success", "Login successful");
 
-        // ✅ Role-based navigation
         if (userData.role === "admin") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "AdminDashboard" as never }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "AdminDashboard" as never }] });
         } else if (userData.role === "shareholder") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "ShareholderDashboard" as never }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "ShareholderDashboard" as never }] });
         } else {
           navigation.navigate("Landing" as never);
         }
       } else {
-        console.error("❌ Login failed:", data);
         hideLoader();
-        showStatus("error", data.message || "Invalid email or password");
+        showStatus("error", data?.message || "Invalid email or password");
       }
-    } catch (error) {
-      console.error("❌ Network error:", error);
+    } catch (error: any) {
       hideLoader();
-      showStatus("error", "Unable to connect to server");
+      showStatus(
+        "error",
+        error.name === "AbortError"
+          ? "Request timed out. Please check your internet connection."
+          : "Unable to connect to the server."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -201,28 +196,19 @@ export default function SigninScreen() {
   const handleForgotPassword = () => navigation.navigate("ForgetPassword" as never);
   const handleSignUp = () => navigation.navigate("Auth" as never);
 
-  useEffect(() => {
-    loadSavedCredentials();
-  }, []);
-
   const loadSavedCredentials = async () => {
     try {
-      const rememberMe = await AsyncStorage.getItem('rememberMe');
-      const savedEmail = await AsyncStorage.getItem('savedEmail');
-      
-      if (rememberMe === 'true' && savedEmail) {
-        setFormData(prev => ({
-          ...prev,
-          email: savedEmail,
-          rememberMe: true,
-        }));
+      const rememberMe = await AsyncStorage.getItem("rememberMe");
+      const savedEmail = await AsyncStorage.getItem("savedEmail");
+      if (rememberMe === "true" && savedEmail) {
+        setFormData((prev) => ({ ...prev, email: savedEmail, rememberMe: true }));
       }
     } catch (error) {
-      console.error('Error loading saved credentials:', error);
+      console.error("Error loading saved credentials:", error);
     }
   };
 
-  // ✅ WEB VERSION
+  // ✅ --- Web Version (same visuals) ---
   if (Platform.OS === "web") {
     return (
       <View className="flex flex-col h-screen bg-primary overflow-hidden">
@@ -463,7 +449,7 @@ export default function SigninScreen() {
     );
   }
 
-  // ✅ MOBILE VERSION (unchanged)
+  // ✅ --- Mobile Version (same visuals) ---
   return (
     <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
       <View className="absolute top-0 left-0 right-0 bottom-0">
@@ -490,16 +476,19 @@ export default function SigninScreen() {
           >
             <View className="px-5 pt-5 pb-5">
               <TouchableOpacity onPress={handleBack} className="mb-5">
-                <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
-                  borderColor: "rgba(134, 194, 50, 0.3)",
-                  backgroundColor: "rgba(134, 194, 50, 0.1)" 
-                }}>
+                <View
+                  className="flex-row items-center gap-2 px-4 py-3 rounded-xl border"
+                  style={{
+                    borderColor: "rgba(134, 194, 50, 0.3)",
+                    backgroundColor: "rgba(134, 194, 50, 0.1)",
+                  }}
+                >
                   <Feather name="arrow-left" size={20} color={COLORS.accent} />
                   <Text className="text-accent text-[15px] font-semibold">Back</Text>
                 </View>
               </TouchableOpacity>
 
-              <View 
+              <View
                 className="rounded-3xl overflow-hidden bg-white p-6"
                 style={{
                   shadowColor: COLORS.black,
@@ -510,18 +499,24 @@ export default function SigninScreen() {
                 }}
               >
                 <View className="mb-6">
-                  <Text className="text-textDark text-2xl font-extrabold mb-2">Welcome Back</Text>
-                  <Text className="text-secondary text-base">Sign in to your account</Text>
+                  <Text className="text-textDark text-2xl font-extrabold mb-2">
+                    Welcome Back
+                  </Text>
+                  <Text className="text-secondary text-base">
+                    Sign in to your account
+                  </Text>
                 </View>
 
                 <View className="mb-5">
-                  <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
+                  <Text className="text-textDark text-sm font-semibold mb-2">
+                    Work Email *
+                  </Text>
                   <TextInput
                     placeholder="name@company.com"
                     placeholderTextColor={COLORS.tertiary + "80"}
                     className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
                     value={formData.email}
-                    onChangeText={(value) => handleInputChange('email', value)}
+                    onChangeText={(value) => handleInputChange("email", value)}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     editable={!isLoading}
@@ -529,30 +524,36 @@ export default function SigninScreen() {
                 </View>
 
                 <View className="mb-5">
-                  <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
+                  <Text className="text-textDark text-sm font-semibold mb-2">
+                    Password *
+                  </Text>
                   <View className="relative">
                     <TextInput
                       placeholder="Enter your password"
                       placeholderTextColor={COLORS.tertiary + "80"}
                       className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
                       value={formData.password}
-                      onChangeText={(value) => handleInputChange('password', value)}
+                      onChangeText={(value) => handleInputChange("password", value)}
                       secureTextEntry={!showPassword}
                       autoCapitalize="none"
                       editable={!isLoading}
                       onSubmitEditing={handleSignIn}
                     />
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       className="absolute right-4 top-3.5"
                       onPress={() => setShowPassword(!showPassword)}
                       disabled={isLoading}
                     >
-                      <Feather name={showPassword ? "eye-off" : "eye"} size={18} color={COLORS.tertiary} />
+                      <Feather
+                        name={showPassword ? "eye-off" : "eye"}
+                        size={18}
+                        color={COLORS.tertiary}
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   className="rounded-xl py-4"
                   style={{
                     backgroundColor: COLORS.accent,
@@ -565,12 +566,16 @@ export default function SigninScreen() {
                     {isLoading ? (
                       <>
                         <ActivityIndicator size="small" color={COLORS.white} />
-                        <Text className="text-white text-[15px] font-bold">Signing In...</Text>
+                        <Text className="text-white text-[15px] font-bold">
+                          Signing In...
+                        </Text>
                       </>
                     ) : (
                       <>
                         <Feather name="lock" size={20} color={COLORS.white} />
-                        <Text className="text-white text-[15px] font-bold">Sign In</Text>
+                        <Text className="text-white text-[15px] font-bold">
+                          Sign In
+                        </Text>
                       </>
                     )}
                   </View>
@@ -578,7 +583,9 @@ export default function SigninScreen() {
 
                 <View className="items-center pt-5 mt-5 border-t border-gray-300">
                   <TouchableOpacity onPress={handleSignUp} disabled={isLoading}>
-                    <Text className="text-accent font-semibold">Create Company Account</Text>
+                    <Text className="text-accent font-semibold">
+                      Create Company Account
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
