@@ -351,7 +351,7 @@ export default function ExpensesModule() {
                     onPress={() => {
                       if (categories.length === 0) {
                         Alert.alert("No Budget Categories", "Please set up budget categories before adding expenses.")
-                        setShowSetBudget(true)
+                        setShowAddExpense(true)
                         return
                       }
                       setShowAddExpense(true)

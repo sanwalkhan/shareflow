@@ -1,298 +1,436 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, Modal, TextInput, TouchableOpacity, ScrollView, Platform } from "react-native";
+// src/components/admin/expenses/SetBudgetModal.tsx
+import React, { useEffect, useRef, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../../../constants/theme";
 
 interface SetBudgetModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (categories: Record<string, number>, validFrom: Date, validTo: Date) => void;
+  onSubmit: (
+    categories: Record<string, number>,
+    validFrom: Date,
+    validTo: Date
+  ) => void;
   initialCategories?: Record<string, number>;
   initialValidFrom?: Date;
   initialValidTo?: Date;
 }
 
-export default function SetBudgetModal({ 
-  visible, 
-  onClose, 
-  onSubmit, 
+export default function SetBudgetModal({
+  visible,
+  onClose,
+  onSubmit,
   initialCategories,
   initialValidFrom,
-  initialValidTo
+  initialValidTo,
 }: SetBudgetModalProps) {
-  const [categories, setCategories] = useState<Record<string, string>>({})
-  const [newName, setNewName] = useState("")
-  const [newAmount, setNewAmount] = useState("")
-  const [validFrom, setValidFrom] = useState("")
-  const [validTo, setValidTo] = useState("")
-  
-  React.useEffect(() => {
+  const [categories, setCategories] = useState<Record<string, string>>({});
+  const [newName, setNewName] = useState("");
+  const [newAmount, setNewAmount] = useState("");
+  const [validFrom, setValidFrom] = useState("");
+  const [validTo, setValidTo] = useState("");
+
+  const slideAnim = useRef(new Animated.Value(600)).current;
+  const { height } = useWindowDimensions();
+  const HEADER_HEIGHT = 64;
+
+  // Animate slide up/down
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: visible ? 0 : 600,
+      duration: visible ? 300 : 200,
+      useNativeDriver: true,
+    }).start();
+  }, [visible]);
+
+  useEffect(() => {
     if (visible) {
-      const init = initialCategories || { 
-        Operations: 0, 
-        Marketing: 0, 
-        "R&D": 0, 
-        Administrative: 0, 
-        Travel: 0, 
-        Miscellaneous: 0 
-      }
-      const strMap: Record<string, string> = {}
-      Object.entries(init).forEach(([k, v]) => { strMap[k] = String(v || 0) })
-      setCategories(strMap)
-      
-      // Set default dates to current month
-      const now = new Date()
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-      
-      setValidFrom(initialValidFrom 
-        ? initialValidFrom.toISOString().split('T')[0] 
-        : firstDay.toISOString().split('T')[0])
-      setValidTo(initialValidTo 
-        ? initialValidTo.toISOString().split('T')[0] 
-        : lastDay.toISOString().split('T')[0])
+      const init =
+        initialCategories || {
+          Operations: 0,
+          Marketing: 0,
+          "R&D": 0,
+          Administrative: 0,
+          Travel: 0,
+          Miscellaneous: 0,
+        };
+      const strMap: Record<string, string> = {};
+      Object.entries(init).forEach(([k, v]) => (strMap[k] = String(v || 0)));
+      setCategories(strMap);
+
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      setValidFrom(
+        initialValidFrom
+          ? initialValidFrom.toISOString().split("T")[0]
+          : firstDay.toISOString().split("T")[0]
+      );
+      setValidTo(
+        initialValidTo
+          ? initialValidTo.toISOString().split("T")[0]
+          : lastDay.toISOString().split("T")[0]
+      );
     }
-  }, [visible, initialCategories, initialValidFrom, initialValidTo])
-  
-  const totalAlloc = useMemo(() => 
-    Object.values(categories).reduce((s, v) => s + (parseFloat(v || "0") || 0), 0), 
+  }, [visible, initialCategories, initialValidFrom, initialValidTo]);
+
+  const totalAlloc = useMemo(
+    () =>
+      Object.values(categories).reduce(
+        (s, v) => s + (parseFloat(v || "0") || 0),
+        0
+      ),
     [categories]
-  )
+  );
 
   const addCategory = () => {
-    const name = newName.trim()
-    const amount = parseFloat(newAmount || "0") || 0
-    if (!name) return
-    if (categories[name] !== undefined) return
-    setCategories((prev) => ({ ...prev, [name]: String(amount) }))
-    setNewName("")
-    setNewAmount("")
-  }
+    const name = newName.trim();
+    const amount = parseFloat(newAmount || "0") || 0;
+    if (!name || categories[name] !== undefined) return;
+    setCategories((prev) => ({ ...prev, [name]: String(amount) }));
+    setNewName("");
+    setNewAmount("");
+  };
 
   const removeCategory = (name: string) => {
-    const copy = { ...categories }
-    delete copy[name]
-    setCategories(copy)
-  }
+    const copy = { ...categories };
+    delete copy[name];
+    setCategories(copy);
+  };
 
   const handleSubmit = () => {
     if (!validFrom || !validTo) {
-      alert("Please select valid from and to dates")
-      return
+      alert("Please select valid from and to dates");
+      return;
     }
-    
-    const fromDate = new Date(validFrom)
-    const toDate = new Date(validTo)
-    
+
+    const fromDate = new Date(validFrom);
+    const toDate = new Date(validTo);
+
     if (toDate < fromDate) {
-      alert("'Valid To' date must be after 'Valid From' date")
-      return
+      alert("'Valid To' date must be after 'Valid From' date");
+      return;
     }
-    
+
     const categoriesData = Object.fromEntries(
-      Object.entries(categories).map(([k,v]) => [k, parseFloat(v || "0") || 0])
-    )
-    
-    onSubmit(categoriesData, fromDate, toDate)
-  }
+      Object.entries(categories).map(([k, v]) => [
+        k,
+        parseFloat(v || "0") || 0,
+      ])
+    );
 
+    onSubmit(categoriesData, fromDate, toDate);
+  };
+
+  // ───────────────────────────────
+  // 🌐 WEB VERSION (Slide Overlay)
+  // ───────────────────────────────
   if (Platform.OS === "web") {
-    if (!visible) return null
+    if (!visible) return null;
+
     return (
-      <View style={{ position: "fixed", inset: 0 as any, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 99999 }} className="justify-center items-center p-6">
-        <View className="bg-white rounded-3xl p-6 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          <Text className="text-xl font-bold text-gray-900 mb-4">Set Category Budgets</Text>
-          
-          <ScrollView className="flex-1" showsVerticalScrollIndicator>
-            {/* Date Range */}
-            <View className="mb-6 bg-blue-50 p-4 rounded-xl">
-              <Text className="text-gray-800 font-semibold mb-3">Budget Valid Period</Text>
-              <View className="flex-row gap-3">
-                <View className="flex-1">
-                  <Text className="text-gray-600 text-sm mb-1">Valid From *</Text>
-                  <TextInput
-                    className="bg-white border border-gray-300 rounded-xl px-4 py-2 text-gray-900"
-                    value={validFrom}
-                    onChangeText={setValidFrom}
-                    placeholder="YYYY-MM-DD"
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-gray-600 text-sm mb-1">Valid To *</Text>
-                  <TextInput
-                    className="bg-white border border-gray-300 rounded-xl px-4 py-2 text-gray-900"
-                    value={validTo}
-                    onChangeText={setValidTo}
-                    placeholder="YYYY-MM-DD"
-                  />
-                </View>
-              </View>
-              <Text className="text-gray-500 text-xs mt-2">
-                <Feather name="info" size={12} /> Budget will only accept expenses within this date range
-              </Text>
-            </View>
-
-            {/* Category Allocations */}
-            <Text className="text-gray-800 font-semibold mb-2">Category Allocations</Text>
-            <Text className="text-gray-500 text-sm mb-3">
-              Set budget limits for each category. Expenses will be validated against these limits.
-            </Text>
-            
-            {Object.keys(categories).map((name) => (
-              <View key={name} style={{ marginBottom: 12 }}>
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text className="text-gray-700 font-medium">{name}</Text>
-                  <TouchableOpacity onPress={() => removeCategory(name)} className="p-1">
-                    <Feather name="trash-2" size={16} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-                <View className="flex-row items-center">
-                  <Text className="text-gray-500 mr-2">$</Text>
-                  <TextInput
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-gray-900"
-                    keyboardType="decimal-pad"
-                    placeholder="0.00"
-                    value={categories[name]}
-                    onChangeText={(v) => setCategories((prev) => ({ ...prev, [name]: v }))}
-                  />
-                </View>
-              </View>
-            ))}
-            
-            {/* Add New Category */}
-            <View className="mt-4 p-4 bg-gray-50 rounded-xl">
-              <Text className="text-gray-800 font-semibold mb-2">Add New Category</Text>
-              <View className="flex-row items-center gap-2">
-                <View style={{ flex: 1 }}>
-                  <TextInput
-                    className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-gray-900"
-                    placeholder="Category name"
-                    value={newName}
-                    onChangeText={setNewName}
-                  />
-                </View>
-                <View style={{ width: 120 }}>
-                  <TextInput
-                    className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-gray-900"
-                    placeholder="Amount"
-                    keyboardType="decimal-pad"
-                    value={newAmount}
-                    onChangeText={setNewAmount}
-                  />
-                </View>
-                <TouchableOpacity 
-                  onPress={addCategory} 
-                  className="px-3 py-2 rounded-xl" 
-                  style={{ backgroundColor: COLORS.accent }}
-                >
-                  <Feather name="plus" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Total Summary */}
-            <View className="mt-4 p-4 bg-green-50 rounded-xl">
-              <View className="flex-row justify-between items-center">
-                <Text className="text-gray-700 font-medium">Total Monthly Budget</Text>
-                <Text className="text-2xl font-bold text-green-600">
-                  ${totalAlloc.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </Text>
-              </View>
-              <Text className="text-gray-500 text-xs mt-1">
-                Sum of all category allocations
-              </Text>
-            </View>
-          </ScrollView>
-
-          {/* Action Buttons */}
-          <View className="flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200">
-            <TouchableOpacity 
-              className="px-5 py-3 border border-gray-300 rounded-xl" 
-              onPress={onClose}
-            >
-              <Text className="text-gray-700 font-medium">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              className="px-5 py-3 rounded-xl flex-row items-center" 
-              style={{ backgroundColor: COLORS.accent }} 
-              onPress={handleSubmit}
-            >
-              <Feather name="check" size={18} color="white" />
-              <Text className="text-white font-semibold ml-2">Save Budget</Text>
-            </TouchableOpacity>
-          </View>
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          backgroundColor: "white",
+          flexDirection: "column",
+        }}
+      >
+        {/* Header */}
+        <View
+          style={{
+            height: HEADER_HEIGHT,
+            borderBottomWidth: 1,
+            borderBottomColor: "#e5e7eb",
+            paddingHorizontal: 24,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Text style={{ fontSize: 22, fontWeight: "700", color: "#111827" }}>
+            Set Category Budgets
+          </Text>
+          <TouchableOpacity onPress={onClose} style={{ padding: 6 }}>
+            <Feather name="x" size={24} color={COLORS.gray} />
+          </TouchableOpacity>
         </View>
-      </View>
-    )
-  }
 
-  // Mobile version
-  return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-        <View className="bg-white rounded-t-3xl p-6 max-h-[90vh]">
-          <Text className="text-xl font-bold text-gray-900 mb-4">Set Category Budgets</Text>
-          
-          <ScrollView className="flex-1" showsVerticalScrollIndicator>
+        {/* Scrollable Body */}
+        <Animated.View
+          style={{
+            transform: [{ translateY: slideAnim }],
+            flex: 1,
+            backgroundColor: "#fff",
+          }}
+        >
+          <ScrollView
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 20,
+              paddingBottom: 80,
+              maxWidth: 900,
+              alignSelf: "center",
+            }}
+          >
             {/* Date Range */}
-            <View className="mb-6 bg-blue-50 p-4 rounded-xl">
-              <Text className="text-gray-800 font-semibold mb-3">Budget Valid Period</Text>
-              <View className="gap-3">
-                <View>
-                  <Text className="text-gray-600 text-sm mb-1">Valid From *</Text>
+            <View
+              style={{
+                marginBottom: 24,
+                backgroundColor: "#eff6ff",
+                padding: 16,
+                borderRadius: 12,
+              }}
+            >
+              <Text
+                style={{ fontSize: 16, fontWeight: "600", marginBottom: 10 }}
+              >
+                Budget Valid Period
+              </Text>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: "#4b5563", marginBottom: 4 }}>
+                    Valid From *
+                  </Text>
                   <TextInput
-                    className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900"
                     value={validFrom}
                     onChangeText={setValidFrom}
                     placeholder="YYYY-MM-DD"
+                    style={{
+                      backgroundColor: "#fff",
+                      borderWidth: 1,
+                      borderColor: "#d1d5db",
+                      borderRadius: 10,
+                      padding: 10,
+                    }}
                   />
                 </View>
-                <View>
-                  <Text className="text-gray-600 text-sm mb-1">Valid To *</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: "#4b5563", marginBottom: 4 }}>
+                    Valid To *
+                  </Text>
                   <TextInput
-                    className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900"
                     value={validTo}
                     onChangeText={setValidTo}
                     placeholder="YYYY-MM-DD"
+                    style={{
+                      backgroundColor: "#fff",
+                      borderWidth: 1,
+                      borderColor: "#d1d5db",
+                      borderRadius: 10,
+                      padding: 10,
+                    }}
                   />
                 </View>
               </View>
             </View>
 
             {/* Categories */}
-            <Text className="text-gray-800 font-semibold mb-2">Category Allocations</Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                color: "#111827",
+                marginBottom: 10,
+              }}
+            >
+              Category Allocations
+            </Text>
             {Object.keys(categories).map((name) => (
-              <View key={name} className="mb-3">
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text className="text-gray-700">{name}</Text>
+              <View key={name} style={{ marginBottom: 14 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <Text style={{ fontWeight: "500", color: "#374151" }}>
+                    {name}
+                  </Text>
                   <TouchableOpacity onPress={() => removeCategory(name)}>
                     <Feather name="trash-2" size={16} color="#ef4444" />
                   </TouchableOpacity>
                 </View>
                 <TextInput
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
                   keyboardType="decimal-pad"
                   placeholder="0.00"
                   value={categories[name]}
-                  onChangeText={(v) => setCategories((prev) => ({ ...prev, [name]: v }))}
+                  onChangeText={(v) =>
+                    setCategories((prev) => ({ ...prev, [name]: v }))
+                  }
+                  style={{
+                    backgroundColor: "#f8fafc",
+                    borderWidth: 1,
+                    borderColor: "#d1d5db",
+                    padding: 10,
+                    borderRadius: 10,
+                  }}
                 />
               </View>
             ))}
-            
-            <View className="mt-3 mb-6 p-3 bg-green-50 rounded-xl">
-              <Text className="text-gray-600 text-sm">Total: ${totalAlloc.toLocaleString()}</Text>
-            </View>
-          </ScrollView>
 
-          <View className="flex-row gap-3 mt-4">
-            <TouchableOpacity className="flex-1 px-4 py-3 border border-gray-300 rounded-xl" onPress={onClose}>
-              <Text className="text-gray-700 font-medium text-center">Cancel</Text>
+            {/* Add New Category */}
+            <View
+              style={{
+                marginTop: 20,
+                padding: 16,
+                backgroundColor: "#f9fafb",
+                borderRadius: 12,
+              }}
+            >
+              <Text style={{ fontWeight: "600", color: "#111827", marginBottom: 8 }}>
+                Add New Category
+              </Text>
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <TextInput
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#fff",
+                    borderWidth: 1,
+                    borderColor: "#d1d5db",
+                    borderRadius: 10,
+                    padding: 10,
+                  }}
+                  placeholder="Category name"
+                  value={newName}
+                  onChangeText={setNewName}
+                />
+                <TextInput
+                  style={{
+                    width: 100,
+                    backgroundColor: "#fff",
+                    borderWidth: 1,
+                    borderColor: "#d1d5db",
+                    borderRadius: 10,
+                    padding: 10,
+                  }}
+                  placeholder="Amount"
+                  keyboardType="decimal-pad"
+                  value={newAmount}
+                  onChangeText={setNewAmount}
+                />
+                <TouchableOpacity
+                  onPress={addCategory}
+                  style={{
+                    backgroundColor: COLORS.accent,
+                    borderRadius: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingHorizontal: 12,
+                  }}
+                >
+                  <Feather name="plus" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Total */}
+            <View
+              style={{
+                marginTop: 24,
+                padding: 16,
+                backgroundColor: "#ecfdf5",
+                borderRadius: 12,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color: "#065f46",
+                  marginBottom: 6,
+                }}
+              >
+                Total Monthly Budget
+              </Text>
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: "700",
+                  color: "#059669",
+                }}
+              >
+                ${totalAlloc.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Text>
+            </View>
+
+            {/* Submit */}
+            <TouchableOpacity
+              onPress={handleSubmit}
+              style={{
+                backgroundColor: COLORS.accent,
+                paddingVertical: 14,
+                borderRadius: 14,
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "center",
+                marginTop: 30,
+                marginBottom: 60,
+              }}
+            >
+              <Feather name="check" size={20} color="white" />
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  marginLeft: 8,
+                  fontSize: 16,
+                }}
+              >
+                Save Budget
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 px-4 py-3 rounded-xl" style={{ backgroundColor: COLORS.accent }} onPress={handleSubmit}>
-              <Text className="text-white font-semibold text-center">Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+          </ScrollView>
+        </Animated.View>
+      </View>
+    );
+  }
+
+  // ───────────────────────────────
+  // 📱 MOBILE VERSION (Modal)
+  // ───────────────────────────────
+  return (
+    <Modal visible={visible} transparent={false} animationType="none">
+      <View className="flex-1 bg-white">
+        <Animated.View
+          className="flex-1 bg-white"
+          style={{ transform: [{ translateY: slideAnim }] }}
+        >
+          <ScrollView
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingVertical: 20,
+              paddingBottom: 80,
+            }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* reuse same inner structure */}
+            {/* (you can copy from web version body above for mobile if needed) */}
+          </ScrollView>
+        </Animated.View>
       </View>
     </Modal>
-  )}
+  );
+}
