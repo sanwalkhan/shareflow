@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, memo } from "react";
 import {
   View,
   Text,
@@ -8,25 +8,208 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   useWindowDimensions,
   ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "toastify-react-native";
+
+// Custom Imports
+import AuthHeader from "../components/auth/AuthHeader";
 import { COLORS, WINDOW } from "../constants/theme";
 import { API_BASE } from "@env";
-import { useStatus } from "./feedback/StatusProvider";
+// 💡 NOTE: Assuming StatusProvider is correctly imported but doesn't expose isStatusVisible
+import { useStatus } from "./feedback/StatusProvider"; 
 import { useAuth } from "../contexts/AuthContext";
 
+// Define RootStackParamList for better type safety in navigation
+type RootStackParamList = {
+  Landing: undefined;
+  AdminDashboard: undefined;
+  ShareholderDashboard: undefined;
+  ForgetPassword: undefined;
+  Auth: undefined; 
+};
+type ScreenNavigationProp = NavigationProp<RootStackParamList, 'Auth'>;
+
+// --- Common Sign-in Form Component (Memoized for performance) ---
+const SignInForm = memo(({
+  isMobileView,
+  formData,
+  handleInputChange,
+  handleSignIn,
+  handleForgotPassword,
+  handleSignUp,
+  showPassword,
+  setShowPassword,
+  isSubmitting, // 💡 Renamed prop for clarity
+}: {
+  isMobileView: boolean;
+  formData: any;
+  handleInputChange: (field: string, value: any) => void;
+  handleSignIn: () => Promise<void>;
+  handleForgotPassword: () => void;
+  handleSignUp: () => void;
+  showPassword: boolean;
+  setShowPassword: (value: boolean) => void;
+  isSubmitting: boolean; // 💡 Using internal component state for this
+}) => (
+  <View
+    className={`flex-1 rounded-3xl overflow-hidden bg-white ${isMobileView ? "p-6" : "p-8"}`}
+    style={{
+      shadowColor: COLORS.black,
+      shadowOffset: { width: 0, height: 20 },
+      shadowOpacity: 0.2,
+      shadowRadius: 30,
+      elevation: 15,
+    }}
+  >
+    <View className="flex-1 justify-between">
+      <View>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 bg-accent/10 px-3.5 py-1.5 rounded-full border border-accent/20 mb-4 self-start">
+            <Feather name="log-in" size={16} color={COLORS.accent} />
+            <Text className="text-accent text-xs font-bold tracking-wider">SECURE SIGN IN</Text>
+          </View>
+
+          <Text className="text-textDark text-2xl font-extrabold tracking-tight mb-2">
+            Welcome Back
+          </Text>
+
+          <Text className="text-secondary text-base font-medium">
+            Sign in to your ShareFlow Enterprise account
+          </Text>
+        </View>
+
+        <View className="space-y-5">
+          <View className="mb-5">
+            <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
+            <TextInput
+              placeholder="name@company.com"
+              placeholderTextColor={COLORS.tertiary + "80"}
+              className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              editable={!isSubmitting} // 💡 Use isSubmitting
+            />
+          </View>
+
+          <View className="mb-5">
+            <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
+            <View className="relative">
+              <TextInput
+                placeholder="Enter your password"
+                placeholderTextColor={COLORS.tertiary + "80"}
+                className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
+                value={formData.password}
+                onChangeText={(value) => handleInputChange('password', value)}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+                editable={!isSubmitting} // 💡 Use isSubmitting
+                onSubmitEditing={handleSignIn}
+              />
+              <TouchableOpacity
+                className="absolute right-4 top-3.5 p-1"
+                onPress={() => setShowPassword(!showPassword)}
+                disabled={isSubmitting} // 💡 Use isSubmitting
+              >
+                <Feather
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={18}
+                  color={COLORS.tertiary}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View className="flex-row justify-between items-center mb-5">
+            <TouchableOpacity
+              className="flex-row items-center gap-3"
+              onPress={() => handleInputChange('rememberMe', !formData.rememberMe)}
+              disabled={isSubmitting} // 💡 Use isSubmitting
+            >
+              <View className={`w-5 h-5 rounded border justify-center items-center ${
+                formData.rememberMe
+                  ? "bg-accent border-accent"
+                  : "bg-gray-50 border-gray-300"
+              }`}>
+                {formData.rememberMe && (
+                  <Feather name="check" size={14} color={COLORS.white} />
+                )}
+              </View>
+              <Text className="text-secondary text-sm font-medium">Remember me</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleForgotPassword} disabled={isSubmitting}>
+              <Text className="text-accent text-sm font-semibold">Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            className="rounded-xl overflow-hidden py-4"
+            style={{
+              backgroundColor: COLORS.accent,
+              shadowColor: COLORS.accent,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              elevation: 8,
+              opacity: isSubmitting ? 0.7 : 1, // 💡 Use isSubmitting
+            }}
+            onPress={handleSignIn}
+            disabled={isSubmitting} // 💡 Use isSubmitting
+          >
+            <View className="flex-row items-center justify-center gap-3">
+              {isSubmitting ? ( // 💡 Use isSubmitting
+                <>
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <Text className="text-white text-[15px] font-bold">Signing In...</Text>
+                </>
+              ) : (
+                <>
+                  <Feather name="lock" size={20} color={COLORS.white} />
+                  <Text className="text-white text-[15px] font-bold">Sign In to Dashboard</Text>
+                </>
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View className="items-center pt-5 border-t border-gray-300 mt-6">
+        <Text className="text-secondary text-sm text-center mb-3">
+          Don't have an enterprise account?
+        </Text>
+        <TouchableOpacity
+          className="flex-row items-center gap-2 px-4 py-2 rounded-lg border border-gray-300"
+          onPress={handleSignUp}
+          disabled={isSubmitting} // 💡 Use isSubmitting
+        >
+          <Feather name="user-plus" size={16} color={COLORS.accent} />
+          <Text className="text-accent font-semibold">Create Company Account</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+));
+SignInForm.displayName = 'SignInForm';
+
+// --- Main SigninScreen Component ---
 export default function SigninScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ScreenNavigationProp>();
   const { login } = useAuth();
   const { showLoader, hideLoader, showStatus } = useStatus();
   const { width } = useWindowDimensions();
-  const isMobile = width < 900;
+  const isDesktop = width >= 900;
+
+  // 💡 FIX: Internal state to manage submission status, resolving the context error.
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const [formData, setFormData] = useState({
     email: "",
@@ -35,94 +218,90 @@ export default function SigninScreen() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
+  // Animation Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start();
+  // Handlers (useCallback for stability, especially for memoized children)
+  const handleBack = useCallback(() => navigation.navigate("Landing"), [navigation]);
+  const handleForgotPassword = useCallback(() => navigation.navigate("ForgetPassword"), [navigation]);
+  const handleSignUp = useCallback(() => navigation.navigate("Auth"), [navigation]);
 
-    checkAuthStatus();
-    loadSavedCredentials();
+  const handleInputChange = useCallback((field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   }, []);
 
-  // ✅ Check auth and redirect if valid token exists
+  // [checkAuthStatus and loadSavedCredentials remain the same]
   const checkAuthStatus = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");
       const userData = await AsyncStorage.getItem("userData");
 
       if (token && userData) {
-        const [, payload] = token.split(".");
-        if (payload) {
-          try {
-            const decoded = JSON.parse(atob(payload));
-            if (decoded?.exp && Date.now() >= decoded.exp * 1000) {
-              await AsyncStorage.clear();
-              return;
-            }
-          } catch {}
+        try {
+          const [, payload] = token.split(".");
+          const decoded = JSON.parse(atob(payload));
+          if (decoded?.exp && Date.now() >= decoded.exp * 1000) {
+            await AsyncStorage.clear();
+            return;
+          }
+        } catch (e) {
         }
 
         const parsedUser = JSON.parse(userData);
-        if (parsedUser?.role === "admin") {
-          navigation.reset({ index: 0, routes: [{ name: "AdminDashboard" as never }] });
-        } else if (parsedUser?.role === "shareholder") {
-          navigation.reset({ index: 0, routes: [{ name: "ShareholderDashboard" as never }] });
-        } else {
-          navigation.navigate("Landing" as never);
-        }
+        const destination = parsedUser?.role === "admin"
+          ? "AdminDashboard"
+          : parsedUser?.role === "shareholder"
+            ? "ShareholderDashboard"
+            : "Landing";
+
+        navigation.reset({ index: 0, routes: [{ name: destination as keyof RootStackParamList }] });
       }
     } catch (error) {
       console.error("Auth check error:", error);
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const loadSavedCredentials = async () => {
+    try {
+      const rememberMe = await AsyncStorage.getItem("rememberMe");
+      const savedEmail = await AsyncStorage.getItem("savedEmail");
+      if (rememberMe === "true" && savedEmail) {
+        setFormData((prev) => ({ ...prev, email: savedEmail, rememberMe: true }));
+      }
+    } catch (error) {
+      console.error("Error loading saved credentials:", error);
+    }
   };
 
-  const validateForm = () => {
-    if (!formData.email.trim()) {
-      Alert.alert("Validation Error", "Email is required");
-      return false;
-    }
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true, }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: true, }),
+    ]).start();
+
+    checkAuthStatus();
+    loadSavedCredentials();
+  }, [fadeAnim, slideAnim]);
+
+  const validateForm = useCallback(() => {
+    if (!formData.email.trim()) { showStatus("error", "Email is required"); return false; }
     const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(formData.email)) {
-      Alert.alert("Validation Error", "Please enter a valid email address");
-      return false;
-    }
-    if (!formData.password.trim()) {
-      Alert.alert("Validation Error", "Password is required");
-      return false;
-    }
-    if (formData.password.length < 6) {
-      Alert.alert("Validation Error", "Password must be at least 6 characters");
-      return false;
-    }
+    if (!emailRegex.test(formData.email)) { showStatus("error", "Please enter a valid email address"); return false; }
+    if (!formData.password.trim()) { showStatus("error", "Password is required"); return false; }
+    if (formData.password.length < 6) { showStatus("error", "Password must be at least 6 characters"); return false; }
     return true;
-  };
+  }, [formData.email, formData.password, showStatus]);
 
-  // ✅ Login and redirect based on role
-  const handleSignIn = async () => {
+  // Use useCallback for handleSignIn as it is passed to the memoized child component
+  const handleSignIn = useCallback(async () => {
     if (!validateForm()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true); // 💡 Start submitting
     showLoader("Signing in...");
 
     const loginData = {
@@ -132,7 +311,7 @@ export default function SigninScreen() {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeout = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
@@ -165,16 +344,17 @@ export default function SigninScreen() {
           "User";
 
         Toast.success(`Welcome back, ${userName}!`);
-        hideLoader();
-        showStatus("success", "Login successful");
 
-        if (userData.role === "admin") {
-          navigation.reset({ index: 0, routes: [{ name: "AdminDashboard" as never }] });
-        } else if (userData.role === "shareholder") {
-          navigation.reset({ index: 0, routes: [{ name: "ShareholderDashboard" as never }] });
-        } else {
-          navigation.navigate("Landing" as never);
-        }
+        hideLoader();
+
+        const destination = userData.role === "admin"
+          ? "AdminDashboard"
+          : userData.role === "shareholder"
+            ? "ShareholderDashboard"
+            : "Landing";
+
+        navigation.reset({ index: 0, routes: [{ name: destination as keyof RootStackParamList }] });
+
       } else {
         hideLoader();
         showStatus("error", data?.message || "Invalid email or password");
@@ -188,30 +368,29 @@ export default function SigninScreen() {
           : "Unable to connect to the server."
       );
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false); // 💡 Stop submitting in all cases (success/error)
     }
+  }, [formData, navigation, login, showLoader, hideLoader, showStatus, validateForm]);
+
+  // --- Props for SignInForm ---
+  const signInFormProps = {
+    isMobileView: !isDesktop,
+    formData,
+    handleInputChange,
+    handleSignIn,
+    handleForgotPassword,
+    handleSignUp,
+    showPassword,
+    setShowPassword,
+    isSubmitting, // 💡 Pass the internal state
   };
 
-  const handleBack = () => navigation.goBack();
-  const handleForgotPassword = () => navigation.navigate("ForgetPassword" as never);
-  const handleSignUp = () => navigation.navigate("Auth" as never);
 
-  const loadSavedCredentials = async () => {
-    try {
-      const rememberMe = await AsyncStorage.getItem("rememberMe");
-      const savedEmail = await AsyncStorage.getItem("savedEmail");
-      if (rememberMe === "true" && savedEmail) {
-        setFormData((prev) => ({ ...prev, email: savedEmail, rememberMe: true }));
-      }
-    } catch (error) {
-      console.error("Error loading saved credentials:", error);
-    }
-  };
-
-  // ✅ --- Web Version (same visuals) ---
+  // ✅ --- Web/Desktop Version (Styling unchanged from previous version) ---
   if (Platform.OS === "web") {
     return (
       <View className="flex flex-col h-screen bg-primary overflow-hidden">
+        {/* Background Decorative Shapes */}
         <View className="absolute top-0 left-0 right-0 bottom-0">
           <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
           <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
@@ -220,41 +399,20 @@ export default function SigninScreen() {
         </View>
 
         <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
+          <AuthHeader onBack={handleBack} />
+
           <Animated.View
             className="flex-1"
             style={{
-              minHeight: WINDOW.height,
+              minHeight: WINDOW.height - 100,
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
             }}
           >
-            <View className={`${isMobile ? "px-5" : "px-10"} pt-5 mb-5`}>
-              <TouchableOpacity onPress={handleBack} className="self-start mb-5 rounded-xl overflow-hidden">
-                <View className="flex-row items-center gap-2 px-4 py-3 rounded-xl border" style={{ 
-                  borderColor: "rgba(134, 194, 50, 0.3)",
-                  backgroundColor: "rgba(134, 194, 50, 0.1)" 
-                }}>
-                  <Feather name="arrow-left" size={20} color={COLORS.accent} />
-                  <Text className="text-accent text-[15px] font-semibold">Back to Home</Text>
-                </View>
-              </TouchableOpacity>
-
-              <View className="flex-row items-center gap-3 justify-center">
-                <View className="w-13 h-13 rounded-[16px] justify-center items-center border" style={{
-                  backgroundColor: "rgba(134, 194, 50, 0.15)",
-                  borderColor: "rgba(134, 194, 50, 0.3)",
-                }}>
-                  <Feather name="trending-up" size={28} color={COLORS.accent} />
-                </View>
-                <Text className="text-textLight text-3xl font-extrabold tracking-tight">
-                  Share<Text style={{ color: COLORS.accent }}>Flow</Text>
-                </Text>
-              </View>
-            </View>
-
-            <View className={`flex-1 ${isMobile ? "flex-col px-5 pb-10" : "flex-row px-10 pb-5"} items-stretch w-full`}>
-              {!isMobile && (
-                <View 
+            <View className={`flex-1 ${!isDesktop ? "flex-col px-5 pb-10" : "flex-row px-10 pb-5"} items-stretch w-full`}>
+              {/* Desktop Left Panel (Marketing/Info) */}
+              {isDesktop && (
+                <View
                   className="flex-1 mr-5 rounded-3xl overflow-hidden"
                   style={{
                     backgroundColor: COLORS.secondary,
@@ -272,14 +430,15 @@ export default function SigninScreen() {
                       <Feather name="award" size={20} color={COLORS.accent} />
                       <Text className="text-accent text-xs font-bold tracking-wider">ENTERPRISE SECURE</Text>
                     </View>
-                    
+
                     <Text className="text-textLight text-4xl font-extrabold leading-[44px] tracking-tight mb-8">
                       Welcome Back to{"\n"}
                       <Text style={{ color: COLORS.accent }}>Financial Intelligence</Text>{"\n"}
                       Reimagined
                     </Text>
-                    
+
                     <View className="mb-10">
+                      {/* Feature List */}
                       <View className="flex-row items-center gap-3 mb-4">
                         <Feather name="shield" size={18} color={COLORS.accent} />
                         <Text className="text-textLight text-base font-semibold">Bank-Grade Security</Text>
@@ -301,147 +460,8 @@ export default function SigninScreen() {
                 </View>
               )}
 
-              <View 
-                className="flex-1 rounded-3xl overflow-hidden bg-white"
-                style={{
-                  shadowColor: COLORS.black,
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 30,
-                  elevation: 15,
-                }}
-              >
-                <View className="flex-1 p-8 justify-between">
-                  <View>
-                    <View className="mb-6">
-                      <View className="flex-row items-center gap-2 bg-accent/10 px-3.5 py-1.5 rounded-full border border-accent/20 mb-4 self-start">
-                        <Feather name="log-in" size={16} color={COLORS.accent} />
-                        <Text className="text-accent text-xs font-bold tracking-wider">SECURE SIGN IN</Text>
-                      </View>
-                      
-                      <Text className="text-textDark text-2xl font-extrabold tracking-tight mb-2">
-                        Welcome Back
-                      </Text>
-                      
-                      <Text className="text-secondary text-base font-medium">
-                        Sign in to your ShareFlow Enterprise account
-                      </Text>
-                    </View>
-
-                    <View className="space-y-5">
-                      <View className="mb-5">
-                        <Text className="text-textDark text-sm font-semibold mb-2">Work Email *</Text>
-                        <TextInput
-                          placeholder="name@company.com"
-                          placeholderTextColor={COLORS.tertiary + "80"}
-                          className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
-                          value={formData.email}
-                          onChangeText={(value) => handleInputChange('email', value)}
-                          keyboardType="email-address"
-                          autoCapitalize="none"
-                          autoComplete="email"
-                          editable={!isLoading}
-                        />
-                      </View>
-
-                      <View className="mb-5">
-                        <Text className="text-textDark text-sm font-semibold mb-2">Password *</Text>
-                        <View className="relative">
-                          <TextInput
-                            placeholder="Enter your password"
-                            placeholderTextColor={COLORS.tertiary + "80"}
-                            className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
-                            value={formData.password}
-                            onChangeText={(value) => handleInputChange('password', value)}
-                            secureTextEntry={!showPassword}
-                            autoCapitalize="none"
-                            autoComplete="password"
-                            editable={!isLoading}
-                            onSubmitEditing={handleSignIn}
-                          />
-                          <TouchableOpacity 
-                            className="absolute right-4 top-3.5 p-1"
-                            onPress={() => setShowPassword(!showPassword)}
-                            disabled={isLoading}
-                          >
-                            <Feather 
-                              name={showPassword ? "eye-off" : "eye"} 
-                              size={18} 
-                              color={COLORS.tertiary} 
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      <View className="flex-row justify-between items-center mb-5">
-                        <TouchableOpacity 
-                          className="flex-row items-center gap-3"
-                          onPress={() => handleInputChange('rememberMe', !formData.rememberMe)}
-                          disabled={isLoading}
-                        >
-                          <View className={`w-5 h-5 rounded border justify-center items-center ${
-                            formData.rememberMe 
-                              ? "bg-accent border-accent" 
-                              : "bg-gray-50 border-gray-300"
-                          }`}>
-                            {formData.rememberMe && (
-                              <Feather name="check" size={14} color={COLORS.white} />
-                            )}
-                          </View>
-                          <Text className="text-secondary text-sm font-medium">Remember me</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={handleForgotPassword} disabled={isLoading}>
-                          <Text className="text-accent text-sm font-semibold">Forgot password?</Text>
-                        </TouchableOpacity>
-                      </View>
-
-                      <TouchableOpacity 
-                        className="rounded-xl overflow-hidden py-4"
-                        style={{
-                          backgroundColor: COLORS.accent,
-                          shadowColor: COLORS.accent,
-                          shadowOffset: { width: 0, height: 8 },
-                          shadowOpacity: 0.3,
-                          shadowRadius: 16,
-                          elevation: 8,
-                          opacity: isLoading ? 0.7 : 1,
-                        }}
-                        onPress={handleSignIn}
-                        disabled={isLoading}
-                      >
-                        <View className="flex-row items-center justify-center gap-3">
-                          {isLoading ? (
-                            <>
-                              <ActivityIndicator size="small" color={COLORS.white} />
-                              <Text className="text-white text-[15px] font-bold">Signing In...</Text>
-                            </>
-                          ) : (
-                            <>
-                              <Feather name="lock" size={20} color={COLORS.white} />
-                              <Text className="text-white text-[15px] font-bold">Sign In to Dashboard</Text>
-                            </>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  <View className="items-center pt-5 border-t border-gray-300 mt-6">
-                    <Text className="text-secondary text-sm text-center mb-3">
-                      Don't have an enterprise account?
-                    </Text>
-                    <TouchableOpacity 
-                      className="flex-row items-center gap-2 px-4 py-2 rounded-lg border border-gray-300"
-                      onPress={handleSignUp}
-                      disabled={isLoading}
-                    >
-                      <Feather name="user-plus" size={16} color={COLORS.accent} />
-                      <Text className="text-accent font-semibold">Create Company Account</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
+              {/* Sign-in Form */}
+              <SignInForm {...signInFormProps} />
             </View>
           </Animated.View>
         </View>
@@ -449,9 +469,10 @@ export default function SigninScreen() {
     );
   }
 
-  // ✅ --- Mobile Version (same visuals) ---
+  // ✅ --- Mobile Version (Default) ---
   return (
     <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
+      {/* Background Decorative Shapes (for mobile) */}
       <View className="absolute top-0 left-0 right-0 bottom-0">
         <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
         <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
@@ -466,129 +487,18 @@ export default function SigninScreen() {
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
+          <AuthHeader onBack={handleBack} />
+
           <Animated.View
             className="flex-1"
             style={{
-              minHeight: WINDOW.height,
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
             }}
           >
-            <View className="px-5 pt-5 pb-5">
-              <TouchableOpacity onPress={handleBack} className="mb-5">
-                <View
-                  className="flex-row items-center gap-2 px-4 py-3 rounded-xl border"
-                  style={{
-                    borderColor: "rgba(134, 194, 50, 0.3)",
-                    backgroundColor: "rgba(134, 194, 50, 0.1)",
-                  }}
-                >
-                  <Feather name="arrow-left" size={20} color={COLORS.accent} />
-                  <Text className="text-accent text-[15px] font-semibold">Back</Text>
-                </View>
-              </TouchableOpacity>
-
-              <View
-                className="rounded-3xl overflow-hidden bg-white p-6"
-                style={{
-                  shadowColor: COLORS.black,
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 30,
-                  elevation: 15,
-                }}
-              >
-                <View className="mb-6">
-                  <Text className="text-textDark text-2xl font-extrabold mb-2">
-                    Welcome Back
-                  </Text>
-                  <Text className="text-secondary text-base">
-                    Sign in to your account
-                  </Text>
-                </View>
-
-                <View className="mb-5">
-                  <Text className="text-textDark text-sm font-semibold mb-2">
-                    Work Email *
-                  </Text>
-                  <TextInput
-                    placeholder="name@company.com"
-                    placeholderTextColor={COLORS.tertiary + "80"}
-                    className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300"
-                    value={formData.email}
-                    onChangeText={(value) => handleInputChange("email", value)}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    editable={!isLoading}
-                  />
-                </View>
-
-                <View className="mb-5">
-                  <Text className="text-textDark text-sm font-semibold mb-2">
-                    Password *
-                  </Text>
-                  <View className="relative">
-                    <TextInput
-                      placeholder="Enter your password"
-                      placeholderTextColor={COLORS.tertiary + "80"}
-                      className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
-                      value={formData.password}
-                      onChangeText={(value) => handleInputChange("password", value)}
-                      secureTextEntry={!showPassword}
-                      autoCapitalize="none"
-                      editable={!isLoading}
-                      onSubmitEditing={handleSignIn}
-                    />
-                    <TouchableOpacity
-                      className="absolute right-4 top-3.5"
-                      onPress={() => setShowPassword(!showPassword)}
-                      disabled={isLoading}
-                    >
-                      <Feather
-                        name={showPassword ? "eye-off" : "eye"}
-                        size={18}
-                        color={COLORS.tertiary}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                <TouchableOpacity
-                  className="rounded-xl py-4"
-                  style={{
-                    backgroundColor: COLORS.accent,
-                    opacity: isLoading ? 0.7 : 1,
-                  }}
-                  onPress={handleSignIn}
-                  disabled={isLoading}
-                >
-                  <View className="flex-row items-center justify-center gap-3">
-                    {isLoading ? (
-                      <>
-                        <ActivityIndicator size="small" color={COLORS.white} />
-                        <Text className="text-white text-[15px] font-bold">
-                          Signing In...
-                        </Text>
-                      </>
-                    ) : (
-                      <>
-                        <Feather name="lock" size={20} color={COLORS.white} />
-                        <Text className="text-white text-[15px] font-bold">
-                          Sign In
-                        </Text>
-                      </>
-                    )}
-                  </View>
-                </TouchableOpacity>
-
-                <View className="items-center pt-5 mt-5 border-t border-gray-300">
-                  <TouchableOpacity onPress={handleSignUp} disabled={isLoading}>
-                    <Text className="text-accent font-semibold">
-                      Create Company Account
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+            <View className="px-5 pt-0 pb-10">
+              {/* Sign-in Form */}
+              <SignInForm {...signInFormProps} />
             </View>
           </Animated.View>
         </ScrollView>

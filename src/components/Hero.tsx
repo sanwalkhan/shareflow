@@ -1,3 +1,4 @@
+// src/components/Hero.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -5,10 +6,23 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Image,
+  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
-import Button from "../UI/Button"; // ✅ use reusable Button
+import Button from "../UI/Button";
+
+// Assuming you have the hero background image in assets/images/hero-bg.png
+const HERO_BG_IMAGE = Platform.OS === 'web' 
+  ? require("../assets/images/hero-bg.png") 
+  : require("../assets/images/hero-bg.png");
+
+// 💡 ESTIMATED HEADER HEIGHT: 
+// Based on the previous Header.tsx code (pt-6 pb-4, plus content height),
+// the header is likely around 80px to 100px tall. We'll adjust the padding 
+// to account for this and pull the content slightly higher.
+const HEADER_HEIGHT_ESTIMATE = 90; 
 
 export default function Hero() {
   const [isMobileView, setIsMobileView] = useState(
@@ -18,49 +32,82 @@ export default function Hero() {
     Dimensions.get("window").height
   );
 
-  // ✅ Listen to window resizing for web
+  // ✅ Listen to window resizing for web/native
   useEffect(() => {
-    const handleResize = () => {
-      const { width, height } = Dimensions.get("window");
-      setIsMobileView(width < 768);
-      setWindowHeight(height);
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = ({ window }: { window: { width: number, height: number } }) => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        setIsMobileView(window.width < 768);
+        setWindowHeight(window.height);
+      }, 100);
     };
+
     const subscription = Dimensions.addEventListener("change", handleResize);
     return () => {
+      clearTimeout(resizeTimeout);
       if (typeof subscription?.remove === "function") subscription.remove();
     };
   }, []);
 
   return (
     <View
-      className="relative bg-transparent w-full"
+      className="relative w-full"
       style={{
-        minHeight: isMobileView ? windowHeight * 0.9 : windowHeight * 0.85,
+        minHeight: isMobileView ? windowHeight * 0.9 : 680,
+        backgroundColor: COLORS.neutral,
+        // ⚠️ IMPORTANT: If your Hero component is placed immediately after a fixed/absolute header,
+        // you might need to use a negative top margin here if the header is *not* covering it.
+        // However, based on the previous code, the ScrollView padding is the correct place to adjust.
       }}
     >
-      {/* Background */}
-      <View className="absolute inset-0" style={{ backgroundColor: COLORS.neutral }} />
+      {/* 🚀 Background Image Container */}
+      <View className="absolute inset-0">
+        <Image
+          source={HERO_BG_IMAGE}
+          style={{
+            width: '100%',
+            height: '100%',
+            resizeMode: 'cover',
+            opacity: 0.15,
+          }}
+        />
+      </View>
+      
+      {/* Background shapes */}
       <View
-        className="absolute top-[-100px] right-[-100px] w-[300px] h-[300px] rounded-[150px]"
-        style={{ backgroundColor: COLORS.accent, opacity: 0.2 }}
+        className="absolute top-[-100px] right-[-100px] w-[300px] h-[300px] rounded-[150px] opacity-20"
+        style={{ backgroundColor: COLORS.accent }}
       />
+      <View
+        className="absolute bottom-[-100px] left-[-100px] w-[200px] h-[200px] rounded-[100px] opacity-10"
+        style={{ backgroundColor: COLORS.primary }}
+      />
+      {/* --- END Background --- */}
 
-      {/* ✅ Scrollable container for mobile */}
+
+      {/* ✅ Main Scrollable Content */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
           flexGrow: 1,
-          paddingTop: isMobileView ? 90 : 110,
+          justifyContent: isMobileView ? 'flex-start' : 'center', 
+          
+          // ⬇️ THE KEY CHANGE: Reduced top padding
+          // The old values were (90 or 110) which pushed the content too far down.
+          // We are using a lower value to pull the content up, closer to the header's base.
+          paddingTop: isMobileView ? 60 : 70, // Reduced from 90/110 to 60/70
+          
           paddingHorizontal: isMobileView ? 20 : 40,
           paddingBottom: isMobileView ? 40 : 60,
         }}
         showsVerticalScrollIndicator={false}
       >
         <View
-          className={`flex-1 ${isMobileView ? "flex-col" : "flex-row"} items-start max-w-[1500px] mx-auto w-full`}
+          className={`flex-1 ${isMobileView ? "flex-col" : "flex-row"} items-center md:h-full max-w-7xl mx-auto w-full`}
         >
-          {/* Left Section */}
-          <View className="flex-1 max-w-[720px] z-10">
+          {/* Left Section: Text and CTAs */}
+          <View className={`z-10 ${isMobileView ? "w-full" : "md:w-1/2 lg:w-3/5"}`}>
             {/* Tagline */}
             <View className="mb-4">
               <View
@@ -85,8 +132,8 @@ export default function Hero() {
                 className="font-extrabold tracking-[-0.8px]"
                 style={{
                   color: "#FFFFFF",
-                  fontSize: isMobileView ? 32 : 48,
-                  lineHeight: isMobileView ? 38 : 56,
+                  fontSize: isMobileView ? 38 : 64,
+                  lineHeight: isMobileView ? 44 : 72,
                   textShadowColor: "rgba(255,255,255,0.1)",
                   textShadowOffset: { width: 0, height: 2 },
                   textShadowRadius: 4,
@@ -112,12 +159,12 @@ export default function Hero() {
 
             {/* Subtitle */}
             <Text
-              className="max-w-[520px] tracking-[-0.2px]"
+              className="max-w-[640px] tracking-[-0.2px]"
               style={{
                 color: "rgba(255,255,255,0.85)",
-                marginVertical: 12,
-                fontSize: isMobileView ? 14 : 18,
-                lineHeight: 24,
+                marginVertical: 20,
+                fontSize: isMobileView ? 16 : 20,
+                lineHeight: isMobileView ? 26 : 32,
               }}
             >
               Streamline expense tracking, automate payroll, and unlock
@@ -126,32 +173,33 @@ export default function Hero() {
 
             {/* CTA Buttons */}
             <View
-              className={`${isMobileView ? "flex-col" : "flex-row"} items-center mt-4 gap-3`}
+              className={`${isMobileView ? "flex-col w-full" : "flex-row"} items-start mt-6 gap-4`}
             >
-              {/* ✅ Reusable Accent Button */}
               <Button
                 onPress={() => {}}
-                className="flex-row items-center justify-center"
+                className={`flex-row items-center justify-center ${isMobileView ? "w-full" : ""}`}
                 style={{
                   backgroundColor: COLORS.accent,
-                  paddingHorizontal: 24,
-                  paddingVertical: 14,
-                  borderRadius: 14,
+                  paddingHorizontal: 30,
+                  paddingVertical: 16,
+                  borderRadius: 16,
                   shadowColor: COLORS.accent,
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 16,
-                  elevation: 8,
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 20,
+                  elevation: 10,
                 }}
               >
-                <Text className="text-white font-extrabold text-base tracking-[-0.2px] mr-2">
+                <Text className="text-white font-extrabold text-lg tracking-[-0.2px] mr-2">
                   Start Free Trial
                 </Text>
-                <Feather name="arrow-right" size={18} color="#fff" />
+                <Feather name="arrow-right" size={20} color="#fff" />
               </Button>
 
-              {/* Watch Demo */}
-              <TouchableOpacity className="flex-row items-center px-5 py-3.5 rounded-[14px] relative overflow-hidden mt-2 md:mt-0">
+              <TouchableOpacity 
+                className={`flex-row items-center px-6 py-4 rounded-[16px] relative overflow-hidden ${isMobileView ? "w-full" : ""}`}
+                style={{ marginLeft: isMobileView ? 0 : 12, marginTop: isMobileView ? 12 : 0 }}
+              >
                 <View
                   className="absolute inset-0 border"
                   style={{
@@ -161,7 +209,7 @@ export default function Hero() {
                 />
                 <Feather name="play-circle" size={20} color={COLORS.accent} />
                 <Text
-                  className="ml-2 font-semibold text-[15px]"
+                  className="ml-3 font-semibold text-[16px]"
                   style={{ color: "rgba(255,255,255,0.9)" }}
                 >
                   Watch Demo
@@ -171,7 +219,7 @@ export default function Hero() {
 
             {/* Stats Section */}
             <View
-              className={`${isMobileView ? "flex-col" : "flex-row"} mt-8 gap-4`}
+              className={`flex-wrap mt-10 gap-x-8 gap-y-4 ${isMobileView ? "flex-row justify-between" : "flex-row"}`}
             >
               {[
                 { number: "500+", label: "Companies" },
@@ -180,7 +228,7 @@ export default function Hero() {
               ].map((stat, index) => (
                 <View
                   key={index}
-                  className="p-4 rounded-[12px] relative overflow-hidden min-w-[120px] mr-6"
+                  className={`p-4 rounded-[12px] relative overflow-hidden min-w-[120px] ${isMobileView ? "w-[48%]" : ""}`}
                 >
                   <View
                     className="absolute inset-0 border rounded-[12px]"
@@ -193,7 +241,7 @@ export default function Hero() {
                     className="font-extrabold"
                     style={{
                       color: "#FFFFFF",
-                      fontSize: isMobileView ? 24 : 28,
+                      fontSize: isMobileView ? 28 : 32,
                       textShadowColor: "rgba(255,255,255,0.1)",
                       textShadowOffset: { width: 0, height: 1 },
                       textShadowRadius: 2,
@@ -202,7 +250,7 @@ export default function Hero() {
                     {stat.number}
                   </Text>
                   <Text
-                    className="text-[13px] mt-1 font-medium tracking-[0.3px]"
+                    className="text-[14px] mt-1 font-medium tracking-[0.3px]"
                     style={{ color: "rgba(255,255,255,0.6)" }}
                   >
                     {stat.label}
@@ -212,27 +260,28 @@ export default function Hero() {
             </View>
           </View>
 
-          {/* Right Graphic (hidden on mobile) */}
+          {/* Right Graphic (Image/Mockup) */}
           {!isMobileView && (
-            <View className="ml-6 w-[360px] z-10">
-              <View className="relative">
+            <View className="flex-1 ml-10 w-full md:w-1/2 lg:w-2/5 flex-row justify-end z-10">
+              <View className="relative max-w-[450px]">
+                {/* Mockup shadow/border effect */}
                 <View
                   className="absolute top-5 left-5 right-[-20px] bottom-[-20px] rounded-[24px]"
-                  style={{ backgroundColor: COLORS.accent, opacity: 0.05 }}
+                  style={{ backgroundColor: COLORS.accent, opacity: 0.08 }}
                 />
                 <View
-                  className="rounded-[20px] p-4 border overflow-hidden"
+                  className="rounded-[24px] p-6 border overflow-hidden"
                   style={{
                     backgroundColor: "rgba(20,20,22,0.95)",
                     borderColor: "rgba(255,255,255,0.08)",
                     shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 16,
-                    elevation: 12,
+                    shadowOffset: { width: 0, height: 12 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 24,
+                    elevation: 18,
                   }}
                 >
-                  <View className="mb-4">
+                  <View className="mb-6">
                     <View className="flex-row">
                       <View
                         className="w-3 h-3 rounded-full border mr-2"
@@ -259,28 +308,28 @@ export default function Hero() {
                   </View>
 
                   {/* Simple animated chart mock */}
-                  <View className="h-[200px] relative mb-4">
+                  <View className="h-[250px] relative mb-6">
                     <View
                       className="absolute inset-0 bg-transparent border-t border-b"
                       style={{ borderColor: "rgba(255,255,255,0.06)" }}
                     />
-                    <View className="flex-row items-end justify-between h-full py-5">
+                    <View className="flex-row items-end justify-between h-full py-6">
                       {[60, 120, 80, 150, 100].map((height, index) => (
-                        <View key={index} className="flex-1 items-center mx-1">
+                        <View key={index} className="flex-1 items-center mx-2">
                           <View
-                            className="w-4 rounded-[8px] mb-2"
+                            className="w-5 rounded-[10px] mb-3"
                             style={{
                               height,
                               backgroundColor: COLORS.accent,
                               shadowColor: COLORS.accent,
                               shadowOffset: { width: 0, height: 4 },
-                              shadowOpacity: 0.3,
-                              shadowRadius: 8,
-                              elevation: 6,
+                              shadowOpacity: 0.4,
+                              shadowRadius: 10,
+                              elevation: 8,
                             }}
                           />
                           <View
-                            className="w-5 h-1 rounded-[2px]"
+                            className="w-6 h-1 rounded-[3px]"
                             style={{
                               backgroundColor: "rgba(255,255,255,0.2)",
                             }}
@@ -290,16 +339,17 @@ export default function Hero() {
                     </View>
                   </View>
 
+                  {/* Mock content below chart */}
                   <View
-                    className="pt-3 border-t gap-2"
+                    className="pt-4 border-t gap-3"
                     style={{ borderTopColor: "rgba(255,255,255,0.06)" }}
                   >
                     <View
-                      className="h-1.5 rounded-[3px] w-3/5"
+                      className="h-2 rounded-[4px] w-4/5"
                       style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                     />
                     <View
-                      className="h-1.5 rounded-[3px] w-3/5"
+                      className="h-2 rounded-[4px] w-3/5"
                       style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                     />
                   </View>

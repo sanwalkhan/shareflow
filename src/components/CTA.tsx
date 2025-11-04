@@ -11,12 +11,17 @@ export default function CTA() {
 
   // ✅ Listen to window resizing for web responsiveness
   useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
-      const width = Dimensions.get("window").width;
-      setIsMobileView(width < 768);
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const width = Dimensions.get("window").width;
+        setIsMobileView(width < 768);
+      }, 100);
     };
     const subscription = Dimensions.addEventListener("change", handleResize);
     return () => {
+      clearTimeout(resizeTimeout);
       if (typeof subscription?.remove === "function") subscription.remove();
     };
   }, []);
@@ -27,20 +32,22 @@ export default function CTA() {
   };
 
   return (
-    <View className="relative bg-transparent overflow-hidden w-full">
+    <View className="relative overflow-hidden w-full">
       {/* Background Layers */}
+      
+      {/* 🚀 KEY CHANGE: Simplified Base Background to primary color */}
       <View
         className="absolute inset-0"
-        style={{ backgroundColor: "#0A0A0A" }}
+        style={{ backgroundColor: COLORS.primary }}
       />
-      <View
-        className="absolute top-0 left-0 right-0 h-3/5"
-        style={{ backgroundColor: COLORS.primary, opacity: 0.95 }}
-      />
+      
+      {/* Background Texture/Pattern Layer (using neutral for dark texture) */}
       <View
         className="absolute inset-0 bg-transparent"
-        style={{ opacity: 0.03 }}
+        style={{ backgroundColor: COLORS.neutral, opacity: 0.08 }} // Subtle dark pattern
       />
+      
+      {/* Background shape for visual interest */}
       <View
         className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] rounded-[150px]"
         style={{ backgroundColor: COLORS.accent, opacity: 0.05 }}
@@ -51,18 +58,19 @@ export default function CTA() {
         <View
           className="items-center relative z-10"
           style={{
-            paddingVertical: isMobileView ? 60 : 80,
+            paddingVertical: isMobileView ? 60 : 100, // Increased vertical padding
             paddingHorizontal: isMobileView ? 20 : 40,
           }}
         >
           {/* Title and Description */}
-          <View className="items-center mb-10 max-w-[800px]">
+          <View className="items-center mb-12 max-w-[800px]">
             <View className="items-center mb-4 relative">
               <Text
                 className="text-white text-center font-extrabold mb-3 tracking-[-0.8px]"
                 style={{
-                  fontSize: isMobileView ? 28 : 42,
-                  lineHeight: isMobileView ? 36 : 52,
+                  color: COLORS.white, // ✅ Used COLORS.white
+                  fontSize: isMobileView ? 34 : 48, // Increased size for impact
+                  lineHeight: isMobileView ? 40 : 58,
                   textShadowColor: "rgba(255,255,255,0.1)",
                   textShadowOffset: { width: 0, height: 2 },
                   textShadowRadius: 4,
@@ -77,9 +85,10 @@ export default function CTA() {
             </View>
 
             <Text
-              className="text-white/85 text-center mb-4 tracking-[-0.2px] leading-6 max-w-[600px]"
+              className="text-white/85 text-center mb-4 tracking-[-0.2px] leading-7 max-w-[600px]"
               style={{
-                fontSize: isMobileView ? 16 : 18,
+                color: "rgba(255,255,255,0.85)", // ✅ White with opacity
+                fontSize: isMobileView ? 17 : 19, // Slightly increased size
               }}
             >
               Join thousands of companies already using ShareFlow to save time,
@@ -90,7 +99,7 @@ export default function CTA() {
           {/* ✅ Reusable Button */}
           <Button
             onPress={handleGetStarted}
-            className="flex-row items-center justify-center mb-10 min-w-[240px]"
+            className="flex-row items-center justify-center mb-12 min-w-[260px]"
             style={{
               backgroundColor: COLORS.accent,
               shadowColor: COLORS.accent,
@@ -98,23 +107,25 @@ export default function CTA() {
               shadowOpacity: 0.4,
               shadowRadius: 20,
               elevation: 16,
+              paddingVertical: 18, // Slightly more padding
+              borderRadius: 16,
             }}
           >
-            <Text className="text-white font-extrabold text-[17px] tracking-[-0.2px] mr-3">
+            <Text className="text-white font-extrabold text-[18px] tracking-[-0.2px] mr-3">
               Get Started Today
             </Text>
             <View
               className="w-7 h-7 rounded-[14px] justify-center items-center"
               style={{
-                backgroundColor: "rgba(255,255,255,0.9)",
-                shadowColor: "#000",
+                backgroundColor: COLORS.white, // ✅ Used COLORS.white
+                shadowColor: COLORS.black, // ✅ Used COLORS.black
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
+                shadowOpacity: 0.15,
                 shadowRadius: 4,
-                elevation: 2,
+                elevation: 3,
               }}
             >
-              <Feather name="arrow-up-right" size={20} color="#000" />
+              <Feather name="arrow-up-right" size={20} color={COLORS.black} /> {/* ✅ Used COLORS.black */}
             </View>
           </Button>
 
@@ -124,24 +135,27 @@ export default function CTA() {
           >
             {[
               { icon: "shield", label: "Enterprise Security" },
-              { icon: "clock", label: "30-Day Trial" },
-              { icon: "users", label: "24/7 Support" },
+              { icon: "clock", label: "30-Day Free Trial" }, // Clarified trial duration
+              { icon: "users", label: "24/7 Priority Support" }, // Clarified support
             ].map((item, index) => (
               <View
                 key={index}
                 className="flex-row items-center p-3 rounded-[12px] border"
                 style={{
-                  backgroundColor: "rgba(255,255,255,0.05)",
-                  borderColor: "rgba(255,255,255,0.08)",
+                  backgroundColor: "rgba(255,255,255,0.05)", // ✅ White with opacity
+                  borderColor: "rgba(255,255,255,0.08)", // ✅ White with opacity
                 }}
               >
                 <View
-                  className="w-7 h-7 rounded-[14px] justify-center items-center mr-2"
-                  style={{ backgroundColor: "rgba(134,194,50,0.15)" }}
+                  className="w-8 h-8 rounded-[16px] justify-center items-center mr-2"
+                  style={{ backgroundColor: "rgba(134,194,50,0.15)" }} // ✅ Accent with opacity
                 >
-                  <Feather name={item.icon as any} size={16} color={COLORS.accent} />
+                  <Feather name={item.icon as any} size={18} color={COLORS.accent} />
                 </View>
-                <Text className="text-white/80 text-sm font-semibold tracking-[0.2px]">
+                <Text 
+                  className="text-white/80 text-base font-semibold tracking-[0.2px]" 
+                  style={{ color: "rgba(255,255,255,0.8)" }} // ✅ White with opacity
+                >
                   {item.label}
                 </Text>
               </View>

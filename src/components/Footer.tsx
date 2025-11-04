@@ -9,15 +9,41 @@ export default function Footer() {
   );
   const currentYear = new Date().getFullYear();
 
+  // Utility function to generate Rgba string from Hex and Opacity
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   // ✅ Responsive resize listener (for web + native)
   useEffect(() => {
+    // FIX: Initialize to null to satisfy TypeScript
+    let resizeTimeout: NodeJS.Timeout | null = null; 
+    
     const handleResize = () => {
-      const width = Dimensions.get("window").width;
-      setIsMobileView(width < 768);
+      // Clear previous timeout if it exists
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+      
+      resizeTimeout = setTimeout(() => {
+        const width = Dimensions.get("window").width;
+        setIsMobileView(width < 768);
+      }, 100);
     };
+    
     const subscription = Dimensions.addEventListener("change", handleResize);
+    
     return () => {
-      if (typeof subscription?.remove === "function") subscription.remove();
+      // Safely clear timeout and remove listener on unmount
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+      if (typeof subscription?.remove === "function") {
+          subscription.remove();
+      }
     };
   }, []);
 
@@ -26,13 +52,18 @@ export default function Footer() {
   const supportLinks = ["Help Center", "Contact", "Status", "Security", "Compliance"];
 
   return (
-    <View className="relative bg-transparent overflow-hidden w-full">
+    <View className="relative overflow-hidden w-full">
       {/* Background */}
-      <View className="absolute inset-0" style={{ backgroundColor: "#0A0A0A" }} />
-      <View className="absolute inset-0 bg-transparent" style={{ opacity: 0.02 }} />
+      <View className="absolute inset-0" style={{ backgroundColor: COLORS.neutral }} />
+      <View 
+        className="absolute inset-0 bg-transparent" 
+        style={{ opacity: 0.02 }} 
+      />
+      
+      {/* Top Divider Line */}
       <View
         className="absolute top-0 left-0 right-0 h-[1px]"
-        style={{ backgroundColor: COLORS.accent, opacity: 0.1 }}
+        style={{ backgroundColor: hexToRgba(COLORS.accent, 0.1) }}
       />
 
       {/* Content Wrapper */}
@@ -48,7 +79,7 @@ export default function Footer() {
           <View
             className={`${
               isMobileView ? "flex-col" : "flex-row"
-            } justify-between items-start mb-8`}
+            } justify-between items-start mb-12`}
           >
             {/* Brand Section */}
             <View
@@ -62,17 +93,23 @@ export default function Footer() {
                 <View
                   className="w-11 h-11 rounded-[12px] justify-center items-center border"
                   style={{
-                    backgroundColor: "rgba(134,194,50,0.1)",
-                    borderColor: "rgba(134,194,50,0.2)",
+                    backgroundColor: hexToRgba(COLORS.accent, 0.1),
+                    borderColor: hexToRgba(COLORS.accent, 0.2),
                   }}
                 >
                   <Feather name="trending-up" size={24} color={COLORS.accent} />
                 </View>
-                <Text className="text-white text-2xl font-extrabold tracking-[-0.5px] ml-3">
+                <Text 
+                  className="text-2xl font-extrabold tracking-[-0.5px] ml-3"
+                  style={{ color: COLORS.white }}
+                >
                   Share<Text style={{ color: COLORS.accent }}>Flow</Text>
                 </Text>
               </View>
-              <Text className="text-white/70 text-[15px] leading-[22px] tracking-[-0.2px] mb-6">
+              <Text 
+                className="text-[15px] leading-[22px] tracking-[-0.2px] mb-6"
+                style={{ color: hexToRgba(COLORS.white, 0.7) }}
+              >
                 Enterprise financial intelligence platform powering the world's most
                 innovative companies.
               </Text>
@@ -84,11 +121,11 @@ export default function Footer() {
                     key={icon}
                     className="w-10 h-10 rounded-[12px] justify-center items-center border"
                     style={{
-                      backgroundColor: "rgba(255,255,255,0.05)",
-                      borderColor: "rgba(255,255,255,0.08)",
+                      backgroundColor: hexToRgba(COLORS.white, 0.05),
+                      borderColor: hexToRgba(COLORS.white, 0.08),
                     }}
                   >
-                    <Feather name={icon as any} size={18} color="rgba(255,255,255,0.8)" />
+                    <Feather name={icon as any} size={18} color={hexToRgba(COLORS.white, 0.8)} />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -109,12 +146,18 @@ export default function Footer() {
                   key={section.title}
                   style={{ minWidth: isMobileView ? "100%" : 160 }}
                 >
-                  <Text className="text-white font-bold text-base mb-4 tracking-[-0.3px]">
+                  <Text 
+                    className="font-bold text-base mb-4 tracking-[-0.3px]"
+                    style={{ color: COLORS.white }}
+                  >
                     {section.title}
                   </Text>
                   {section.links.map((link) => (
                     <TouchableOpacity key={link} className="mb-3 relative">
-                      <Text className="text-white/70 text-sm tracking-[-0.2px]">
+                      <Text 
+                        className="text-sm tracking-[-0.2px]"
+                        style={{ color: hexToRgba(COLORS.white, 0.7) }}
+                      >
                         {link}
                       </Text>
                     </TouchableOpacity>
@@ -125,7 +168,10 @@ export default function Footer() {
           </View>
 
           {/* Divider */}
-          <View className="h-[1px] bg-white/8 mb-6" />
+          <View 
+            className="h-[1px] mb-6" 
+            style={{ backgroundColor: hexToRgba(COLORS.white, 0.08) }}
+          />
 
           {/* Bottom Section */}
           <View
@@ -142,7 +188,10 @@ export default function Footer() {
               {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
                 (item) => (
                   <TouchableOpacity key={item} className="py-1">
-                    <Text className="text-white/60 text-[13px] tracking-[0.2px]">
+                    <Text 
+                      className="text-[13px] tracking-[0.2px]"
+                      style={{ color: hexToRgba(COLORS.white, 0.6) }}
+                    >
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -152,8 +201,11 @@ export default function Footer() {
 
             {/* Copyright */}
             <Text
-              className="text-white/50 text-[13px] tracking-[0.2px]"
-              style={{ textAlign: isMobileView ? "left" : "center" }}
+              className="text-[13px] tracking-[0.2px]"
+              style={{ 
+                color: hexToRgba(COLORS.white, 0.5),
+                textAlign: isMobileView ? "left" : "center" 
+              }}
             >
               © {currentYear} ShareFlow Technologies. All rights reserved.
             </Text>
