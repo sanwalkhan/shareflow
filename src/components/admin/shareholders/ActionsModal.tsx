@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ActionsModalProps } from "./types";
 import { COLORS } from "../../../constants/theme";
@@ -11,6 +11,9 @@ export default function ActionsModal({
   onClose,
   stats,
 }: ActionsModalProps) {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   if (!visible) return null;
 
   const getActionDetails = (): {
@@ -57,9 +60,9 @@ export default function ActionsModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <View className="flex-1 justify-center items-center bg-black/50 p-4">
         <View
-          className="rounded-3xl p-6 w-full max-w-md"
+          className={`rounded-xl p-6 w-full ${isMobile ? 'max-w-sm' : 'max-w-md'}`}
           style={{ backgroundColor: COLORS.white }}
         >
           {/* Header with Icon */}
@@ -68,10 +71,10 @@ export default function ActionsModal({
               className="p-4 rounded-full mb-4"
               style={{ backgroundColor: details.color }}
             >
-              <Ionicons name={details.icon} size={32} color={COLORS.white} />
+              <Ionicons name={details.icon} size={isMobile ? 28 : 32} color={COLORS.white} />
             </View>
             <Text
-              className="text-xl font-bold text-center"
+              className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-center`}
               style={{ color: COLORS.textDark }}
             >
               {details.title}
@@ -87,7 +90,7 @@ export default function ActionsModal({
           {/* Summary */}
           <View
             className="p-4 rounded-xl mb-6"
-            style={{ backgroundColor: COLORS.textLight }}
+            style={{ backgroundColor: COLORS.neutral + "10" }}
           >
             <Text
               className="font-medium mb-2"
@@ -107,26 +110,26 @@ export default function ActionsModal({
           </View>
 
           {/* Buttons */}
-          <View className="flex-row justify-end space-x-3">
+          <View className={`flex-row justify-end space-x-3 ${isMobile ? 'flex-col space-y-2' : ''}`}>
             <TouchableOpacity
-              className="px-6 py-3 rounded-xl border"
+              className={`border rounded-xl ${isMobile ? 'py-3' : 'px-6 py-3'}`}
               style={{
                 borderColor: COLORS.tertiary,
                 backgroundColor: COLORS.white,
               }}
               onPress={onClose}
             >
-              <Text style={{ color: COLORS.secondary, fontWeight: "500" }}>
+              <Text style={{ color: COLORS.secondary, fontWeight: "500", textAlign: 'center' }}>
                 Cancel
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="px-6 py-3 rounded-xl"
+              className={`rounded-xl ${isMobile ? 'py-3' : 'px-6 py-3'}`}
               style={{ backgroundColor: COLORS.accent }}
               onPress={onExecute}
             >
-              <Text style={{ color: COLORS.white, fontWeight: "600" }}>
+              <Text style={{ color: COLORS.white, fontWeight: "600", textAlign: 'center' }}>
                 Execute Action
               </Text>
             </TouchableOpacity>
