@@ -347,7 +347,7 @@ export default function Header() {
                 
                 {/* --- NEW "SIGN IN" BUTTON (Secondary Style) --- */}
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Auth" as never)}
+                  onPress={() => navigation.navigate("Signin" as never)}
                   className="w-full py-3 rounded-xl border items-center justify-center"
                   style={{
                     backgroundColor: 'transparent',
