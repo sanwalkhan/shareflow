@@ -10,6 +10,8 @@ import {
   Animated,
   useWindowDimensions,
   Alert,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, WINDOW } from "../../constants/theme";
@@ -38,6 +40,34 @@ import {
 import LoaderOverlay from "../feedback/LoaderOverlay";
 import LottieStatus from "../feedback/LottieStatus";
 import ProgressBar from "../feedback/ProgressBar";
+
+// QuickActionButton wrapper with disabled state
+const QuickActionButtonWithDisabled = ({ 
+  icon, 
+  label, 
+  color, 
+  onPress, 
+  disabled = false 
+}: { 
+  icon: string; 
+  label: string; 
+  color: string; 
+  onPress: () => void; 
+  disabled?: boolean;
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    disabled={disabled}
+    style={{ opacity: disabled ? 0.5 : 1 }}
+  >
+    <QuickActionButton
+      icon={icon}
+      label={label}
+      color={color}
+      onPress={onPress}
+    />
+  </TouchableOpacity>
+);
 
 export default function ShareholdersModule() {
   const { width } = useWindowDimensions();
@@ -84,6 +114,7 @@ export default function ShareholdersModule() {
   const [selectedShareholder, setSelectedShareholder] = useState<Shareholder | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentAction, setCurrentAction] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ──────────────────────────────
   // 📊 Derived Calculations
@@ -127,7 +158,8 @@ export default function ShareholdersModule() {
         }));
         setShareholders(mapped);
       } catch (e: any) {
-        showStatus("error", e?.message || "Failed to load shareholders");
+        console.error("Load shareholders error:", e);
+        showStatus("error", e?.response?.data?.message || e?.message || "Failed to load shareholders");
       } finally {
         setGlobalLoading(false);
       }
@@ -136,7 +168,11 @@ export default function ShareholdersModule() {
   }, []);
 
   const handleAdd = async (data: ShareholderFormData) => {
+    if (isSubmitting) return;
+    
     try {
+      setIsSubmitting(true);
+      
       // Validate email format
       const emailRegex = /^\S+@\S+\.\S+$/;
       if (!emailRegex.test(data.email)) {
@@ -157,21 +193,24 @@ export default function ShareholdersModule() {
       
     } catch (e: any) {
       console.error("Send OTP error:", e);
-      showStatus("error", e?.message || "Failed to send OTP");
+      showStatus("error", e?.response?.data?.message || e?.message || "Failed to send OTP");
     } finally {
+      setIsSubmitting(false);
       setGlobalLoading(false);
     }
   };
 
   const handleEdit = (shareholder: Shareholder) => {
+    if (globalLoading || isSubmitting) return;
     setSelectedShareholder(shareholder);
     setIsEditModalVisible(true);
   };
 
   const handleUpdate = async (updatedData: ShareholderFormData) => {
-    if (!selectedShareholder) return;
+    if (!selectedShareholder || isSubmitting) return;
     
     try {
+      setIsSubmitting(true);
       setGlobalLoading(true);
       
       const payload = {
@@ -213,8 +252,9 @@ export default function ShareholdersModule() {
       
     } catch (e: any) {
       console.error("Update error:", e);
-      showStatus("error", e?.message || "Failed to update shareholder");
+      showStatus("error", e?.response?.data?.message || e?.message || "Failed to update shareholder");
     } finally {
+      setIsSubmitting(false);
       setGlobalLoading(false);
     }
   };
@@ -222,14 +262,16 @@ export default function ShareholdersModule() {
   const [confirmDelete, setConfirmDelete] = useState<{ visible: boolean; target?: Shareholder }>({ visible: false });
   
   const handleDelete = (shareholder: Shareholder) => {
+    if (globalLoading || isSubmitting) return;
     setConfirmDelete({ visible: true, target: shareholder });
   };
   
   const confirmDeleteNow = async () => {
     const target = confirmDelete.target;
-    if (!target) return;
+    if (!target || isSubmitting) return;
     
     try {
+      setIsSubmitting(true);
       setGlobalLoading(true);
       setConfirmDelete({ visible: false });
       
@@ -240,13 +282,15 @@ export default function ShareholdersModule() {
       
     } catch (e: any) {
       console.error("Delete error:", e);
-      showStatus("error", e?.message || "Failed to delete shareholder");
+      showStatus("error", e?.response?.data?.message || e?.message || "Failed to delete shareholder");
     } finally {
+      setIsSubmitting(false);
       setGlobalLoading(false);
     }
   };
 
   const handleQuickAction = (action: string) => {
+    if (globalLoading || isSubmitting) return;
     setCurrentAction(action);
     setIsActionsModalVisible(true);
   };
@@ -260,12 +304,13 @@ export default function ShareholdersModule() {
   };
 
   const handleVerifyOtp = async (code: string) => {
-    if (!pendingShareholder) {
+    if (!pendingShareholder || isSubmitting) {
       showStatus("error", "No pending shareholder data");
       return;
     }
 
     try {
+      setIsSubmitting(true);
       setGlobalLoading(true);
       
       // Verify OTP
@@ -316,24 +361,77 @@ export default function ShareholdersModule() {
       
     } catch (e: any) {
       console.error("OTP verification error:", e);
-      showStatus("error", e?.message || "Failed to verify OTP or create shareholder");
+      showStatus("error", e?.response?.data?.message || e?.message || "Failed to verify OTP or create shareholder");
     } finally {
+      setIsSubmitting(false);
       setGlobalLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
-    if (!pendingShareholder) {
+    if (!pendingShareholder || isSubmitting) {
       return { success: false, message: "No pending shareholder" };
     }
     
     try {
+      setIsSubmitting(true);
       await sendShareholderOtp(pendingShareholder.email);
       return { success: true, message: "OTP resent successfully" };
     } catch (e: any) {
-      return { success: false, message: e?.message || "Failed to resend OTP" };
+      return { success: false, message: e?.response?.data?.message || e?.message || "Failed to resend OTP" };
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  // Custom ConfirmModal with loading state
+  const ConfirmModalWithLoading = ({ 
+    visible, 
+    title, 
+    message, 
+    confirmText, 
+    onCancel, 
+    onConfirm, 
+    loading = false 
+  }: { 
+    visible: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    onCancel: () => void;
+    onConfirm: () => void;
+    loading?: boolean;
+  }) => (
+    <Modal visible={visible} transparent animationType="fade">
+      <View className="flex-1 justify-center items-center bg-black/50 p-6">
+        <View className="bg-white rounded-2xl p-6 w-full max-w-md">
+          <Text className="text-xl font-bold text-gray-900 mb-2">{title}</Text>
+          <Text className="text-gray-600 mb-6">{message}</Text>
+          
+          <View className="flex-row justify-end space-x-3">
+            <TouchableOpacity
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+              onPress={onCancel}
+              disabled={loading}
+            >
+              <Text className="text-gray-700 font-medium">Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="px-4 py-2 bg-red-500 rounded-lg flex-row items-center min-w-20 justify-center"
+              onPress={onConfirm}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text className="text-white font-medium">{confirmText}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 
   // ──────────────────────────────
   // 🌐 RENDER
@@ -359,35 +457,45 @@ export default function ShareholdersModule() {
           </View>
           <TouchableOpacity
             className="flex-row items-center px-4 py-3 rounded-2xl shadow-lg"
-            style={{ backgroundColor: COLORS.accent }}
+            style={{ backgroundColor: globalLoading || isSubmitting ? COLORS.tertiary : COLORS.accent }}
             onPress={() => setIsAddModalVisible(true)}
+            disabled={globalLoading || isSubmitting}
           >
-            <Ionicons name="add" size={20} color={COLORS.white} />
-            <Text style={{ color: COLORS.white }} className="font-semibold ml-2">
-              Add New
-            </Text>
+            {globalLoading || isSubmitting ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <>
+                <Ionicons name="add" size={20} color={COLORS.white} />
+                <Text style={{ color: COLORS.white }} className="font-semibold ml-2">
+                  Add New
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
         {/* Quick Actions + Stats */}
         <View className="flex-row mb-4">
-          <QuickActionButton
+          <QuickActionButtonWithDisabled
             icon="shield-checkmark"
             label="Equity Validation"
             color="bg-green-500"
             onPress={() => handleQuickAction("Equity Validation")}
+            disabled={globalLoading || isSubmitting}
           />
-          <QuickActionButton
+          <QuickActionButtonWithDisabled
             icon="cash"
             label="Dividend Actions"
             color="bg-purple-500"
             onPress={() => handleQuickAction("Dividend Actions")}
+            disabled={globalLoading || isSubmitting}
           />
-          <QuickActionButton
+          <QuickActionButtonWithDisabled
             icon="analytics"
             label="Reports"
             color="bg-blue-500"
             onPress={() => handleQuickAction("Reports")}
+            disabled={globalLoading || isSubmitting}
           />
         </View>
 
@@ -437,7 +545,7 @@ export default function ShareholdersModule() {
   if (Platform.OS === "web") {
     return (
       <View className="flex flex-col h-screen bg-gray-50 overflow-hidden">
-        <ProgressBar running={globalLoading} />
+        <ProgressBar running={globalLoading || isSubmitting} />
         <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
           {renderContent()}
         </View>
@@ -460,19 +568,21 @@ export default function ShareholdersModule() {
           message={status.message} 
           onDone={() => setStatus((s) => ({ ...s, visible: false }))} 
         />
-        <ConfirmModal
+        <ConfirmModalWithLoading
           visible={confirmDelete.visible}
           title="Delete Shareholder"
           message={`Are you sure you want to delete ${confirmDelete.target?.name}? This will recalculate equity for all shareholders.`}
           confirmText="Delete"
           onCancel={() => setConfirmDelete({ visible: false })}
           onConfirm={confirmDeleteNow}
+          loading={isSubmitting}
         />
         <ShareholderFormModal
           visible={isAddModalVisible}
           mode="add"
           onSave={handleAdd}
           onClose={() => setIsAddModalVisible(false)}
+          loading={isSubmitting}
         />
         <ShareholderFormModal
           visible={isEditModalVisible}
@@ -483,6 +593,7 @@ export default function ShareholdersModule() {
             setIsEditModalVisible(false);
             setSelectedShareholder(null);
           }}
+          loading={isSubmitting}
         />
         <ActionsModal
           visible={isActionsModalVisible}
@@ -510,7 +621,7 @@ export default function ShareholdersModule() {
   // ──────────────────────────────
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <ProgressBar running={globalLoading} />
+      <ProgressBar running={globalLoading || isSubmitting} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -543,19 +654,21 @@ export default function ShareholdersModule() {
         onResend={handleResendOtp}
         onVerify={handleVerifyOtp}
       />
-      <ConfirmModal
+      <ConfirmModalWithLoading
         visible={confirmDelete.visible}
         title="Delete Shareholder"
         message={`Are you sure you want to delete ${confirmDelete.target?.name}? This will recalculate equity for all shareholders.`}
         confirmText="Delete"
         onCancel={() => setConfirmDelete({ visible: false })}
         onConfirm={confirmDeleteNow}
+        loading={isSubmitting}
       />
       <ShareholderFormModal
         visible={isAddModalVisible}
         mode="add"
         onSave={handleAdd}
         onClose={() => setIsAddModalVisible(false)}
+        loading={isSubmitting}
       />
       <ShareholderFormModal
         visible={isEditModalVisible}
@@ -566,6 +679,7 @@ export default function ShareholdersModule() {
           setIsEditModalVisible(false);
           setSelectedShareholder(null);
         }}
+        loading={isSubmitting}
       />
       <ActionsModal
         visible={isActionsModalVisible}
