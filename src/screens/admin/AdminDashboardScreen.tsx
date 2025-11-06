@@ -1,3 +1,4 @@
+// src/screens/admin/AdminDashboardScreen.tsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -53,7 +54,13 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
   const [userData, setUserData] = useState<any>(null);
   const [companyData, setCompanyData] = useState<any>(null);
 
-  const sidebarWidth = useRef(new Animated.Value(isMobile ? 0 : 280)).current;
+  // Use the same animation approach as shareholder
+  const getSidebarWidth = () => {
+    if (isMobile) return width * 0.85;
+    return 280;
+  };
+
+  const sidebarWidth = useRef(new Animated.Value(isMobile ? 0 : getSidebarWidth())).current;
   const sidebarOpacity = useRef(new Animated.Value(isMobile ? 0 : 1)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -85,13 +92,21 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
 
   const toggleSidebar = () => {
     const next = !isSidebarCollapsed;
-    const toValue = next ? 0 : 280;
+    const toValue = next ? 0 : getSidebarWidth();
     const opacityValue = next ? 0 : 1;
+
     Animated.parallel([
       Animated.spring(sidebarWidth, { toValue, friction: 8, tension: 40, useNativeDriver: false }),
       Animated.timing(sidebarOpacity, { toValue: opacityValue, duration: 300, useNativeDriver: false }),
     ]).start();
     setIsSidebarCollapsed(next);
+  };
+
+  // Close sidebar when clicking outside on mobile
+  const handleOverlayPress = () => {
+    if (isMobile && !isSidebarCollapsed) {
+      toggleSidebar();
+    }
   };
 
   const handleLogoutClick = () => {
@@ -101,19 +116,14 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
 
   const handleLogoutConfirm = async () => {
     try {
-      // Clear AsyncStorage
       await AsyncStorage.clear();
       console.log('✅ AsyncStorage cleared');
 
-      // For web: clear localStorage
       if (Platform.OS === 'web') {
         localStorage.clear();
         console.log('✅ localStorage cleared');
-        
-        // Reload the page
         window.location.reload();
       } else {
-        // For mobile: navigate to landing
         navigation.reset({
           index: 0,
           routes: [{ name: 'Landing' }],
@@ -239,19 +249,30 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
 
   return (
     <View className="flex-1 flex-row bg-gray-50">
-      {/* Sidebar (hidden/collapsible for mobile) */}
-      {!isMobile && (
-        <Animated.View
-          className="bg-gray-800 shadow-xl z-40"
-          style={{ width: sidebarWidth, opacity: sidebarOpacity }}
-        >
-          <Sidebar
-            isCollapsed={isSidebarCollapsed}
-            onToggle={toggleSidebar}
-            activeModule={activeModule}
-            setActiveModule={setActiveModule}
-          />
-        </Animated.View>
+      {/* Sidebar - Always render but position absolutely on mobile */}
+      <Animated.View
+        className="bg-gray-800 shadow-xl z-40"
+        style={[
+          { width: sidebarWidth, opacity: sidebarOpacity },
+          isMobile && { position: "absolute", left: 0, top: 0, bottom: 0, zIndex: 50 }
+        ]}
+      >
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={toggleSidebar}
+          activeModule={activeModule}
+          setActiveModule={setActiveModule}
+          isMobile={isMobile} // Add this prop
+        />
+      </Animated.View>
+
+      {/* Overlay for mobile when sidebar is open */}
+      {isMobile && !isSidebarCollapsed && (
+        <TouchableOpacity
+          className="absolute inset-0 bg-black/50 z-40"
+          onPress={handleOverlayPress}
+          activeOpacity={1}
+        />
       )}
 
       {/* Main content */}

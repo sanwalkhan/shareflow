@@ -15,6 +15,7 @@ interface Props {
   onToggle: () => void;
   activeModule: string;
   setActiveModule: Dispatch<SetStateAction<string>>;
+  isMobile?: boolean;
 }
 
 export default function ShareholderSidebar({
