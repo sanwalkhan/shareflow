@@ -26,6 +26,9 @@ import ProgressBar from "../feedback/ProgressBar";
 
 export default function ExpensesModule() {
   const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
@@ -327,27 +330,27 @@ export default function ExpensesModule() {
               transform: [{ translateY: slideAnim }],
             }}
           >
-            {/* Header */}
-            <View className="bg-white px-6 pt-6 pb-4 border-b border-gray-200 shadow-sm">
-              <View className="flex-row justify-between items-start mb-6">
-                <View className="flex-1 mr-4">
-                  <Text className="text-3xl font-bold text-gray-900">Expense Management</Text>
-                  <Text className="text-gray-600 mt-1">
+            {/* Header - RESPONSIVE FIX */}
+            <View className={`bg-white border-b border-gray-200 shadow-sm ${isMobile ? 'px-4 py-4' : 'px-6 pt-6 pb-4'}`}>
+              <View className={`${isMobile ? 'flex-col space-y-4' : 'flex-row justify-between items-start'} mb-6`}>
+                <View className={`${isMobile ? 'w-full' : 'flex-1 mr-4'}`}>
+                  <Text className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-gray-900`}>Expense Management</Text>
+                  <Text className={`text-gray-600 mt-1 ${isMobile ? 'text-sm' : ''}`}>
                     Track, allocate, and manage company expenses
                   </Text>
                   {budget.validFrom && budget.validTo && (
                     <View className="flex-row items-center mt-2">
                       <Feather name="calendar" size={14} color={COLORS.gray} />
-                      <Text className="text-gray-500 text-sm ml-1">
+                      <Text className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'} ml-1`}>
                         Budget Period: {budget.validFrom.toLocaleDateString()} - {budget.validTo.toLocaleDateString()}
                       </Text>
                     </View>
                   )}
                 </View>
 
-                <View className="flex-row space-x-3">
+                <View className={`flex-row ${isMobile ? 'w-full justify-between space-x-2' : 'space-x-3'}`}>
                   <TouchableOpacity
-                    className="bg-accent px-6 py-3 rounded-xl flex-row items-center shadow-lg"
+                    className={`${isMobile ? 'flex-1 px-4 py-3' : 'px-6 py-3'} bg-accent rounded-xl flex-row items-center shadow-lg justify-center`}
                     onPress={() => {
                       if (categories.length === 0) {
                         Alert.alert("No Budget Categories", "Please set up budget categories before adding expenses.")
@@ -357,40 +360,40 @@ export default function ExpensesModule() {
                       setShowAddExpense(true)
                     }}
                   >
-                    <Feather name="plus" size={20} color="white" />
+                    <Feather name="plus" size={isMobile ? 18 : 20} color="white" />
                     <Text className="text-white font-semibold ml-2">Add Expense</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    className="bg-secondary px-6 py-3 rounded-xl flex-row items-center shadow-lg"
+                    className={`${isMobile ? 'flex-1 px-4 py-3' : 'px-6 py-3'} bg-secondary rounded-xl flex-row items-center shadow-lg justify-center`}
                     onPress={() => setShowSetBudget(true)}
                   >
-                    <Feather name="sliders" size={20} color="white" />
+                    <Feather name="sliders" size={isMobile ? 18 : 20} color="white" />
                     <Text className="text-white font-semibold ml-2">Set Budget</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
-              {/* Quick Stats */}
-              <View className="flex-row justify-between bg-gray-50 rounded-xl p-4">
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-accent">${budget.remaining.toLocaleString()}</Text>
-                  <Text className="text-gray-600 text-sm">Remaining</Text>
+              {/* Quick Stats - RESPONSIVE FIX */}
+              <View className={`${isMobile ? 'flex-row space-x-2' : 'flex-row justify-between'} bg-gray-50 rounded-xl p-4`}>
+                <View className={`items-center ${isMobile ? 'flex-1' : ''}`}>
+                  <Text className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-accent`}>${budget.remaining.toLocaleString()}</Text>
+                  <Text className={`text-gray-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>Remaining</Text>
                 </View>
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-gray-800">${budget.used.toLocaleString()}</Text>
-                  <Text className="text-gray-600 text-sm">Used</Text>
+                <View className={`items-center ${isMobile ? 'flex-1' : ''}`}>
+                  <Text className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-gray-800`}>${budget.used.toLocaleString()}</Text>
+                  <Text className={`text-gray-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>Used</Text>
                 </View>
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-gray-800">{expenses.length}</Text>
-                  <Text className="text-gray-600 text-sm">Expenses</Text>
+                <View className={`items-center ${isMobile ? 'flex-1' : ''}`}>
+                  <Text className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-gray-800`}>{expenses.length}</Text>
+                  <Text className={`text-gray-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>Expenses</Text>
                 </View>
               </View>
             </View>
 
-            {/* Main */}
-            <View className="px-6 pt-6 pb-10 flex-1">
-              <View className="max-w-[1100px] w-full mx-auto flex-1">
+            {/* Main Content - RESPONSIVE FIX */}
+            <View className={`${isMobile ? 'px-4 pt-4 pb-6' : 'px-6 pt-6 pb-10'} flex-1`}>
+              <View className={`${isMobile ? 'w-full' : 'max-w-[1100px] w-full mx-auto'} flex-1`}>
                 <BudgetOverview budget={budget} onSetBudget={() => setShowSetBudget(true)} />
 
                 <View className="mt-6 flex-1">
