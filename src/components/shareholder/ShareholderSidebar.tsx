@@ -1,5 +1,5 @@
 // src/components/shareholder/ShareholderSidebar.tsx
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,10 @@ import {
   ScrollView,
   Platform,
   useWindowDimensions,
+  Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {
   isCollapsed: boolean;
@@ -16,6 +18,28 @@ interface Props {
   activeModule: string;
   setActiveModule: Dispatch<SetStateAction<string>>;
   isMobile?: boolean;
+}
+
+interface CompanyData {
+  id: string;
+  name: string;
+  email: string;
+  currencyCode: string;
+  currencySymbol: string;
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  firstName: string;
+  fullName: string;
+  lastName: string;
+  investment: number;
+  profit: number;
+  returns: number;
+  role: string;
+  sharePercentage: number;
+  company: CompanyData;
 }
 
 export default function ShareholderSidebar({
@@ -28,6 +52,15 @@ export default function ShareholderSidebar({
   const isTablet = width < 1200 && width >= 768;
   const isMobile = width < 768;
 
+  const [companyData, setCompanyData] = useState<CompanyData>({ 
+    id: '',
+    name: 'ShareFlow', 
+    email: '',
+    currencyCode: 'USD',
+    currencySymbol: '$'
+  });
+  const [userProfile, setUserProfile] = useState<any>(null);
+
   const sidebarItems = [
     { id: "overview", icon: "home", label: "Overview", color: "#86C232" },
     { id: "investments", icon: "trending-up", label: "My Investments", color: "#3B82F6" },
@@ -36,6 +69,47 @@ export default function ShareholderSidebar({
     { id: "reports", icon: "bar-chart-2", label: "Reports", color: "#06B6D4" },
     { id: "settings", icon: "settings", label: "Settings", color: "#6B7280" },
   ];
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      // Assuming user data is stored under a key like 'userData' or 'currentUser'
+      const userDataString = await AsyncStorage.getItem('userData');
+      if (userDataString) {
+        const userData: UserData = JSON.parse(userDataString);
+        
+        // Extract company data from user data
+        if (userData.company) {
+          setCompanyData(userData.company);
+        }
+        
+        // Set user profile
+        setUserProfile({
+          name: userData.fullName || `${userData.firstName} ${userData.lastName}`,
+          email: userData.email,
+          role: userData.role,
+          investment: userData.investment,
+          profit: userData.profit,
+          sharePercentage: userData.sharePercentage
+        });
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   const renderMenuItems = () =>
     sidebarItems.map((item) => (
@@ -76,26 +150,28 @@ export default function ShareholderSidebar({
       </TouchableOpacity>
     ));
 
-  const FooterBlock = !isCollapsed && (
+  const FooterBlock = !isCollapsed && userProfile && (
     <View className="p-5 border-t border-gray-700">
-      <View className="flex-row items-center mb-4">
-        <View className="w-11 h-11 rounded-xl bg-green-500 justify-center items-center mr-3">
-          <Text className="text-white font-bold text-base">SC</Text>
+      <View className="flex-row items-center">
+        <View className="w-11 h-11 rounded-xl bg-green-500 justify-center items-center mr-3 overflow-hidden">
+          <Text className="text-white font-bold text-base">
+            {getInitials(userProfile.name)}
+          </Text>
         </View>
         <View className="flex-1">
-          <Text className="text-white text-base font-bold mb-0.5">Sarah Chen</Text>
-          <Text className="text-gray-400 text-xs font-medium">Shareholder</Text>
+          <Text className="text-white text-base font-bold mb-0.5" numberOfLines={1}>
+            {userProfile.name}
+          </Text>
+          <Text className="text-gray-400 text-xs font-medium capitalize">
+            {userProfile.role.toLowerCase()}
+          </Text>
+          {userProfile.sharePercentage !== undefined && (
+            <Text className="text-green-400 text-xs font-medium mt-0.5">
+              {userProfile.sharePercentage}% Shares
+            </Text>
+          )}
         </View>
       </View>
-
-      <TouchableOpacity
-        onPress={onToggle}
-        className="flex-row items-center justify-center py-3 rounded-xl bg-red-100 border border-red-200"
-        activeOpacity={0.8}
-      >
-        <Feather name="log-out" size={18} color="#ef4444" />
-        <Text className="text-red-500 text-sm font-semibold ml-2">Logout</Text>
-      </TouchableOpacity>
     </View>
   );
 
@@ -138,9 +214,25 @@ export default function ShareholderSidebar({
                 alignItems: "center",
                 justifyContent: "center",
                 marginRight: 12,
+                overflow: "hidden",
               }}
             >
-              <Feather name="pie-chart" size={26} color="#86C232" />
+              {/* Using the default logo from assets */}
+              <img 
+                src={require('../../assets/images/logo.png')} 
+                alt="Company Logo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  // Fallback to icon if logo fails to load
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    const featherIcon = document.createElement('div');
+                    featherIcon.innerHTML = '<Feather name="pie-chart" size={26} color="#86C232" />';
+                    parent.appendChild(featherIcon);
+                  }
+                }}
+              />
             </div>
             {!isCollapsed && !isMobile && (
               <div>
@@ -152,7 +244,7 @@ export default function ShareholderSidebar({
                     letterSpacing: -0.5,
                   }}
                 >
-                  Share<Text style={{ color: "#86C232" }}>Flow</Text>
+                  {companyData.name}
                 </Text>
                 <Text
                   style={{
@@ -207,13 +299,25 @@ export default function ShareholderSidebar({
       {/* Header */}
       <View className="p-6 border-b border-gray-700 flex-row items-center justify-between">
         <View className="flex-row items-center">
-          <View className="w-11 h-11 rounded-xl bg-green-100 border border-green-200 justify-center items-center mr-3">
-            <Feather name="pie-chart" size={26} color="#86C232" />
+          <View className="w-11 h-11 rounded-xl bg-green-100 border border-green-200 justify-center items-center mr-3 overflow-hidden">
+            {/* Using the default logo from assets */}
+            <Image 
+              source={require('../../assets/images/logo.png')}
+              className="w-full h-full"
+              resizeMode="cover"
+              onError={() => {
+                // Fallback handled by showing the icon below if image fails
+              }}
+            />
+            {/* Fallback icon if logo doesn't load */}
+            <View className="absolute inset-0 justify-center items-center">
+              <Feather name="pie-chart" size={26} color="#86C232" />
+            </View>
           </View>
           {!isCollapsed && (
             <View>
               <Text className="text-white text-xl font-extrabold tracking-tight">
-                Share<Text className="text-green-500">Flow</Text>
+                {companyData.name}
               </Text>
               <Text className="text-green-500 text-xs font-bold tracking-wide mt-0.5">
                 SHAREHOLDER

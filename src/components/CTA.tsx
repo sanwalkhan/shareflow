@@ -3,8 +3,10 @@ import { View, Text, Dimensions } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 import Button from "../UI/Button"; // ✅ Use reusable button
+import { useNavigation } from "@react-navigation/native";
 
 export default function CTA() {
+  const navigation = useNavigation();
   const [isMobileView, setIsMobileView] = useState(
     Dimensions.get("window").width < 768
   );
@@ -28,7 +30,7 @@ export default function CTA() {
 
   const handleGetStarted = () => {
     // You can link this to Auth or Onboarding screen later
-    console.log("Get Started Pressed!");
+    navigation.navigate("Auth" as never);
   };
 
   return (
@@ -111,7 +113,7 @@ export default function CTA() {
               borderRadius: 16,
             }}
           >
-            <Text className="text-white font-extrabold text-[18px] tracking-[-0.2px] mr-3">
+            <Text className="text-white text-[18px] tracking-[-0.2px] mr-3">
               Get Started Today
             </Text>
             <View

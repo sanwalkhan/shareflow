@@ -14,8 +14,10 @@ import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, WINDOW } from "../../constants/theme";
 import { API_BASE } from "@env"; // ✅ environment variable
+import {useNavigation} from "@react-navigation/native";
 
 export default function ShareholderOverview() {
+  const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
 
@@ -188,7 +190,9 @@ export default function ShareholderOverview() {
 
               {/* Quick Actions */}
               <View className="flex-row items-center justify-between mb-6">
-                <TouchableOpacity className="flex-row items-center bg-green-600 px-4 py-2 rounded-xl">
+                <TouchableOpacity
+                onPress={() => navigation.navigate("InvestmentRequest" as never)}
+                className="flex-row items-center bg-green-600 px-4 py-2 rounded-xl">
                   <Feather name="plus-circle" size={18} color="#fff" />
                   <Text className="text-white font-semibold ml-2">
                     Request Investment

@@ -52,7 +52,7 @@ export default function Features() {
     <View
       className="relative overflow-hidden w-full"
       // ✅ Using COLORS.surface for the main background color
-      style={{ backgroundColor: COLORS.surface }} 
+      style={{ backgroundColor: COLORS.neutral}} 
     >
       {/* Subtle pattern layer (using neutral color for opacity effect) */}
       <View

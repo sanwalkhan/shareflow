@@ -126,7 +126,7 @@ export default function Header() {
   return (
     <View className="relative bg-transparent w-full overflow-visible">
       <StatusBar 
-        backgroundColor={COLORS.neutral} 
+        backgroundColor={COLORS.secondary} 
         barStyle="light-content" 
       />
       
@@ -160,7 +160,7 @@ export default function Header() {
           activeOpacity={0.8}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          onPress={() => navigation.navigate("Home" as never)} // Assuming tapping logo goes to Home
+          onPress={() => navigation.navigate("Landing" as never)} // Assuming tapping logo goes to Home
         >
           <Animated.View
             className="p-2 rounded-xl"
@@ -207,7 +207,7 @@ export default function Header() {
                 {/* Animated underline */}
                 <View
                   className="absolute bottom-1 left-4 right-4 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ backgroundColor: COLORS.primary }}
+                  style={{ backgroundColor: COLORS.accent }}
                 />
               </TouchableOpacity>
             ))}
@@ -226,7 +226,7 @@ export default function Header() {
                   borderColor: hexToRgba(COLORS.white, 0.2), // 'border-white/20'
                 }}
               >
-                <Text className="text-white font-bold text-sm" style={{ color: COLORS.white }}>
+                <Text className="text-white font-bold text-sm" style={{ color: COLORS.textLight }}>
                   Sign In
                 </Text>
               </TouchableOpacity>
@@ -251,10 +251,9 @@ export default function Header() {
                   elevation: 6,
                 }}
               >
-                <Text className="font-bold text-sm" style={{ color: COLORS.neutral }}>
+                <Text className="font-bold text-md" style={{ color: COLORS.neutral }}>
                   Register Company
                 </Text>
-                <Feather name="arrow-right" size={16} color={COLORS.neutral} style={{ marginLeft: 6 }} />
               </TouchableOpacity>
             </Animated.View>
           </View>

@@ -12,19 +12,18 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 import Button from "../UI/Button";
+import { useNavigation } from "@react-navigation/native";
 
 // Assuming you have the hero background image in assets/images/hero-bg.png
 const HERO_BG_IMAGE = Platform.OS === 'web' 
   ? require("../assets/images/hero-bg.png") 
   : require("../assets/images/hero-bg.png");
 
-// 💡 ESTIMATED HEADER HEIGHT: 
-// Based on the previous Header.tsx code (pt-6 pb-4, plus content height),
-// the header is likely around 80px to 100px tall. We'll adjust the padding 
-// to account for this and pull the content slightly higher.
 const HEADER_HEIGHT_ESTIMATE = 90; 
 
+
 export default function Hero() {
+  const navigation = useNavigation();
   const [isMobileView, setIsMobileView] = useState(
     Dimensions.get("window").width < 768
   );
@@ -49,7 +48,6 @@ export default function Hero() {
       if (typeof subscription?.remove === "function") subscription.remove();
     };
   }, []);
-
   return (
     <View
       className="relative w-full"
@@ -176,7 +174,7 @@ export default function Hero() {
               className={`${isMobileView ? "flex-col w-full" : "flex-row"} items-start mt-6 gap-4`}
             >
               <Button
-                onPress={() => {}}
+                onPress={() => navigation.navigate("Auth" as never)}
                 className={`flex-row items-center justify-center ${isMobileView ? "w-full" : ""}`}
                 style={{
                   backgroundColor: COLORS.accent,
@@ -190,10 +188,12 @@ export default function Hero() {
                   elevation: 10,
                 }}
               >
-                <Text className="text-white font-extrabold text-lg tracking-[-0.2px] mr-2">
+                <Text className="text-lg tracking-[-0.2px] mr-2"
+                style={{color: COLORS.white}}
+                >
                   Start Free Trial
                 </Text>
-                <Feather name="arrow-right" size={20} color="#fff" />
+                <Feather name="arrow-right" size={20} color={COLORS.white} />
               </Button>
 
               <TouchableOpacity 
