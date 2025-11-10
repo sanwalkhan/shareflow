@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native';
+import LoginScreen from './src/Screens/LoginScreen';
 
-export default function App() {
+const App: React.FC = () => {
   return (
-    <>
-      <View>
-        <Text>Welcome to HR Dashboard</Text>
-      </View>
-    </>
+    <SafeAreaView style={{ flex: 1 }}>
+      <LoginScreen />
+    </SafeAreaView>
   );
-}
+};
+
+export default App;
