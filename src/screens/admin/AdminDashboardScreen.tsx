@@ -54,14 +54,6 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
   const [userData, setUserData] = useState<any>(null);
   const [companyData, setCompanyData] = useState<any>(null);
 
-  // Use the same animation approach as shareholder
-  const getSidebarWidth = () => {
-    if (isMobile) return width * 0.85;
-    return 280;
-  };
-
-  const sidebarWidth = useRef(new Animated.Value(isMobile ? 0 : getSidebarWidth())).current;
-  const sidebarOpacity = useRef(new Animated.Value(isMobile ? 0 : 1)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   
@@ -91,15 +83,7 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
   }, []);
 
   const toggleSidebar = () => {
-    const next = !isSidebarCollapsed;
-    const toValue = next ? 0 : getSidebarWidth();
-    const opacityValue = next ? 0 : 1;
-
-    Animated.parallel([
-      Animated.spring(sidebarWidth, { toValue, friction: 8, tension: 40, useNativeDriver: false }),
-      Animated.timing(sidebarOpacity, { toValue: opacityValue, duration: 300, useNativeDriver: false }),
-    ]).start();
-    setIsSidebarCollapsed(next);
+    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
   // Close sidebar when clicking outside on mobile
@@ -249,12 +233,16 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
 
   return (
     <View className="flex-1 flex-row bg-gray-50">
-      {/* Sidebar - Always render but position absolutely on mobile */}
-      <Animated.View
-        className="bg-gray-800 shadow-xl z-40"
+      {/* Sidebar - Let the Sidebar component handle its own width and responsiveness */}
+      <View
         style={[
-          { width: sidebarWidth, opacity: sidebarOpacity },
-          isMobile && { position: "absolute", left: 0, top: 0, bottom: 0, zIndex: 50 }
+          isMobile && { 
+            position: "absolute", 
+            left: 0, 
+            top: 0, 
+            bottom: 0, 
+            zIndex: 50 
+          }
         ]}
       >
         <Sidebar
@@ -262,9 +250,9 @@ export default function AdminDashboardScreen({ navigation }: DashboardScreenProp
           onToggle={toggleSidebar}
           activeModule={activeModule}
           setActiveModule={setActiveModule}
-          isMobile={isMobile} // Add this prop
+          isMobile={isMobile}
         />
-      </Animated.View>
+      </View>
 
       {/* Overlay for mobile when sidebar is open */}
       {isMobile && !isSidebarCollapsed && (
