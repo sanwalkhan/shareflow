@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,67 +11,79 @@ import {
   Image,
 } from 'react-native';
 import { ArrowLeft, Lock, Eye, EyeOff, X } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App'; // adjust the path if needed
 
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
-
-export default function LoginScreen() {
+const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
   const handleLogin = () => console.log('Login pressed');
-  const handleCreateAccount = () => console.log('Create account pressed');
+  const handleCreateAccount = () => navigation.navigate('ContactDetails');
   const handleBackToHome = () => console.log('Back to home pressed');
   const handleClose = () => console.log('Close pressed');
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.outerCard}>
           {/* Top Left Back */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={handleBackToHome}>
+            onPress={handleBackToHome}
+          >
             <ArrowLeft color="#fff" size={20} />
             <Text style={styles.backButtonText}>Back To Home</Text>
           </TouchableOpacity>
 
-          {/* Centered ShareFlow + Poll with Image */}
+          {/* Centered Logo */}
           <View style={styles.outerCenter}>
             <View style={styles.logoWithImage}>
-         {/* <Image
-  source={{ uri: Image1 }}
-  style={{ width: 100, height: 100, resizeMode: 'contain' }}
-/> */}
-
-
-              <View style={{ width: 149, height: 117, marginTop: -15, justifyContent: 'center', alignItems: 'center' }}>
-  <Text style={{ 
-    fontFamily: 'Bold', 
-    fontSize: 39.57, 
-    color: '#000', 
-    opacity: 1, 
-    textAlign: 'center' 
-  }}>
-    Share
-    <Text style={{ 
-      fontFamily: 'Bold', 
-      fontSize: 39.57, 
-      color: '#4CAF50', 
-      opacity: 1 
-    }}>
-      Flow
-    </Text>
-  </Text>
-</View>
-
+              <View
+                style={{
+                  width: 149,
+                  height: 117,
+                  marginTop: -15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Bold',
+                    fontSize: 39.57,
+                    color: '#000',
+                    opacity: 1,
+                    textAlign: 'center',
+                  }}
+                >
+                  Share
+                  <Text
+                    style={{
+                      fontFamily: 'Bold',
+                      fontSize: 39.57,
+                      color: '#4CAF50',
+                      opacity: 1,
+                    }}
+                  >
+                    Flow
+                  </Text>
+                </Text>
+              </View>
             </View>
-            {/* <Text style={styles.pollText}>Poll</Text> */}
           </View>
 
           {/* Inner Card */}
@@ -120,7 +132,8 @@ export default function LoginScreen() {
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
-                    onPress={() => setShowPassword(!showPassword)}>
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
                     {showPassword ? (
                       <EyeOff color="#666" size={20} />
                     ) : (
@@ -133,9 +146,13 @@ export default function LoginScreen() {
               <View style={styles.optionsRow}>
                 <TouchableOpacity
                   style={styles.rememberMeContainer}
-                  onPress={() => setRememberMe(!rememberMe)}>
+                  onPress={() => setRememberMe(!rememberMe)}
+                >
                   <View
-                    style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
+                    style={[
+                      styles.checkbox,
+                      rememberMe && styles.checkboxChecked,
+                    ]}
                   />
                   <Text style={styles.rememberMeText}>Remember me</Text>
                 </TouchableOpacity>
@@ -144,7 +161,10 @@ export default function LoginScreen() {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={handleLogin}
+              >
                 <Lock color="#fff" size={18} />
                 <Text style={styles.loginButtonText}>Sign Into Dashboard</Text>
               </TouchableOpacity>
@@ -155,7 +175,8 @@ export default function LoginScreen() {
 
               <TouchableOpacity
                 style={styles.createAccountButton}
-                onPress={handleCreateAccount}>
+                onPress={handleCreateAccount}
+              >
                 <Lock color="#333" size={18} />
                 <Text style={styles.createAccountButtonText}>
                   Create Company Account
@@ -167,7 +188,9 @@ export default function LoginScreen() {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
@@ -182,7 +205,6 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 10,
     maxWidth: 774,
-  
     width: '100%',
     alignSelf: 'center',
   },
@@ -199,10 +221,6 @@ const styles = StyleSheet.create({
   backButtonText: { color: '#fff', marginLeft: 8, fontSize: 14, fontWeight: '500' },
   outerCenter: { alignItems: 'center', marginBottom: 20 },
   logoWithImage: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoImage: { width: 30, height: 30, resizeMode: 'contain' },
-  logoText: { fontSize: 28, fontWeight: '700', color: '#000' },
-  logoTextGreen: { color: '#4CAF50' },
-  pollText: { fontSize: 20, fontWeight: '600', color: '#fff', marginTop: 4 },
   card: { backgroundColor: '#fff', borderRadius: 16, padding: 28 },
   innerTopRow: {
     flexDirection: 'row',
@@ -210,7 +228,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  
   signInBadge: {
     flexDirection: 'row',
     alignItems: 'center',
