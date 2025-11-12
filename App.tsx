@@ -1,13 +1,35 @@
-
+// App.tsx
 import "./global.css";
-import { Text, View } from "react-native";
- 
-export default function App() {
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import HeroScreen from "./src/Screens/HeroScreen";
+import LoginScreen from "./src/Screens/LoginScreen";
+import Header from "./src/Screens/Header";
+import SignupScreen from "./src/Screens/SignupScreen";
+
+
+
+export type RootStackParamList = {
+  Hero: undefined;
+  Login: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const App: React.FC = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        Welcome to Nativewind!
-      </Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+         <Stack.Screen name="Header" component={Header} />
+        <Stack.Screen name="Hero" component={HeroScreen} />
+
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
+
+export default App;

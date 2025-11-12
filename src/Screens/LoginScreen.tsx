@@ -1,251 +1,198 @@
-// src/Screens/LoginScreen.tsx
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { TailwindProvider } from "tailwindcss-react-native";
-import { theme } from "../Constants/theme";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from 'react-native';
+import { Eye, EyeOff, X } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
+  const navigation = useNavigation<any>();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   return (
-<<<<<<< HEAD
-    <Text className="bg-red-300">Login Screen</Text>
-=======
-    <TailwindProvider>
-      <View style={{ flex: 1, backgroundColor: theme.tokens.colors.muted100 }}>
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: 20,
-            backgroundColor: "#D9D9D9",
-            paddingVertical: 20,
-          }}
-        >
-          {/* Left: ShareFlow + Image1 */}
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <Image
-              source={require("../assets/Image1.png")}
-              style={{ width: 40, height: 40, resizeMode: "contain" }}
-            />
-            <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-              <Text style={{ color: "#000000" }}>Share</Text>
-              <Text style={{ color: "#018502" }}>Flow</Text>
-            </Text>
-          </View>
+    <View className="flex-1 bg-[#E8EDF5]">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 items-center justify-center px-6 py-12">
 
-          {/* Navigation */}
-          <View style={{ flexDirection: "row", gap: 140 }}>
-            <Text style={{ fontSize: 16, color: "#000" }}>Home</Text>
-            <Text style={{ fontSize: 16, color: "#000" }}>About Us</Text>
-            <Text style={{ fontSize: 16, color: "#000" }}>Pricing</Text>
-          </View>
-
-          {/* Register Button */}
-          <TouchableOpacity>
-            <LinearGradient
-              colors={["#2A2F50", "#28A745"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12 }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}>
-                Register
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-
-        {/* Main Section */}
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          {/* Outer Card */}
           <View
-            style={{
-              width: "100%",
-              height: 440,
-              backgroundColor: "#1F6A3D",
-              paddingVertical: 60,
-              paddingHorizontal: 30,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+            className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-6"
+            style={{ width: 800, height: 860 }}
           >
-            {/* Left Text Section */}
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontSize: 40,
-                  fontWeight: "700",
-                  fontFamily: "Poppins",
-                  color: "#FFFFFF",
-                  marginBottom: 10,
-                }}
+
+            {/* Top Bar */}
+            <View className="flex-row items-center justify-center mb-6 w-full relative">
+              <View className="flex-row items-center">
+                <Image
+                  source={require('../assets/image.png')}
+                  className="w-10 h-10 mr-2"
+                  style={{ marginTop: 60 }}
+                />
+                <Text
+                  className="text-2xl font-bold text-gray-800"
+                  style={{ marginTop: 60 }}
+                >
+                  ShareFlow
+                </Text>
+              </View>
+
+              {/* Back Button */}
+              <TouchableOpacity
+                className="absolute top-4 left-4 z-10"
+                onPress={() => navigation.goBack()}
               >
-                Financial Intelligence
+                <LinearGradient
+                  colors={['#2A2F50', '#28A745']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    width: 183,
+                    height: 41,
+                    borderRadius: 12.77,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text className="text-white font-bold">← Back To Home</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            {/* Inner Card */}
+            <View
+              className="bg-white rounded-3xl shadow-2xl p-8"
+              style={{ width: '90%', alignSelf: 'center', height: 620 }}
+            >
+
+              {/* Welcome Text */}
+              <Text className="text-3xl font-extrabold text-gray-800 mb-2 text-center">
+                Welcome Back
               </Text>
-              <Text
-                style={{
-                  fontSize: 40,
-                  fontWeight: "700",
-                  fontFamily: "Poppins",
-                  color: "#4CAF4F",
-                }}
-              >
-                Reimagined
+              <Text className="text-base text-gray-500 mb-6 text-center">
+                Sign into your ShareFlow account
               </Text>
 
-              {/* Buttons */}
-              <View style={{ flexDirection: "row", gap: 20, marginTop: 30 }}>
-                <TouchableOpacity>
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      paddingHorizontal: 20,
-                      paddingVertical: 12,
-                      borderRadius: 10,
-                    }}
-                  >
-                    <Text
-                      style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}
-                    >
-                      Register
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+              {/* Email Field */}
+              <View className="mb-5">
+                <Text className="text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </Text>
+                <TextInput
+                  className="w-full bg-gray-100 rounded-xl px-4 py-4 text-gray-800"
+                  placeholder="yourname@work.com"
+                  placeholderTextColor="#9CA3AF"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
 
-                <TouchableOpacity>
-                  <LinearGradient
-                    colors={["#4CAF4F", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      paddingHorizontal: 20,
-                      paddingVertical: 12,
-                      borderRadius: 10,
-                    }}
-                  >
-                    <Text
-                      style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}
-                    >
-                      Demo
-                    </Text>
-                  </LinearGradient>
+              {/* Password Field */}
+              <View className="mb-5 relative">
+                <Text className="text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </Text>
+                <TextInput
+                  className="w-full bg-gray-100 rounded-xl px-4 py-4 text-gray-800"
+                  placeholder="Enter your password"
+                  placeholderTextColor="#9CA3AF"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity
+                  className="absolute right-4 top-6"
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} color="#9CA3AF" />
+                  ) : (
+                    <Eye size={20} color="#9CA3AF" />
+                  )}
                 </TouchableOpacity>
               </View>
-            </View>
 
-            {/* Right Image */}
-            <Image
-              source={require("../assets/Image2.png")}
-              style={{
-                width: 220,
-                height: 220,
-                resizeMode: "contain",
-                marginLeft: 20,
-              }}
-            />
+              {/* Remember Me */}
+              <TouchableOpacity
+                className="flex-row items-center mb-6"
+                onPress={() => setRememberMe(!rememberMe)}
+              >
+                <View
+                  className={`w-4 h-4 rounded border-2 mr-2 items-center justify-center ${
+                    rememberMe
+                      ? 'bg-[#34D399] border-[#34D399]'
+                      : 'bg-white border-gray-300'
+                  }`}
+                >
+                  {rememberMe && (
+                    <Text className="text-white text-xs font-bold">✓</Text>
+                  )}
+                </View>
+                <Text className="text-sm text-gray-600">Keep me signed in</Text>
+              </TouchableOpacity>
+
+              {/* Sign-In Button */}
+              <TouchableOpacity className="rounded-xl py-4 mb-6">
+                <LinearGradient
+                  colors={['#2A2F50', '#28A745']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    width: '100%',
+                    paddingVertical: 14,
+                    borderRadius: 12,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text className="text-white font-bold text-base">
+                    Sign Into Dashboard
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              {/* Create Account Text */}
+              <Text className="text-center text-sm text-gray-500 mb-4">
+                Don't have a ShareFlow account?
+              </Text>
+
+              {/* Register Button */}
+              <TouchableOpacity
+                className="mt-2"
+                onPress={() => navigation.navigate('Signup')}
+              >
+                <LinearGradient
+                  colors={['#2A2F50', '#28A745']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  className="py-4 px-6 rounded-2xl items-center justify-center shadow-lg"
+                >
+                  <Text className="text-white font-bold text-base">
+                    Create Company Account
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+            </View>
           </View>
 
-          {/* Features Section */}
-          <View
-            style={{
-              backgroundColor: "#E3EDF9",
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "center",
-              paddingVertical: 50,
-            }}
-          >
-            {/* Feature Card 1 */}
-            <View
-              style={{
-                backgroundColor: "#fff",
-                width: 110,
-                height: 150,
-                borderRadius: 20,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 10,
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontWeight: "600",
-                  fontSize: 12,
-                  color: "#000",
-                }}
-              >
-                Advanced Analytics
-              </Text>
-            </View>
-
-            {/* Feature Card 2 */}
-            <View
-              style={{
-                backgroundColor: "#fff",
-                width: 110,
-                height: 150,
-                borderRadius: 20,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 10,
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontWeight: "600",
-                  fontSize: 12,
-                  color: "#000",
-                }}
-              >
-                Enterprise Security
-              </Text>
-            </View>
-
-            {/* Feature Card 3 */}
-            <View
-              style={{
-                backgroundColor: "#fff",
-                width: 110,
-                height: 150,
-                borderRadius: 20,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 10,
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontWeight: "600",
-                  fontSize: 12,
-                  color: "#000",
-                }}
-              >
-                Smart Automation
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    </TailwindProvider>
->>>>>>> f0ab0405882ca33d2bdf4ad2e9ea7e31144cf06d
+        </View>
+      </ScrollView>
+    </View>
   );
 }
