@@ -53,12 +53,7 @@
   "devDependencies": {
     "@react-native-community/cli": "^20.0.2",
     "@types/react": "~19.1.0",
-<<<<<<< HEAD
     "prettier-plugin-tailwindcss": "0.5.11",
-=======
-    "@types/react-native": "^0.72.8",
-    "prettier-plugin-tailwindcss": "^0.5.14",
->>>>>>> f0ab0405882ca33d2bdf4ad2e9ea7e31144cf06d
     "react-native-svg-transformer": "^1.5.2",
     "typescript": "~5.9.2"
   }
