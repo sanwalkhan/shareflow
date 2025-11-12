@@ -1,160 +1,303 @@
-// import React, { useState } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-// import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import { useNavigation } from '@react-navigation/native';
-// import { RootStackParamList } from '../../App';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Image,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
+import { ChevronDown } from "lucide-react-native";
 
-// type ContactDetailsScreenProp = NativeStackNavigationProp<RootStackParamList, 'ContactDetails'>;
+const ContactDetails: React.FC = () => {
+  const navigation = useNavigation<any>();
 
-// const ContactDetails: React.FC = () => {
-//   const navigation = useNavigation<ContactDetailsScreenProp>();
+  const [legalName, setLegalName] = useState("");
+  const [companyType, setCompanyType] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [companyStatus, setCompanyStatus] = useState("");
+  const [yearFounded, setYearFounded] = useState("");
+  const [taxId, setTaxId] = useState("");
+  const [registrationNum, setRegistrationNum] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
 
-//   // Form state
-//   const [businessEmail, setBusinessEmail] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [streetAddress, setStreetAddress] = useState('');
-//   const [city, setCity] = useState('');
-//   const [country, setCountry] = useState('');
-//   const [postalCode, setPostalCode] = useState('');
+  const registrationOptions = [
+    "Private Limited",
+    "Sole Proprietor",
+    "Partnership Firm",
+    "Public Limited",
+  ];
 
-//   const handlePrevious = () => {
-//     navigation.goBack();
-//   };
+  return (
+    <SafeAreaView className="flex-1 bg-[#E8EDF5]">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 items-center justify-center px-6 py-12">
+          {/* Outer Card */}
+          <View
+            className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-4"
+            style={{ width: 800, height: 960 }}
+          >
+            {/* Header */}
+            <View className="flex-row items-center justify-center mb-6 w-full relative">
+              <View className="flex-row items-center">
+                <Image
+                  source={require("../assets/image.png")}
+                  className="w-10 h-10 mr-2"
+                  style={{ marginTop: 60 }}
+                />
+                <Text
+                  className="text-2xl font-bold text-gray-800"
+                  style={{ marginTop: 60 }}
+                >
+                  ShareFlow
+                </Text>
+              </View>
 
-//   const handleComplete = () => {
-//     console.log('Form submitted:', {
-//       businessEmail,
-//       phoneNumber,
-//       streetAddress,
-//       city,
-//       country,
-//       postalCode,
-//     });
-//     // Yahan aap next step ya success screen navigate kar sakte ho
-//   };
+              {/* Back Button */}
+              <TouchableOpacity
+                className="absolute top-4 left-4 z-10"
+                onPress={() => navigation.goBack()}
+              >
+                <LinearGradient
+                  colors={["#2A2F50", "#28A745"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    width: 183,
+                    height: 41,
+                    borderRadius: 12.77,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text className="text-white font-bold">← Back To Home</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
 
-//   return (
-//     <ScrollView contentContainerStyle={styles.container}>
-//       <Text style={styles.title}>Welcome!</Text>
-//       <Text style={styles.subtitle}>Please enter your contact details</Text>
+            {/* Inner Card */}
+            <View
+              className="bg-white rounded-3xl shadow-2xl p-8"
+              style={{
+                alignSelf: "center",
+                width: "90%",
+                height: 730,
+              }}
+            >
+              {/* Stepper */}
+              <View className="flex-row items-center justify-between mb-8 w-full px-4">
+                {[1, 2, 3, 4].map((step, index) => (
+                  <React.Fragment key={index}>
+                    <View className="items-center">
+                      <LinearGradient
+                        colors={
+                          step <= 2
+                            ? ["#2A2F50", "#28A745"]
+                            : ["#FFFFFF", "#FFFFFF"]
+                        }
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 20,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderWidth: step > 2 ? 2 : 0,
+                          borderColor: step > 2 ? "#9CA3AF" : "transparent",
+                        }}
+                      >
+                        <Text
+                          className={`font-bold text-lg ${
+                            step <= 2 ? "text-white" : "text-gray-500"
+                          }`}
+                        >
+                          {step}
+                        </Text>
+                      </LinearGradient>
+                    </View>
+                    {step < 4 && (
+                      <View
+                        style={{
+                          flex: 1,
+                          height: 2,
+                          backgroundColor: "#9CA3AF",
+                          marginHorizontal: 4,
+                          marginTop: 19,
+                        }}
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
+              </View>
 
-//       <View style={styles.form}>
-//         <Text style={styles.label}>Business Email</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="example@company.com"
-//           value={businessEmail}
-//           onChangeText={setBusinessEmail}
-//           keyboardType="email-address"
-//         />
+              {/* Heading */}
+              <Text className="text-xl font-semibold mb-2 text-center">
+                Company Information
+              </Text>
+              <Text className="text-sm text-gray-500 mb-6 text-center">
+                Enter your company’s official details
+              </Text>
 
-//         <Text style={styles.label}>Phone Number</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="+92 300 1234567"
-//           value={phoneNumber}
-//           onChangeText={setPhoneNumber}
-//           keyboardType="phone-pad"
-//         />
+              {/* Form Fields */}
+              <View className="space-y-5">
+                {/* Row 1 */}
+                <View className="flex-row space-x-4">
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1">
+                      Company Legal Name
+                    </Text>
+                    <TextInput
+                      value={legalName}
+                      onChangeText={setLegalName}
+                      placeholder="Enter company legal name"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
 
-//         <Text style={styles.label}>Street Address</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="123 Main Street"
-//           value={streetAddress}
-//           onChangeText={setStreetAddress}
-//         />
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1">
+                      Company Type
+                    </Text>
+                    <TextInput
+                      value={companyType}
+                      onChangeText={setCompanyType}
+                      placeholder="Select company type"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
+                </View>
 
-//         <Text style={styles.label}>City</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Karachi"
-//           value={city}
-//           onChangeText={setCity}
-//         />
+                {/* Row 2 */}
+                <View className="flex-row space-x-4">
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                      Industry
+                    </Text>
+                    <TextInput
+                      value={industry}
+                      onChangeText={setIndustry}
+                      placeholder="Select industry"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
 
-//         <Text style={styles.label}>Country</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Pakistan"
-//           value={country}
-//           onChangeText={setCountry}
-//         />
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                      Company Status
+                    </Text>
+                    <TextInput
+                      value={companyStatus}
+                      onChangeText={setCompanyStatus}
+                      placeholder="Select company status"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
+                </View>
 
-//         <Text style={styles.label}>Postal Code</Text>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="12345"
-//           value={postalCode}
-//           onChangeText={setPostalCode}
-//           keyboardType="numeric"
-//         />
-//       </View>
+                {/* Row 3 */}
+                <View className="flex-row space-x-4">
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                      Year Founded
+                    </Text>
+                    <TextInput
+                      value={yearFounded}
+                      onChangeText={setYearFounded}
+                      placeholder="Enter founding year"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
 
-//       <View style={styles.buttonRow}>
-//         <TouchableOpacity style={styles.prevButton} onPress={handlePrevious}>
-//           <Text style={styles.buttonText}>Previous</Text>
-//         </TouchableOpacity>
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                      Tax ID
+                    </Text>
+                    <TextInput
+                      value={taxId}
+                      onChangeText={setTaxId}
+                      placeholder="Enter tax ID"
+                      className="bg-gray-200 rounded-lg px-4"
+                      style={{ height: 50 }}
+                    />
+                  </View>
+                </View>
 
-//         <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
-//           <Text style={styles.buttonText}>Complete</Text>
-//         </TouchableOpacity>
-//       </View>
+                {/* Row 4 - Registration Number with Icon */}
+                <View>
+                  <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                    Registration Number
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setShowDropdown(!showDropdown)}
+                    activeOpacity={0.8}
+                    className="bg-gray-200 rounded-lg flex-row items-center justify-between px-4"
+                    style={{ height: 50 }}
+                  >
+                    <Text className="text-gray-600">
+                      {registrationNum || "Select registration type"}
+                    </Text>
+                    <ChevronDown color="#555" size={22} />
+                  </TouchableOpacity>
 
-//       <Text style={styles.footerText}>
-//         Already have an account? <Text style={styles.signInText}>Sign in</Text>
-//       </Text>
-//     </ScrollView>
-//   );
-// };
+                  {/* Dropdown Options */}
+                  {showDropdown && (
+                    <View className="bg-gray-100 rounded-lg mt-2 shadow-md">
+                      {registrationOptions.map((option, i) => (
+                        <TouchableOpacity
+                          key={i}
+                          onPress={() => {
+                            setRegistrationNum(option);
+                            setShowDropdown(false);
+                          }}
+                          className="px-4 py-3 border-b border-gray-300"
+                        >
+                          <Text className="text-gray-700">{option}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              </View>
 
-// const styles = StyleSheet.create({
-//   container: {
-//     padding: 20,
-//     paddingTop: 40,
-//     flexGrow: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//   },
-//   title: { fontSize: 28, fontWeight: '700', marginBottom: 10, textAlign: 'center' },
-//   subtitle: { fontSize: 16, color: '#666', marginBottom: 20, textAlign: 'center' },
-//   form: { width: '100%', marginBottom: 30 },
-//   label: { fontSize: 14, fontWeight: '600', marginBottom: 6 },
-//   input: {
-//     backgroundColor: '#f5f5f5',
-//     paddingHorizontal: 16,
-//     paddingVertical: 14,
-//     borderRadius: 10,
-//     marginBottom: 16,
-//     fontSize: 15,
-//     borderWidth: 1,
-//     borderColor: '#e0e0e0',
-//   },
-//   buttonRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     width: '100%',
-//     marginBottom: 20,
-//   },
-//   prevButton: {
-//     flex: 1,
-//     backgroundColor: '#aaa',
-//     paddingVertical: 16,
-//     borderRadius: 10,
-//     marginRight: 10,
-//     alignItems: 'center',
-//   },
-//   completeButton: {
-//     flex: 1,
-//     backgroundColor: '#2d5a3d',
-//     paddingVertical: 16,
-//     borderRadius: 10,
-//     marginLeft: 10,
-//     alignItems: 'center',
-//   },
-//   buttonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-//   footerText: { fontSize: 13, color: '#666', textAlign: 'center' },
-//   signInText: { color: '#2d5a3d', fontWeight: '600' },
-// });
+              {/* Complete Button Full Width */}
+              <TouchableOpacity
+                className="rounded-lg items-center justify-center mt-8"
+                style={{ height: 60 }} // increased height
+                onPress={() => navigation.navigate("VerifyEmail")}
+              >
+                <LinearGradient
+                  colors={["#2A2F50", "#28A745"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: 12.77,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text className="text-white font-bold text-lg">Complete →</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
-// export default ContactDetails;
+export default ContactDetails;

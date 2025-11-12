@@ -274,26 +274,28 @@ const SignupScreen: React.FC = () => {
                 </TouchableOpacity>
 
                 {/* Complete Button */}
-                <TouchableOpacity
-                  className="flex-1 ml-2 rounded-lg items-center justify-center"
-                  style={{ height: 50 }}
-                  onPress={() => {}}
-                >
-                  <LinearGradient
-                    colors={['#2A2F50', '#28A745']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: 12.77,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text className="text-white font-bold">Complete →</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                {/* Complete Button */}
+<TouchableOpacity
+  className="flex-1 ml-2 rounded-lg items-center justify-center"
+  style={{ height: 50 }}
+  onPress={() => navigation.navigate('ContactDetails')} // <- yaha navigation add kiya
+>
+  <LinearGradient
+    colors={['#2A2F50', '#28A745']}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 0 }}
+    style={{
+      width: '100%',
+      height: '100%',
+      borderRadius: 12.77,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <Text className="text-white font-bold">Complete →</Text>
+  </LinearGradient>
+</TouchableOpacity>
+
               </View>
 
               {/* Horizontal Line */}
