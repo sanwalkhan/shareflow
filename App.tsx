@@ -1,18 +1,12 @@
-import React from 'react';
-import { SafeAreaView } from 'react-native';
-import LoginScreen from './src/Screens/LoginScreen';
-// import ContactDetails from './src/Screens/ContactDetails';
 
-
-const App: React.FC = () => {
+import { Text, View } from "react-native";
+ 
+export default function App() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <LoginScreen />
-      {/* <ContactDetails/> */}
-    </SafeAreaView>
-
-    
+    <View className="flex-1 items-center justify-center bg-white">
+      <Text className="text-xl font-bold text-blue-500">
+        Welcome to Nativewind!
+      </Text>
+    </View>
   );
-};
-
-export default App;
+}
