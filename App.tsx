@@ -1,17 +1,16 @@
-import React from 'react';
-import { SafeAreaView } from 'react-native';
-import LoginScreen from './src/Screens/LoginScreen';
-// import ContactDetails from './src/Screens/ContactDetails';
-
+import React from "react";
+import { SafeAreaView } from "react-native";
+//import { TailwindProvider } from "tailwindcss-react-native";
+import LoginScreen from "./src/Screens/LoginScreen";
+ import './global.css';
 
 const App: React.FC = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <LoginScreen />
-      {/* <ContactDetails/> */}
-    </SafeAreaView>
-
-    
+  
+      <SafeAreaView className="flex-1">
+        <LoginScreen />
+      </SafeAreaView>
+ 
   );
 };
 

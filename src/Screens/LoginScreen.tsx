@@ -20,43 +20,20 @@ export default function LoginScreen() {
             paddingVertical: 20,
           }}
         >
-          {/* Left: Poll-like icon + ShareFlow + Image1 */}
+          {/* Left: ShareFlow + Image1 */}
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            {/* Poll bars */}
-            <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 3 }}>
-              <View
-                style={{
-                  width: 8,
-                  height: 20,
-                  backgroundColor: "#1F6A3D",
-                  borderRadius: 2,
-                }}
-              />
-              <View
-                style={{
-                  width: 6,
-                  height: 14,
-                  backgroundColor: "#28A745",
-                  borderRadius: 2,
-                }}
-              />
-            </View>
-
-            {/* ShareFlow text + logo */}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-                <Text style={{ color: "#000000" }}>Share</Text>
-                <Text style={{ color: "#018502" }}>Flow</Text>
-              </Text>
-              <Image
-                source={require("../assets/Image1.png")}
-                style={{ width: 30, height: 30, resizeMode: "contain" }}
-              />
-            </View>
+            <Image
+              source={require("../assets/Image1.png")}
+              style={{ width: 40, height: 40, resizeMode: "contain" }}
+            />
+            <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+              <Text style={{ color: "#000000" }}>Share</Text>
+              <Text style={{ color: "#018502" }}>Flow</Text>
+            </Text>
           </View>
 
           {/* Navigation */}
-          <View style={{ flexDirection: "row", gap: 80 }}>
+          <View style={{ flexDirection: "row", gap: 140 }}>
             <Text style={{ fontSize: 16, color: "#000" }}>Home</Text>
             <Text style={{ fontSize: 16, color: "#000" }}>About Us</Text>
             <Text style={{ fontSize: 16, color: "#000" }}>Pricing</Text>
@@ -68,7 +45,7 @@ export default function LoginScreen() {
               colors={["#2A2F50", "#28A745"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}
+              style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12 }}
             >
               <Text style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}>
                 Register
@@ -195,11 +172,6 @@ export default function LoginScreen() {
                 padding: 10,
               }}
             >
-              {/* <Image
-                source={require("../assets/Image1.png")}
-                style={{ width: 40, height: 40, marginBottom: 8 }}
-                resizeMode="contain"
-              /> */}
               <Text
                 style={{
                   textAlign: "center",
@@ -228,11 +200,6 @@ export default function LoginScreen() {
                 padding: 10,
               }}
             >
-              {/* <Image
-                source={require("../assets/icon-security.png")}
-                style={{ width: 40, height: 40, marginBottom: 8 }}
-                resizeMode="contain"
-              /> */}
               <Text
                 style={{
                   textAlign: "center",
@@ -261,11 +228,6 @@ export default function LoginScreen() {
                 padding: 10,
               }}
             >
-              <Image
-                source={require("../assets/icon-automation.png")}
-                style={{ width: 40, height: 40, marginBottom: 8 }}
-                resizeMode="contain"
-              />
               <Text
                 style={{
                   textAlign: "center",
