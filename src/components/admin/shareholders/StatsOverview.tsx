@@ -5,8 +5,7 @@ import { StatsOverviewProps } from "./types";
 import { COLORS } from "../../../constants/theme";
 
 export default function StatsOverview({
-  totalEquity,
-  totalInvestment,
+  totalInvestment, // This should be the sum of ALL investments
   totalProfit,
   totalReturns,
   totalOtherMoney,
@@ -16,10 +15,13 @@ export default function StatsOverview({
   const isMobile = width < 768;
   const profitAfterExpenses = totalProfit - totalOtherMoney;
 
+  // Total equity should always be 100% - it's the total pie that gets divided
+  const totalEquity = 100;
+
   const stats = [
     {
       label: "Total Equity",
-      value: `${totalEquity.toFixed(1)}%`,
+      value: `${totalEquity.toFixed(1)}%`, // Always 100%
       color: "#3b82f6",
       icon: "🏢",
     },
