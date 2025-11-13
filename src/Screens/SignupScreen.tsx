@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,46 +7,38 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 const SignupScreen: React.FC = () => {
   const navigation = useNavigation<any>();
 
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [street, setStreet] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('');
-  const [postalCode, setPostalCode] = useState('');
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [postalCode, setPostalCode] = useState("");
 
   return (
     <SafeAreaView className="flex-1 bg-[#E8EDF5]">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1 items-center justify-center px-6 py-12">
-
           {/* Outer Card */}
           <View
             className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-4"
-            style={{ width: 800, height: 940 }} // increased height
+            style={{ width: 800, height: 940 }}
           >
-
             {/* Top Bar */}
             <View className="flex-row items-center justify-center mb-6 w-full relative">
               <View className="flex-row items-center">
                 <Image
-                  source={require('../assets/image.png')}
+                  source={require("../assets/image.png")}
                   className="w-10 h-10 mr-2"
                   style={{ marginTop: 60 }}
                 />
-                <Text
-                  className="text-2xl font-bold text-gray-800"
-                  style={{ marginTop: 60 }}
-                >
+                <Text className="text-2xl font-bold text-gray-800" style={{ marginTop: 60 }}>
                   ShareFlow
                 </Text>
               </View>
@@ -57,15 +49,15 @@ const SignupScreen: React.FC = () => {
                 onPress={() => navigation.goBack()}
               >
                 <LinearGradient
-                  colors={['#2A2F50', '#28A745']}
+                  colors={["#2A2F50", "#28A745"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{
                     width: 183,
                     height: 41,
                     borderRadius: 12.77,
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <Text className="text-white font-bold">← Back To Home</Text>
@@ -74,24 +66,22 @@ const SignupScreen: React.FC = () => {
             </View>
 
             {/* Inner Card */}
-            <View
-              className="bg-white rounded-3xl shadow-2xl p-6"
-              style={{ alignSelf: 'center', width: '90%' }}
-            >
+            <View className="bg-white rounded-3xl shadow-2xl p-6" style={{ alignSelf: "center", width: "90%" }}>
+              
               {/* Progress Stepper */}
               <View className="flex-row items-center justify-between mb-6 w-full px-4">
                 {/* Step 1 */}
                 <View className="items-center">
                   <LinearGradient
-                    colors={['#2A2F50', '#28A745']}
+                    colors={["#2A2F50", "#28A745"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Text className="text-white font-bold text-lg">1</Text>
@@ -101,10 +91,9 @@ const SignupScreen: React.FC = () => {
                 {/* Line 1 */}
                 <View
                   style={{
-                    flex: 1,
+                    width: 100,
                     height: 2,
-                    backgroundColor: '#9CA3AF',
-                    marginHorizontal: 4,
+                    backgroundColor: "#9CA3AF",
                     marginTop: 19,
                   }}
                 />
@@ -112,15 +101,15 @@ const SignupScreen: React.FC = () => {
                 {/* Step 2 */}
                 <View className="items-center">
                   <LinearGradient
-                    colors={['#2A2F50', '#28A745']}
+                    colors={["#2A2F50", "#28A745"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Text className="text-white font-bold text-lg">2</Text>
@@ -130,10 +119,9 @@ const SignupScreen: React.FC = () => {
                 {/* Line 2 */}
                 <View
                   style={{
-                    flex: 1,
+                    width: 100,
                     height: 2,
-                    backgroundColor: '#9CA3AF',
-                    marginHorizontal: 4,
+                    backgroundColor: "#9CA3AF",
                     marginTop: 19,
                   }}
                 />
@@ -145,11 +133,11 @@ const SignupScreen: React.FC = () => {
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: "#FFFFFF",
                       borderWidth: 2,
-                      borderColor: '#9CA3AF',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      borderColor: "#9CA3AF",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Text className="text-gray-500 font-bold text-lg">3</Text>
@@ -159,10 +147,9 @@ const SignupScreen: React.FC = () => {
                 {/* Line 3 */}
                 <View
                   style={{
-                    flex: 1,
+                    width: 100,
                     height: 2,
-                    backgroundColor: '#9CA3AF',
-                    marginHorizontal: 4,
+                    backgroundColor: "#9CA3AF",
                     marginTop: 19,
                   }}
                 />
@@ -174,11 +161,11 @@ const SignupScreen: React.FC = () => {
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: "#FFFFFF",
                       borderWidth: 2,
-                      borderColor: '#9CA3AF',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      borderColor: "#9CA3AF",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Text className="text-gray-500 font-bold text-lg">4</Text>
@@ -187,7 +174,7 @@ const SignupScreen: React.FC = () => {
               </View>
 
               {/* Heading */}
-              <Text className="text-xl font-semibold mb-2 text-center">
+              <Text className="text-xl font-bold mb-2 text-center text-gray-800">
                 Contact Details
               </Text>
               <Text className="text-sm text-gray-500 mb-6 text-center">
@@ -196,7 +183,7 @@ const SignupScreen: React.FC = () => {
 
               {/* Form Fields */}
               <View className="mb-4">
-                <Text className="text-sm font-medium text-gray-700 mb-1">
+                <Text className="text-sm font-bold text-gray-700 mb-1">
                   Business Email
                 </Text>
                 <TextInput
@@ -208,7 +195,7 @@ const SignupScreen: React.FC = () => {
               </View>
 
               <View className="mb-4">
-                <Text className="text-sm font-medium text-gray-700 mb-1">
+                <Text className="text-sm font-bold text-gray-700 mb-1">
                   Phone Number
                 </Text>
                 <TextInput
@@ -220,7 +207,7 @@ const SignupScreen: React.FC = () => {
               </View>
 
               <View className="mb-4">
-                <Text className="text-sm font-medium text-gray-700 mb-1">
+                <Text className="text-sm font-bold text-gray-700 mb-1">
                   Street Address
                 </Text>
                 <TextInput
@@ -233,7 +220,7 @@ const SignupScreen: React.FC = () => {
 
               <View className="mb-4 flex-row space-x-4">
                 <View className="flex-1">
-                  <Text className="text-sm font-medium text-gray-700 mb-1">City</Text>
+                  <Text className="text-sm font-bold text-gray-700 mb-1">City</Text>
                   <TextInput
                     value={city}
                     onChangeText={setCity}
@@ -242,7 +229,7 @@ const SignupScreen: React.FC = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-sm font-medium text-gray-700 mb-1">Postal Code</Text>
+                  <Text className="text-sm font-bold text-gray-700 mb-1">Postal Code</Text>
                   <TextInput
                     value={postalCode}
                     onChangeText={setPostalCode}
@@ -253,7 +240,7 @@ const SignupScreen: React.FC = () => {
               </View>
 
               <View className="mb-6">
-                <Text className="text-sm font-medium text-gray-700 mb-1">Country</Text>
+                <Text className="text-sm font-bold text-gray-700 mb-1">Country</Text>
                 <TextInput
                   value={country}
                   onChangeText={setCountry}
@@ -264,38 +251,34 @@ const SignupScreen: React.FC = () => {
 
               {/* Buttons */}
               <View className="flex-row justify-between mb-2">
-                {/* Previous Button */}
                 <TouchableOpacity
                   className="flex-1 mr-2 rounded-lg items-center justify-center"
-                  style={{ height: 50, backgroundColor: '#D1D5DB' }} // equal height & color
+                  style={{ height: 50, backgroundColor: "#D1D5DB" }}
                   onPress={() => navigation.goBack()}
                 >
-                  <Text className="text-gray-700 font-medium">← Previous</Text>
+                  <Text className="text-gray-700 font-bold">← Previous</Text>
                 </TouchableOpacity>
 
-                {/* Complete Button */}
-                {/* Complete Button */}
-<TouchableOpacity
-  className="flex-1 ml-2 rounded-lg items-center justify-center"
-  style={{ height: 50 }}
-  onPress={() => navigation.navigate('ContactDetails')} // <- yaha navigation add kiya
->
-  <LinearGradient
-    colors={['#2A2F50', '#28A745']}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-    style={{
-      width: '100%',
-      height: '100%',
-      borderRadius: 12.77,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <Text className="text-white font-bold">Complete →</Text>
-  </LinearGradient>
-</TouchableOpacity>
-
+                <TouchableOpacity
+                  className="flex-1 ml-2 rounded-lg items-center justify-center"
+                  style={{ height: 50 }}
+                  onPress={() => navigation.navigate("ContactDetails")}
+                >
+                  <LinearGradient
+                    colors={["#2A2F50", "#28A745"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: 12.77,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text className="text-white font-bold">Complete →</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
 
               {/* Horizontal Line */}
@@ -303,7 +286,7 @@ const SignupScreen: React.FC = () => {
 
               {/* Already Have Account */}
               <Text className="text-center text-sm text-gray-500">
-                Already have an Account?{' '}
+                Already have an Account?{" "}
                 <Text className="text-green-600 font-medium">Sign in here</Text>
               </Text>
             </View>

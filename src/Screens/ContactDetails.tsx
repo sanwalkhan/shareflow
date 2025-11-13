@@ -91,7 +91,7 @@ const ContactDetails: React.FC = () => {
               }}
             >
               {/* Stepper */}
-              <View className="flex-row items-center justify-between mb-8 w-full px-4">
+              <View className="flex-row items-center justify-between mb-10 w-full px-4">
                 {[1, 2, 3, 4].map((step, index) => (
                   <React.Fragment key={index}>
                     <View className="items-center">
@@ -138,11 +138,14 @@ const ContactDetails: React.FC = () => {
               </View>
 
               {/* Heading */}
-              <Text className="text-xl font-semibold mb-2 text-center">
+              <Text
+                className="text-[22px] font-extrabold text-gray-800 text-center mb-2"
+                style={{ fontFamily: "Poppins" }}
+              >
                 Company Information
               </Text>
-              <Text className="text-sm text-gray-500 mb-6 text-center">
-                Enter your company’s official details
+              <Text className="text-sm text-gray-500 text-center mb-8 font-medium">
+                Enter your company’s official details below
               </Text>
 
               {/* Form Fields */}
@@ -150,27 +153,27 @@ const ContactDetails: React.FC = () => {
                 {/* Row 1 */}
                 <View className="flex-row space-x-4">
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Company Legal Name
                     </Text>
                     <TextInput
                       value={legalName}
                       onChangeText={setLegalName}
                       placeholder="Enter company legal name"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
 
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Company Type
                     </Text>
                     <TextInput
                       value={companyType}
                       onChangeText={setCompanyType}
                       placeholder="Select company type"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
@@ -179,27 +182,27 @@ const ContactDetails: React.FC = () => {
                 {/* Row 2 */}
                 <View className="flex-row space-x-4">
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Industry
                     </Text>
                     <TextInput
                       value={industry}
                       onChangeText={setIndustry}
                       placeholder="Select industry"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
 
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Company Status
                     </Text>
                     <TextInput
                       value={companyStatus}
                       onChangeText={setCompanyStatus}
                       placeholder="Select company status"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
@@ -208,35 +211,35 @@ const ContactDetails: React.FC = () => {
                 {/* Row 3 */}
                 <View className="flex-row space-x-4">
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Year Founded
                     </Text>
                     <TextInput
                       value={yearFounded}
                       onChangeText={setYearFounded}
                       placeholder="Enter founding year"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
 
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                    <Text className="text-sm font-semibold text-gray-800 mb-2">
                       Tax ID
                     </Text>
                     <TextInput
                       value={taxId}
                       onChangeText={setTaxId}
                       placeholder="Enter tax ID"
-                      className="bg-gray-200 rounded-lg px-4"
+                      className="bg-gray-200 rounded-lg px-4 text-black"
                       style={{ height: 50 }}
                     />
                   </View>
                 </View>
 
-                {/* Row 4 - Registration Number with Icon */}
+                {/* Row 4 */}
                 <View>
-                  <Text className="text-sm font-medium text-gray-700 mb-1 mt-2">
+                  <Text className="text-sm font-semibold text-gray-800 mb-2">
                     Registration Number
                   </Text>
                   <TouchableOpacity
@@ -251,7 +254,7 @@ const ContactDetails: React.FC = () => {
                     <ChevronDown color="#555" size={22} />
                   </TouchableOpacity>
 
-                  {/* Dropdown Options */}
+                  {/* Dropdown */}
                   {showDropdown && (
                     <View className="bg-gray-100 rounded-lg mt-2 shadow-md">
                       {registrationOptions.map((option, i) => (
@@ -271,10 +274,10 @@ const ContactDetails: React.FC = () => {
                 </View>
               </View>
 
-              {/* Complete Button Full Width */}
+              {/* Complete Button */}
               <TouchableOpacity
-                className="rounded-lg items-center justify-center mt-8"
-                style={{ height: 60 }} // increased height
+                className="rounded-lg items-center justify-center mt-10"
+                style={{ height: 60 }}
                 onPress={() => navigation.navigate("VerifyEmail")}
               >
                 <LinearGradient
@@ -289,7 +292,9 @@ const ContactDetails: React.FC = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Text className="text-white font-bold text-lg">Complete →</Text>
+                  <Text className="text-white font-bold text-lg">
+                    Complete →
+                  </Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>

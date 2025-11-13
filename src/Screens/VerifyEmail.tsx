@@ -202,7 +202,7 @@ const VerifyEmail: React.FC = () => {
                   <TouchableOpacity
                     className="flex-1 ml-2 rounded-lg items-center justify-center"
                     style={{ height: 50 }}
-                    onPress={() => navigation.navigate("NextScreen")}
+                    onPress={() => navigation.navigate("Administrator")}
                   >
                     <LinearGradient
                       colors={["#2A2F50", "#28A745"]}
