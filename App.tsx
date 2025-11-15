@@ -15,6 +15,18 @@ import Forgetpwd from "./src/Screens/Forgetpwd";
 import Password from "./src/Screens/Password";
 import VerifyReset from "./src/Screens/VerifyReset";
 
+import HomeLayout from "./src/Screens/HomeLayout";
+import Cards from "./src/Screens/Cards";
+import InfoScreen from "./src/Screens/InfoScreen";
+import BusinessScreen from "./src/Screens/BusinessScreen";
+import Marketing from "./src/Screens/Marketing";
+import Footer from "./src/Screens/Footer";
+
+
+
+
+
+
 
 
 
@@ -29,6 +41,8 @@ const App: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+         <Stack.Screen name="HomeLayout" component={HomeLayout} />
+
          <Stack.Screen name="Header" component={Header} />
         <Stack.Screen name="Hero" component={HeroScreen} />
 
@@ -40,6 +54,16 @@ const App: React.FC = () => {
           <Stack.Screen name="Forgetpwd" component={Forgetpwd} />
            <Stack.Screen name="Password" component={Password} />
             <Stack.Screen name="VerifyReset" component={VerifyReset} />
+            <Stack.Screen name="Cards" component={Cards} />
+             <Stack.Screen name="InfoScreen" component={InfoScreen} />
+             <Stack.Screen name="BusinessScreen" component={BusinessScreen} />
+             <Stack.Screen name="Marketing" component={Marketing} />
+             <Stack.Screen name="Footer" component={Footer} />
+
+
+
+
+
 
 
 

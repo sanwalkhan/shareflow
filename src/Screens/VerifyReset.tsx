@@ -110,48 +110,43 @@ const VerifyReset: React.FC = () => {
               </Text>
 
               {/* Stepper */}
-              <View className="flex-row items-center mb-8">
-                {/* Step 1 */}
-                <LinearGradient
-                  colors={["#2A2F50", "#28A745"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text className="text-white font-bold">1</Text>
-                </LinearGradient>
+              <View className="flex-row items-center justify-center mb-8">
+  {/* Step 1 - Gradient Circle */}
+  <LinearGradient
+    colors={["#2A2F50", "#28A745"]}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={{
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <Text className="text-white text-sm font-bold">1</Text>
+  </LinearGradient>
 
-                {/* Line */}
-                <View
-                  style={{
-                    width: 120,
-                    height: 2,
-                    backgroundColor: "#9CA3AF",
-                    marginLeft: 8,
-                    marginRight: 8,
-                  }}
-                />
+  {/* Line */}
+  <View className="w-28 h-[3px] bg-gray-400" />
 
-                {/* Step 2 */}
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "#AEA2A2",
-                  }}
-                >
-                  <Text className="text-white font-bold">2</Text>
-                </View>
-              </View>
+  {/* Step 2 - Gradient Circle (Filled) */}
+  <LinearGradient
+    colors={["#2A2F50", "#28A745"]}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={{
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <Text className="text-white text-sm font-bold">2</Text>
+  </LinearGradient>
+</View>
+
 
               {/* Step Headings */}
               <Text className="text-lg font-bold text-gray-800 mb-2">
@@ -255,7 +250,7 @@ const VerifyReset: React.FC = () => {
               <View
                 className="rounded-xl p-5 mt-8 border border-[#28A745]"
                 style={{
-                  width: "95%", // increased width
+                  width: "95%",
                   alignSelf: "center",
                   backgroundColor: "rgba(178, 175, 175, 0.5)",
                 }}

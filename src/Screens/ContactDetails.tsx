@@ -87,7 +87,7 @@ const ContactDetails: React.FC = () => {
               style={{
                 alignSelf: "center",
                 width: "90%",
-                height: 730,
+                height: 780,
               }}
             >
               {/* Stepper */}
@@ -278,7 +278,7 @@ const ContactDetails: React.FC = () => {
               <TouchableOpacity
                 className="rounded-lg items-center justify-center mt-10"
                 style={{ height: 60 }}
-                onPress={() => navigation.navigate("VerifyEmail")}
+                onPress={() => navigation.navigate("Administrator")}
               >
                 <LinearGradient
                   colors={["#2A2F50", "#28A745"]}
@@ -297,6 +297,29 @@ const ContactDetails: React.FC = () => {
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
+                {/* Horizontal Line */}
+                           <View
+                style={{
+                  height: 3,
+                  backgroundColor: "#000000",
+                  width: "90%",
+                  alignSelf: "center",
+                  marginVertical: 20,
+                  marginTop:26,
+                }}
+              />
+              
+                            {/* Already Have Account */}
+                           <View className="flex-row justify-center mt-4">
+                             <Text className="text-sm text-gray-500">
+                               Already have an Account?{" "}
+                             </Text>
+                             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                               <Text className="text-sm text-green-600 font-medium">Sign in here</Text>
+                             </TouchableOpacity>
+                           </View>
+                          
+                        
             </View>
           </View>
         </View>

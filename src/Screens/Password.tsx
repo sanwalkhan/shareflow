@@ -77,15 +77,13 @@ const Password: React.FC = () => {
                 minHeight: 780,
               }}
             >
-              {/* Stepper */}
+              {/* Stepper - All 4 steps filled */}
               <View className="flex-row items-center justify-between mb-10 w-full px-4">
                 {[1, 2, 3, 4].map((step, index) => (
                   <React.Fragment key={index}>
                     <View className="items-center">
                       <LinearGradient
-                        colors={
-                          step <= 2 ? ["#2A2F50", "#28A745"] : ["#FFFFFF", "#FFFFFF"]
-                        }
+                        colors={["#2A2F50", "#28A745"]} // Gradient for all steps
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         style={{
@@ -94,17 +92,9 @@ const Password: React.FC = () => {
                           borderRadius: 20,
                           justifyContent: "center",
                           alignItems: "center",
-                          borderWidth: step > 2 ? 2 : 0,
-                          borderColor: step > 2 ? "#9CA3AF" : "transparent",
                         }}
                       >
-                        <Text
-                          className={`font-bold text-lg ${
-                            step <= 2 ? "text-white" : "text-gray-500"
-                          }`}
-                        >
-                          {step}
-                        </Text>
+                        <Text className="font-bold text-lg text-white">{step}</Text>
                       </LinearGradient>
                     </View>
                     {step < 4 && (
@@ -112,10 +102,9 @@ const Password: React.FC = () => {
                         style={{
                           flex: 1,
                           height: 3,
-                          backgroundColor: "#9CA3AF",
+                          backgroundColor: "#2A2F50", // Gradient color effect
                           marginHorizontal: 6,
                           marginTop: 19,
-                          width: 30,
                         }}
                       />
                     )}
@@ -255,12 +244,14 @@ const Password: React.FC = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Divider & Footer */}
-              <View className="border-t border-gray-300 mt-14 pt-4">
-                <Text className="text-center text-sm text-gray-500">
+              {/* Footer */}
+              <View className="flex-row justify-center mt-4">
+                <Text className="text-sm text-gray-500">
                   Already have an Account?{" "}
-                  <Text className="text-green-600 font-medium">Sign in here</Text>
                 </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                  <Text className="text-sm text-green-600 font-medium">Sign in here</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

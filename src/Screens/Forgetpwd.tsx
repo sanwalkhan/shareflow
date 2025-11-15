@@ -200,6 +200,7 @@ const ForgetPwd: React.FC = () => {
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
+              
 
               {/* Security Notice Box */}
               <View

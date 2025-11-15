@@ -84,6 +84,111 @@ const Administrator: React.FC = () => {
                 </Text>
               </View>
 
+              {/* Stepper */}
+              <View className="flex-row items-center justify-between mb-6 w-full px-4">
+                {/* Step 1 */}
+                <View className="items-center">
+                  <LinearGradient
+                    colors={["#2A2F50", "#28A745"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text className="text-white font-bold text-lg">1</Text>
+                  </LinearGradient>
+                </View>
+
+                {/* Line 1 */}
+                <View
+                  style={{
+                    width: 100,
+                    height: 2,
+                    backgroundColor: "#2A2F50",
+                    marginTop: 19,
+                  }}
+                />
+
+                {/* Step 2 */}
+                <View className="items-center">
+                  <LinearGradient
+                    colors={["#2A2F50", "#28A745"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text className="text-white font-bold text-lg">2</Text>
+                  </LinearGradient>
+                </View>
+
+                {/* Line 2 */}
+                <View
+                  style={{
+                    width: 100,
+                    height: 2,
+                    backgroundColor: "#2A2F50",
+                    marginTop: 19,
+                  }}
+                />
+
+                {/* Step 3 */}
+                <View className="items-center">
+                  <LinearGradient
+                    colors={["#2A2F50", "#28A745"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text className="text-white font-bold text-lg">3</Text>
+                  </LinearGradient>
+                </View>
+
+                {/* Line 3 */}
+                <View
+                  style={{
+                    width: 100,
+                    height: 2,
+                    backgroundColor: "#9CA3AF",
+                    marginTop: 19,
+                  }}
+                />
+
+                {/* Step 4 - Empty */}
+                <View className="items-center">
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: "#FFFFFF",
+                      borderWidth: 2,
+                      borderColor: "#9CA3AF",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text className="text-gray-500 font-bold text-lg">4</Text>
+                  </View>
+                </View>
+              </View>
+
               {/* Form Fields */}
               <View className="space-y-8">
                 {/* First & Last Name */}
@@ -180,13 +285,28 @@ const Administrator: React.FC = () => {
               </View>
 
               {/* Divider */}
-              <View className="border-t border-gray-300 my-8" />
+              <View
+                style={{
+                  height: 3,
+                  backgroundColor: "#000000",
+                  width: "90%",
+                  alignSelf: "center",
+                  marginVertical: 20,
+                  marginTop: 32,
+                }}
+              />
 
               {/* Already Have Account */}
-              <Text className="text-center text-sm text-gray-500">
-                Already have an Account?{" "}
-                <Text className="text-green-600 font-medium">Sign in here</Text>
-              </Text>
+              <View className="flex-row justify-center mt-4">
+                <Text className="text-sm text-gray-500">
+                  Already have an Account?{" "}
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                  <Text className="text-sm text-green-600 font-medium">
+                    Sign in here
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>

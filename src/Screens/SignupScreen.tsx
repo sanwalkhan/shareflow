@@ -28,7 +28,7 @@ const SignupScreen: React.FC = () => {
           {/* Outer Card */}
           <View
             className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-4"
-            style={{ width: 800, height: 940 }}
+            style={{ width: 800, height: 1050 }}
           >
             {/* Top Bar */}
             <View className="flex-row items-center justify-center mb-6 w-full relative">
@@ -68,110 +68,111 @@ const SignupScreen: React.FC = () => {
             {/* Inner Card */}
             <View className="bg-white rounded-3xl shadow-2xl p-6" style={{ alignSelf: "center", width: "90%" }}>
               
-              {/* Progress Stepper */}
-              <View className="flex-row items-center justify-between mb-6 w-full px-4">
-                {/* Step 1 */}
-                <View className="items-center">
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-lg">1</Text>
-                  </LinearGradient>
-                </View>
+             {/* Progress Stepper */}
+<View className="flex-row items-center justify-between mb-6 w-full px-4">
+  {/* Step 1 - Active */}
+  <View className="items-center">
+    <LinearGradient
+      colors={["#2A2F50", "#28A745"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text className="text-white font-bold text-lg">1</Text>
+    </LinearGradient>
+  </View>
 
-                {/* Line 1 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#9CA3AF",
-                    marginTop: 19,
-                  }}
-                />
+  {/* Line 1 - Active */}
+  <View
+    style={{
+      width: 100,
+      height: 2,
+      backgroundColor: "#2A2F50", // optional: active line color
+      marginTop: 19,
+    }}
+  />
 
-                {/* Step 2 */}
-                <View className="items-center">
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-lg">2</Text>
-                  </LinearGradient>
-                </View>
+  {/* Step 2 - Inactive */}
+  <View className="items-center">
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 2,
+        borderColor: "#9CA3AF",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text className="text-gray-500 font-bold text-lg">2</Text>
+    </View>
+  </View>
 
-                {/* Line 2 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#9CA3AF",
-                    marginTop: 19,
-                  }}
-                />
+  {/* Line 2 - Inactive */}
+  <View
+    style={{
+      width: 100,
+      height: 2,
+      backgroundColor: "#9CA3AF",
+      marginTop: 19,
+    }}
+  />
 
-                {/* Step 3 */}
-                <View className="items-center">
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: "#FFFFFF",
-                      borderWidth: 2,
-                      borderColor: "#9CA3AF",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-gray-500 font-bold text-lg">3</Text>
-                  </View>
-                </View>
+  {/* Step 3 - Inactive */}
+  <View className="items-center">
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 2,
+        borderColor: "#9CA3AF",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text className="text-gray-500 font-bold text-lg">3</Text>
+    </View>
+  </View>
 
-                {/* Line 3 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#9CA3AF",
-                    marginTop: 19,
-                  }}
-                />
+  {/* Line 3 - Inactive */}
+  <View
+    style={{
+      width: 100,
+      height: 2,
+      backgroundColor: "#9CA3AF",
+      marginTop: 19,
+    }}
+  />
 
-                {/* Step 4 */}
-                <View className="items-center">
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: "#FFFFFF",
-                      borderWidth: 2,
-                      borderColor: "#9CA3AF",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-gray-500 font-bold text-lg">4</Text>
-                  </View>
-                </View>
-              </View>
+  {/* Step 4 - Inactive */}
+  <View className="items-center">
+    <View
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 2,
+        borderColor: "#9CA3AF",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text className="text-gray-500 font-bold text-lg">4</Text>
+    </View>
+  </View>
+</View>
+
 
               {/* Heading */}
               <Text className="text-xl font-bold mb-2 text-center text-gray-800">
@@ -218,17 +219,18 @@ const SignupScreen: React.FC = () => {
                 />
               </View>
 
-              <View className="mb-4 flex-row space-x-4">
-                <View className="flex-1">
-                  <Text className="text-sm font-bold text-gray-700 mb-1">City</Text>
-                  <TextInput
-                    value={city}
-                    onChangeText={setCity}
-                    placeholder="Enter City"
-                    className="bg-gray-200 rounded-lg px-4 py-3"
-                  />
-                </View>
-                <View className="flex-1">
+              <View className="mb-4">
+                <Text className="text-sm font-bold text-gray-700 mb-1">
+                City
+                </Text>
+                <TextInput
+                  value={street}
+                  onChangeText={setStreet}
+                  placeholder="Enter company headquarters"
+                  className="bg-gray-200 rounded-lg px-4 py-3"
+                />
+             
+                <View className="flex-1 mt-6">
                   <Text className="text-sm font-bold text-gray-700 mb-1">Postal Code</Text>
                   <TextInput
                     value={postalCode}
@@ -250,7 +252,7 @@ const SignupScreen: React.FC = () => {
               </View>
 
               {/* Buttons */}
-              <View className="flex-row justify-between mb-2">
+              <View className="flex-row justify-between mt-2">
                 <TouchableOpacity
                   className="flex-1 mr-2 rounded-lg items-center justify-center"
                   style={{ height: 50, backgroundColor: "#D1D5DB" }}
@@ -282,13 +284,26 @@ const SignupScreen: React.FC = () => {
               </View>
 
               {/* Horizontal Line */}
-              <View className="border-t border-gray-300 my-4" />
+             <View
+                style={{
+                  height: 3,
+                  backgroundColor: "#000000",
+                  width: "90%",
+                  alignSelf: "center",
+                  marginVertical: 20,
+                  marginTop:28,
+                }}
+              />
+             {/* Already Have Account */}
+<View className="flex-row justify-center mt-4">
+  <Text className="text-sm text-gray-500">
+    Already have an Account?{" "}
+  </Text>
+  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+    <Text className="text-sm text-green-600 font-medium">Sign in here</Text>
+  </TouchableOpacity>
+</View>
 
-              {/* Already Have Account */}
-              <Text className="text-center text-sm text-gray-500">
-                Already have an Account?{" "}
-                <Text className="text-green-600 font-medium">Sign in here</Text>
-              </Text>
             </View>
           </View>
         </View>
