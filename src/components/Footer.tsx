@@ -9,207 +9,162 @@ export default function Footer() {
   );
   const currentYear = new Date().getFullYear();
 
-  // Utility function to generate Rgba string from Hex and Opacity
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  // ✅ Responsive resize listener (for web + native)
   useEffect(() => {
-    // FIX: Initialize to null to satisfy TypeScript
-    let resizeTimeout: NodeJS.Timeout | null = null; 
-    
-    const handleResize = () => {
-      // Clear previous timeout if it exists
-      if (resizeTimeout) {
-        clearTimeout(resizeTimeout);
-      }
-      
-      resizeTimeout = setTimeout(() => {
-        const width = Dimensions.get("window").width;
-        setIsMobileView(width < 768);
-      }, 100);
-    };
-    
-    const subscription = Dimensions.addEventListener("change", handleResize);
-    
-    return () => {
-      // Safely clear timeout and remove listener on unmount
-      if (resizeTimeout) {
-        clearTimeout(resizeTimeout);
-      }
-      if (typeof subscription?.remove === "function") {
-          subscription.remove();
-      }
-    };
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setIsMobileView(window.width < 768);
+    });
+
+    return () => subscription?.remove();
   }, []);
 
-  const productLinks = ["Features", "Solutions", "Pricing", "API", "Documentation"];
-  const companyLinks = ["About", "Careers", "Blog", "Press", "Partners"];
-  const supportLinks = ["Help Center", "Contact", "Status", "Security", "Compliance"];
+  const links = [
+    { title: "Product", items: ["Features", "Pricing", "API"] },
+    { title: "Company", items: ["About", "Blog", "Careers"] },
+    { title: "Support", items: ["Help", "Contact", "Security"] },
+  ];
 
   return (
-    <View className="relative overflow-hidden w-full">
-      {/* Background */}
-      <View className="absolute inset-0" style={{ backgroundColor: COLORS.neutral }} />
-      <View 
-        className="absolute inset-0 bg-transparent" 
-        style={{ opacity: 0.02 }} 
-      />
+    <View className="w-full bg-neutral border-t border-white/10">
       
-      {/* Top Divider Line */}
-      <View
-        className="absolute top-0 left-0 right-0 h-[1px]"
-        style={{ backgroundColor: hexToRgba(COLORS.accent, 0.1) }}
-      />
-
-      {/* Content Wrapper */}
-      <View className="max-w-[1500px] mx-auto w-full">
-        <View
+      {/* Main Content - Ultra Compact */}
+      <View className="w-full max-w-5xl mx-auto">
+        <View 
           className="relative z-10"
           style={{
-            paddingVertical: isMobileView ? 48 : 64,
-            paddingHorizontal: isMobileView ? 20 : 40,
+            paddingVertical: isMobileView ? 24 : 32,
+            paddingHorizontal: isMobileView ? 16 : 32,
           }}
         >
-          {/* Top Section */}
-          <View
-            className={`${
-              isMobileView ? "flex-col" : "flex-row"
-            } justify-between items-start mb-12`}
-          >
-            {/* Brand Section */}
-            <View
-              className="flex-1"
-              style={{
-                marginBottom: isMobileView ? 32 : 0,
-                maxWidth: isMobileView ? "100%" : 320,
-              }}
-            >
-              <View className="flex-row items-center mb-4">
-                <View
-                  className="w-11 h-11 rounded-[12px] justify-center items-center border"
-                  style={{
-                    backgroundColor: hexToRgba(COLORS.accent, 0.1),
-                    borderColor: hexToRgba(COLORS.accent, 0.2),
-                  }}
-                >
-                  <Feather name="trending-up" size={24} color={COLORS.accent} />
+          
+          {/* Single Row Layout for Mobile */}
+          {isMobileView ? (
+            <View className="flex-col">
+              {/* Brand & Social in one row */}
+              <View className="flex-row justify-between items-center mb-4">
+                <View className="flex-row items-center">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center border border-accent/20 bg-accent/10">
+                    <Feather name="trending-up" size={18} color={COLORS.accent} />
+                  </View>
+                  <Text className="text-lg font-black text-white ml-2">
+                    Share<Text className="text-accent">Flow</Text>
+                  </Text>
                 </View>
-                <Text 
-                  className="text-2xl font-extrabold tracking-[-0.5px] ml-3"
-                  style={{ color: COLORS.white }}
-                >
-                  Share<Text style={{ color: COLORS.accent }}>Flow</Text>
-                </Text>
+                
+                {/* Social Links */}
+                <View className="flex-row gap-2">
+                  {["twitter", "linkedin", "github"].map((icon) => (
+                    <TouchableOpacity
+                      key={icon}
+                      className="w-7 h-7 rounded-lg justify-center items-center border border-white/10 bg-white/5"
+                    >
+                      <Feather name={icon as any} size={14} color="rgba(255,255,255,0.8)" />
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-              <Text 
-                className="text-[15px] leading-[22px] tracking-[-0.2px] mb-6"
-                style={{ color: hexToRgba(COLORS.white, 0.7) }}
-              >
-                Enterprise financial intelligence platform powering the world's most
-                innovative companies.
-              </Text>
 
-              {/* Social Icons */}
-              <View className="flex-row gap-3">
-                {["twitter", "linkedin", "github"].map((icon) => (
-                  <TouchableOpacity
-                    key={icon}
-                    className="w-10 h-10 rounded-[12px] justify-center items-center border"
-                    style={{
-                      backgroundColor: hexToRgba(COLORS.white, 0.05),
-                      borderColor: hexToRgba(COLORS.white, 0.08),
-                    }}
-                  >
-                    <Feather name={icon as any} size={18} color={hexToRgba(COLORS.white, 0.8)} />
-                  </TouchableOpacity>
+              {/* Links in compact grid */}
+              <View className="flex-row justify-between mb-4">
+                {links.map((section) => (
+                  <View key={section.title} className="flex-1 items-start">
+                    <Text className="text-white font-bold text-xs mb-2">
+                      {section.title}
+                    </Text>
+                    <View className="gap-1">
+                      {section.items.map((link) => (
+                        <TouchableOpacity key={link}>
+                          <Text className="text-white/60 text-[10px]">
+                            {link}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
                 ))}
               </View>
-            </View>
 
-            {/* Links Grid */}
-            <View
-              className={`${
-                isMobileView ? "flex-col" : "flex-row"
-              } gap-12 flex-wrap`}
-            >
-              {[
-                { title: "Product", links: productLinks },
-                { title: "Company", links: companyLinks },
-                { title: "Support", links: supportLinks },
-              ].map((section) => (
-                <View
-                  key={section.title}
-                  style={{ minWidth: isMobileView ? "100%" : 160 }}
-                >
-                  <Text 
-                    className="font-bold text-base mb-4 tracking-[-0.3px]"
-                    style={{ color: COLORS.white }}
-                  >
-                    {section.title}
-                  </Text>
-                  {section.links.map((link) => (
-                    <TouchableOpacity key={link} className="mb-3 relative">
-                      <Text 
-                        className="text-sm tracking-[-0.2px]"
-                        style={{ color: hexToRgba(COLORS.white, 0.7) }}
-                      >
-                        {link}
+              {/* Legal & Copyright in one row */}
+              <View className="flex-row justify-between items-center pt-3 border-t border-white/10">
+                <View className="flex-row gap-3">
+                  {["Privacy", "Terms", "Cookies"].map((item) => (
+                    <TouchableOpacity key={item}>
+                      <Text className="text-white/50 text-[9px]">
+                        {item}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
-              ))}
+                <Text className="text-white/40 text-[9px]">
+                  © {currentYear}
+                </Text>
+              </View>
             </View>
-          </View>
-
-          {/* Divider */}
-          <View 
-            className="h-[1px] mb-6" 
-            style={{ backgroundColor: hexToRgba(COLORS.white, 0.08) }}
-          />
-
-          {/* Bottom Section */}
-          <View
-            className={`${
-              isMobileView ? "flex-col" : "flex-row"
-            } justify-between ${isMobileView ? "items-start" : "items-center"}`}
-          >
-            {/* Legal Links */}
-            <View
-              className={`${
-                isMobileView ? "flex-col" : "flex-row"
-              } gap-6 ${isMobileView ? "mb-4" : "mb-0"}`}
-            >
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
-                (item) => (
-                  <TouchableOpacity key={item} className="py-1">
-                    <Text 
-                      className="text-[13px] tracking-[0.2px]"
-                      style={{ color: hexToRgba(COLORS.white, 0.6) }}
+          ) : (
+            /* Desktop Layout */
+            <View className="flex-row justify-between items-start">
+              
+              {/* Brand Section */}
+              <View className="max-w-[200px]">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center border border-accent/20 bg-accent/10">
+                    <Feather name="trending-up" size={18} color={COLORS.accent} />
+                  </View>
+                  <Text className="text-lg font-black text-white ml-2">
+                    Share<Text className="text-accent">Flow</Text>
+                  </Text>
+                </View>
+                <Text className="text-white/60 text-xs leading-4 mb-3">
+                  Enterprise financial platform.
+                </Text>
+                <View className="flex-row gap-2">
+                  {["twitter", "linkedin", "github"].map((icon) => (
+                    <TouchableOpacity
+                      key={icon}
+                      className="w-7 h-7 rounded-lg justify-center items-center border border-white/10 bg-white/5"
                     >
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              )}
-            </View>
+                      <Feather name={icon as any} size={14} color="rgba(255,255,255,0.8)" />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
 
-            {/* Copyright */}
-            <Text
-              className="text-[13px] tracking-[0.2px]"
-              style={{ 
-                color: hexToRgba(COLORS.white, 0.5),
-                textAlign: isMobileView ? "left" : "center" 
-              }}
-            >
-              © {currentYear} ShareFlow Technologies. All rights reserved.
-            </Text>
-          </View>
+              {/* Links */}
+              <View className="flex-row gap-8">
+                {links.map((section) => (
+                  <View key={section.title}>
+                    <Text className="text-white font-bold text-xs mb-2">
+                      {section.title}
+                    </Text>
+                    <View className="gap-1">
+                      {section.items.map((link) => (
+                        <TouchableOpacity key={link}>
+                          <Text className="text-white/60 text-xs">
+                            {link}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              {/* Legal & Copyright */}
+              <View className="items-end">
+                <View className="flex-row gap-4 mb-2">
+                  {["Privacy", "Terms", "Cookies"].map((item) => (
+                    <TouchableOpacity key={item}>
+                      <Text className="text-white/50 text-[10px]">
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text className="text-white/40 text-[10px]">
+                  © {currentYear} ShareFlow
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </View>
     </View>

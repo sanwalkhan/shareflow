@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Dimensions } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
-import Button from "../UI/Button"; // ✅ Use reusable button
+import Button from "../UI/Button";
 import { useNavigation } from "@react-navigation/native";
 
 export default function CTA() {
@@ -11,157 +11,91 @@ export default function CTA() {
     Dimensions.get("window").width < 768
   );
 
-  // ✅ Listen to window resizing for web responsiveness
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const width = Dimensions.get("window").width;
-        setIsMobileView(width < 768);
-      }, 100);
-    };
-    const subscription = Dimensions.addEventListener("change", handleResize);
-    return () => {
-      clearTimeout(resizeTimeout);
-      if (typeof subscription?.remove === "function") subscription.remove();
-    };
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setIsMobileView(window.width < 768);
+    });
+
+    return () => subscription?.remove();
   }, []);
 
   const handleGetStarted = () => {
-    // You can link this to Auth or Onboarding screen later
     navigation.navigate("Auth" as never);
   };
 
   return (
-    <View className="relative overflow-hidden w-full">
-      {/* Background Layers */}
+    <View className="relative w-full bg-gradient-to-b from-primary to-neutral/90">
       
-      {/* 🚀 KEY CHANGE: Simplified Base Background to primary color */}
-      <View
-        className="absolute inset-0"
-        style={{ backgroundColor: COLORS.primary }}
-      />
-      
-      {/* Background Texture/Pattern Layer (using neutral for dark texture) */}
-      <View
-        className="absolute inset-0 bg-transparent"
-        style={{ backgroundColor: COLORS.neutral, opacity: 0.08 }} // Subtle dark pattern
-      />
-      
-      {/* Background shape for visual interest */}
-      <View
-        className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] rounded-[150px]"
-        style={{ backgroundColor: COLORS.accent, opacity: 0.05 }}
-      />
+      {/* Simple Background Pattern */}
+      <View className="absolute inset-0 opacity-5">
+        <View className="absolute top-10 right-10 w-20 h-20 rounded-full bg-accent" />
+        <View className="absolute bottom-10 left-10 w-16 h-16 rounded-full bg-white" />
+      </View>
 
-      {/* Content Container */}
-      <View className="max-w-[1500px] mx-auto w-full">
-        <View
+      {/* Main Content - Ultra Compact */}
+      <View className="w-full max-w-4xl mx-auto">
+        <View 
           className="items-center relative z-10"
           style={{
-            paddingVertical: isMobileView ? 60 : 100, // Increased vertical padding
-            paddingHorizontal: isMobileView ? 20 : 40,
+            paddingVertical: isMobileView ? 50 : 70,
+            paddingHorizontal: isMobileView ? 16 : 32,
           }}
         >
-          {/* Title and Description */}
-          <View className="items-center mb-12 max-w-[800px]">
-            <View className="items-center mb-4 relative">
-              <Text
-                className="text-white text-center font-extrabold mb-3 tracking-[-0.8px]"
-                style={{
-                  color: COLORS.white, // ✅ Used COLORS.white
-                  fontSize: isMobileView ? 34 : 48, // Increased size for impact
-                  lineHeight: isMobileView ? 40 : 58,
-                  textShadowColor: "rgba(255,255,255,0.1)",
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
-                }}
-              >
-                Ready to transform your financial operations?
-              </Text>
-              <View
-                className="w-[100px] h-1 rounded-[2px]"
-                style={{ backgroundColor: COLORS.accent, opacity: 0.8 }}
-              />
-            </View>
-
-            <Text
-              className="text-white/85 text-center mb-4 tracking-[-0.2px] leading-7 max-w-[600px]"
-              style={{
-                color: "rgba(255,255,255,0.85)", // ✅ White with opacity
-                fontSize: isMobileView ? 17 : 19, // Slightly increased size
-              }}
-            >
-              Join thousands of companies already using ShareFlow to save time,
-              reduce risk, and drive sustainable growth.
+          
+          {/* Single Focused Message */}
+          <View className="items-center mb-8 max-w-md">
+            <Text className="text-white text-center font-black text-2xl md:text-3xl leading-tight mb-4">
+              Start your free trial today
+            </Text>
+            <Text className="text-white/80 text-center text-base leading-6">
+              No credit card required • Setup in 5 minutes • Cancel anytime
             </Text>
           </View>
 
-          {/* ✅ Reusable Button */}
+          {/* Primary CTA Button */}
           <Button
             onPress={handleGetStarted}
-            className="flex-row items-center justify-center mb-12 min-w-[260px]"
+            className="flex-row items-center justify-center bg-accent px-8 py-4 rounded-xl shadow-2xl mb-6"
             style={{
-              backgroundColor: COLORS.accent,
               shadowColor: COLORS.accent,
-              shadowOffset: { width: 0, height: 8 },
+              shadowOffset: { width: 0, height: 6 },
               shadowOpacity: 0.4,
-              shadowRadius: 20,
-              elevation: 16,
-              paddingVertical: 18, // Slightly more padding
-              borderRadius: 16,
+              shadowRadius: 16,
+              elevation: 12,
             }}
           >
-            <Text className="text-white text-[18px] tracking-[-0.2px] mr-3">
-              Get Started Today
+            <Text className="text-white text-lg font-semibold mr-3">
+              Get Started Free
             </Text>
-            <View
-              className="w-7 h-7 rounded-[14px] justify-center items-center"
-              style={{
-                backgroundColor: COLORS.white, // ✅ Used COLORS.white
-                shadowColor: COLORS.black, // ✅ Used COLORS.black
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <Feather name="arrow-up-right" size={20} color={COLORS.black} /> {/* ✅ Used COLORS.black */}
-            </View>
+            <Feather name="arrow-right" size={20} color={COLORS.white} />
           </Button>
 
-          {/* ✅ Trust Indicators */}
-          <View
-            className={`${isMobileView ? "flex-col" : "flex-row"} items-center gap-8`}
-          >
-            {[
-              { icon: "shield", label: "Enterprise Security" },
-              { icon: "clock", label: "30-Day Free Trial" }, // Clarified trial duration
-              { icon: "users", label: "24/7 Priority Support" }, // Clarified support
-            ].map((item, index) => (
-              <View
-                key={index}
-                className="flex-row items-center p-3 rounded-[12px] border"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.05)", // ✅ White with opacity
-                  borderColor: "rgba(255,255,255,0.08)", // ✅ White with opacity
-                }}
-              >
-                <View
-                  className="w-8 h-8 rounded-[16px] justify-center items-center mr-2"
-                  style={{ backgroundColor: "rgba(134,194,50,0.15)" }} // ✅ Accent with opacity
-                >
-                  <Feather name={item.icon as any} size={18} color={COLORS.accent} />
-                </View>
-                <Text 
-                  className="text-white/80 text-base font-semibold tracking-[0.2px]" 
-                  style={{ color: "rgba(255,255,255,0.8)" }} // ✅ White with opacity
-                >
-                  {item.label}
-                </Text>
-              </View>
-            ))}
+          {/* Simple Trust Badges in Single Row */}
+          <View className="flex-row flex-wrap justify-center gap-4">
+            <View className="flex-row items-center">
+              <Feather name="shield" size={14} color={COLORS.accent} />
+              <Text className="text-white/70 text-xs ml-1">Enterprise Security</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Feather name="clock" size={14} color={COLORS.accent} />
+              <Text className="text-white/70 text-xs ml-1">30-Day Trial</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Feather name="users" size={14} color={COLORS.accent} />
+              <Text className="text-white/70 text-xs ml-1">24/7 Support</Text>
+            </View>
+          </View>
+
+          {/* Minimal Social Proof */}
+          <View className="mt-6 flex-row items-center">
+            <View className="flex-row mr-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Feather key={star} name="star" size={12} color={COLORS.warning} />
+              ))}
+            </View>
+            <Text className="text-white/60 text-xs">
+              4.9/5 from 500+ companies
+            </Text>
           </View>
         </View>
       </View>

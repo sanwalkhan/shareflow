@@ -1,4 +1,3 @@
-// src/components/Hero.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -7,220 +6,159 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 import Button from "../UI/Button";
 import { useNavigation } from "@react-navigation/native";
 
-// Assuming you have the hero background image in assets/images/hero-bg.png
-const HERO_BG_IMAGE = Platform.OS === 'web' 
-  ? require("../assets/images/hero-bg.png") 
-  : require("../assets/images/hero-bg.png");
-
-const HEADER_HEIGHT_ESTIMATE = 90; 
-
+const HERO_BG_IMAGE = require("../assets/images/hero-bg.png");
 
 export default function Hero() {
   const navigation = useNavigation();
-  const [isMobileView, setIsMobileView] = useState(
-    Dimensions.get("window").width < 768
-  );
   const [windowHeight, setWindowHeight] = useState(
     Dimensions.get("window").height
   );
 
-  // ✅ Listen to window resizing for web/native
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = ({ window }: { window: { width: number, height: number } }) => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        setIsMobileView(window.width < 768);
-        setWindowHeight(window.height);
-      }, 100);
-    };
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setWindowHeight(window.height);
+    });
 
-    const subscription = Dimensions.addEventListener("change", handleResize);
-    return () => {
-      clearTimeout(resizeTimeout);
-      if (typeof subscription?.remove === "function") subscription.remove();
-    };
+    return () => subscription?.remove();
   }, []);
+
+  const handleFreeTrial = () => {
+    navigation.navigate("Auth" as never);
+  };
+
+  const handleWatchDemo = () => {
+    console.log("Watch Demo pressed");
+  };
+
+  const trustedCompanies = [
+    "TechCorp", "GlobalBank", "InnovateCo", "ScaleFast", "FinancePlus"
+  ];
+
+  const features = [
+    { icon: "clock", text: "30-Day Free Trial" },
+    { icon: "shield", text: "Enterprise Security" },
+    { icon: "zap", text: "Setup in 5 mins" }
+  ];
+
   return (
-    <View
-      className="relative w-full"
-      style={{
-        minHeight: isMobileView ? windowHeight * 0.9 : 680,
-        backgroundColor: COLORS.neutral,
-        // ⚠️ IMPORTANT: If your Hero component is placed immediately after a fixed/absolute header,
-        // you might need to use a negative top margin here if the header is *not* covering it.
-        // However, based on the previous code, the ScrollView padding is the correct place to adjust.
-      }}
-    >
-      {/* 🚀 Background Image Container */}
+    <View className="relative w-full bg-neutral" style={{ minHeight: windowHeight * 0.85 }}>
+      
+      {/* Background Image */}
       <View className="absolute inset-0">
         <Image
           source={HERO_BG_IMAGE}
-          style={{
-            width: '100%',
-            height: '100%',
-            resizeMode: 'cover',
-            opacity: 0.15,
-          }}
+          className="w-full h-full"
+          resizeMode="cover"
+          style={{ opacity: 0.15 }}
         />
       </View>
       
-      {/* Background shapes */}
-      <View
-        className="absolute top-[-100px] right-[-100px] w-[300px] h-[300px] rounded-[150px] opacity-20"
+      {/* Background Shapes */}
+      <View 
+        className="absolute -top-12 -right-12 w-60 h-60 rounded-full opacity-20"
         style={{ backgroundColor: COLORS.accent }}
       />
-      <View
-        className="absolute bottom-[-100px] left-[-100px] w-[200px] h-[200px] rounded-[100px] opacity-10"
+      <View 
+        className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full opacity-10"
         style={{ backgroundColor: COLORS.primary }}
       />
-      {/* --- END Background --- */}
 
-
-      {/* ✅ Main Scrollable Content */}
+      {/* Main Content */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
           flexGrow: 1,
-          justifyContent: isMobileView ? 'flex-start' : 'center', 
-          
-          // ⬇️ THE KEY CHANGE: Reduced top padding
-          // The old values were (90 or 110) which pushed the content too far down.
-          // We are using a lower value to pull the content up, closer to the header's base.
-          paddingTop: isMobileView ? 60 : 70, // Reduced from 90/110 to 60/70
-          
-          paddingHorizontal: isMobileView ? 20 : 40,
-          paddingBottom: isMobileView ? 40 : 60,
+          justifyContent: 'center',
+          paddingTop: 50,
+          paddingHorizontal: 16,
+          paddingBottom: 30,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          className={`flex-1 ${isMobileView ? "flex-col" : "flex-row"} items-center md:h-full max-w-7xl mx-auto w-full`}
-        >
-          {/* Left Section: Text and CTAs */}
-          <View className={`z-10 ${isMobileView ? "w-full" : "md:w-1/2 lg:w-3/5"}`}>
-            {/* Tagline */}
+        <View className="flex-1 flex-col items-center w-full">
+          
+          {/* Main Content Section */}
+          <View className="w-full z-10">
+            
+            {/* Tagline Badge */}
             <View className="mb-4">
-              <View
-                className="px-4 py-2 rounded-[20px] self-start border relative overflow-hidden"
-                style={{
-                  backgroundColor: "rgba(134,194,50,0.08)",
-                  borderColor: "rgba(134,194,50,0.15)",
-                }}
-              >
-                <Text
-                  className="font-bold text-[13px] tracking-[0.5px]"
-                  style={{ color: COLORS.accent }}
-                >
+              <View className="px-3 py-1.5 rounded-xl self-start border border-accent/15 bg-accent/8">
+                <Text className="font-bold text-xs tracking-wide text-accent">
                   Enterprise Grade
                 </Text>
               </View>
             </View>
 
-            {/* Title */}
-            <View className="mb-3 relative">
-              <Text
-                className="font-extrabold tracking-[-0.8px]"
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: isMobileView ? 38 : 64,
-                  lineHeight: isMobileView ? 44 : 72,
-                  textShadowColor: "rgba(255,255,255,0.1)",
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
-                }}
-              >
+            {/* Main Title */}
+            <View className="mb-4">
+              <Text className="font-black tracking-tight text-white text-3xl leading-[38px]">
                 Financial Intelligence{"\n"}
-                <Text
-                  style={{
-                    color: COLORS.accent,
-                    textShadowColor: "rgba(134,194,50,0.3)",
-                    textShadowOffset: { width: 0, height: 4 },
-                    textShadowRadius: 8,
-                  }}
-                >
-                  Reimagined
-                </Text>
+                <Text className="text-accent">Reimagined</Text>
               </Text>
-              <View
-                className="absolute bottom-2 left-0 w-[120px] h-1 rounded-[2px]"
-                style={{ backgroundColor: COLORS.accent, opacity: 0.3 }}
-              />
+              <View className="w-20 h-1 rounded-sm bg-accent/30 mt-2" />
             </View>
 
             {/* Subtitle */}
-            <Text
-              className="max-w-[640px] tracking-[-0.2px]"
-              style={{
-                color: "rgba(255,255,255,0.85)",
-                marginVertical: 20,
-                fontSize: isMobileView ? 16 : 20,
-                lineHeight: isMobileView ? 26 : 32,
-              }}
-            >
+            <Text className="text-white/80 text-sm leading-6 tracking-tight mb-6">
               Streamline expense tracking, automate payroll, and unlock
               powerful shareholder insights with a single platform.
             </Text>
 
             {/* CTA Buttons */}
-            <View
-              className={`${isMobileView ? "flex-col w-full" : "flex-row"} items-start mt-6 gap-4`}
-            >
+            <View className="flex-col w-full gap-3 mb-8">
+              
+              {/* Free Trial Button */}
               <Button
-                onPress={() => navigation.navigate("Auth" as never)}
-                className={`flex-row items-center justify-center ${isMobileView ? "w-full" : ""}`}
+                onPress={handleFreeTrial}
+                className="flex-row items-center justify-center w-full bg-accent px-6 py-3.5 rounded-xl shadow-xl"
                 style={{
-                  backgroundColor: COLORS.accent,
-                  paddingHorizontal: 30,
-                  paddingVertical: 16,
-                  borderRadius: 16,
                   shadowColor: COLORS.accent,
-                  shadowOffset: { width: 0, height: 8 },
+                  shadowOffset: { width: 0, height: 6 },
                   shadowOpacity: 0.4,
-                  shadowRadius: 20,
-                  elevation: 10,
+                  shadowRadius: 16,
+                  elevation: 8,
                 }}
               >
-                <Text className="text-lg tracking-[-0.2px] mr-2"
-                style={{color: COLORS.white}}
-                >
+                <Text className="text-base text-white font-semibold tracking-tight mr-2">
                   Start Free Trial
                 </Text>
-                <Feather name="arrow-right" size={20} color={COLORS.white} />
+                <Feather name="arrow-right" size={18} color={COLORS.white} />
               </Button>
 
+              {/* Watch Demo Button */}
               <TouchableOpacity 
-                className={`flex-row items-center px-6 py-4 rounded-[16px] relative overflow-hidden ${isMobileView ? "w-full" : ""}`}
-                style={{ marginLeft: isMobileView ? 0 : 12, marginTop: isMobileView ? 12 : 0 }}
+                onPress={handleWatchDemo}
+                className="flex-row items-center justify-center w-full px-6 py-3.5 rounded-xl border border-white/10 bg-white/5"
               >
-                <View
-                  className="absolute inset-0 border"
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                    borderColor: "rgba(255,255,255,0.12)",
-                  }}
-                />
-                <Feather name="play-circle" size={20} color={COLORS.accent} />
-                <Text
-                  className="ml-3 font-semibold text-[16px]"
-                  style={{ color: "rgba(255,255,255,0.9)" }}
-                >
+                <Feather name="play-circle" size={18} color={COLORS.accent} />
+                <Text className="ml-2 font-semibold text-sm text-white/90">
                   Watch Demo
                 </Text>
               </TouchableOpacity>
             </View>
 
+            {/* Quick Features */}
+            <View className="flex-row justify-between mb-8">
+              {features.map((feature, index) => (
+                <View key={index} className="flex-1 items-center mx-1">
+                  <View className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 justify-center items-center mb-2">
+                    <Feather name={feature.icon as any} size={14} color={COLORS.accent} />
+                  </View>
+                  <Text className="text-white/70 text-[10px] text-center font-medium leading-tight">
+                    {feature.text}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
             {/* Stats Section */}
-            <View
-              className={`flex-wrap mt-10 gap-x-8 gap-y-4 ${isMobileView ? "flex-row justify-between" : "flex-row"}`}
-            >
+            <View className="flex-row justify-between mb-8">
               {[
                 { number: "500+", label: "Companies" },
                 { number: "$2.1B+", label: "Managed" },
@@ -228,135 +166,53 @@ export default function Hero() {
               ].map((stat, index) => (
                 <View
                   key={index}
-                  className={`p-4 rounded-[12px] relative overflow-hidden min-w-[120px] ${isMobileView ? "w-[48%]" : ""}`}
+                  className="flex-1 items-center p-3 mx-1 rounded-lg border border-white/5 bg-white/2"
                 >
-                  <View
-                    className="absolute inset-0 border rounded-[12px]"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.03)",
-                      borderColor: "rgba(255,255,255,0.06)",
-                    }}
-                  />
-                  <Text
-                    className="font-extrabold"
-                    style={{
-                      color: "#FFFFFF",
-                      fontSize: isMobileView ? 28 : 32,
-                      textShadowColor: "rgba(255,255,255,0.1)",
-                      textShadowOffset: { width: 0, height: 1 },
-                      textShadowRadius: 2,
-                    }}
-                  >
+                  <Text className="font-black text-white text-lg mb-1">
                     {stat.number}
                   </Text>
-                  <Text
-                    className="text-[14px] mt-1 font-medium tracking-[0.3px]"
-                    style={{ color: "rgba(255,255,255,0.6)" }}
-                  >
+                  <Text className="text-xs font-medium text-white/60 tracking-wide">
                     {stat.label}
                   </Text>
                 </View>
               ))}
             </View>
-          </View>
 
-          {/* Right Graphic (Image/Mockup) */}
-          {!isMobileView && (
-            <View className="flex-1 ml-10 w-full md:w-1/2 lg:w-2/5 flex-row justify-end z-10">
-              <View className="relative max-w-[450px]">
-                {/* Mockup shadow/border effect */}
-                <View
-                  className="absolute top-5 left-5 right-[-20px] bottom-[-20px] rounded-[24px]"
-                  style={{ backgroundColor: COLORS.accent, opacity: 0.08 }}
-                />
-                <View
-                  className="rounded-[24px] p-6 border overflow-hidden"
-                  style={{
-                    backgroundColor: "rgba(20,20,22,0.95)",
-                    borderColor: "rgba(255,255,255,0.08)",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 12 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 24,
-                    elevation: 18,
-                  }}
-                >
-                  <View className="mb-6">
-                    <View className="flex-row">
-                      <View
-                        className="w-3 h-3 rounded-full border mr-2"
-                        style={{
-                          backgroundColor: "#ef4444",
-                          borderColor: "rgba(255,255,255,0.2)",
-                        }}
-                      />
-                      <View
-                        className="w-3 h-3 rounded-full border mr-2"
-                        style={{
-                          backgroundColor: COLORS.accent,
-                          borderColor: "rgba(255,255,255,0.2)",
-                        }}
-                      />
-                      <View
-                        className="w-3 h-3 rounded-full border"
-                        style={{
-                          backgroundColor: COLORS.neutral,
-                          borderColor: "rgba(255,255,255,0.2)",
-                        }}
-                      />
-                    </View>
-                  </View>
-
-                  {/* Simple animated chart mock */}
-                  <View className="h-[250px] relative mb-6">
-                    <View
-                      className="absolute inset-0 bg-transparent border-t border-b"
-                      style={{ borderColor: "rgba(255,255,255,0.06)" }}
-                    />
-                    <View className="flex-row items-end justify-between h-full py-6">
-                      {[60, 120, 80, 150, 100].map((height, index) => (
-                        <View key={index} className="flex-1 items-center mx-2">
-                          <View
-                            className="w-5 rounded-[10px] mb-3"
-                            style={{
-                              height,
-                              backgroundColor: COLORS.accent,
-                              shadowColor: COLORS.accent,
-                              shadowOffset: { width: 0, height: 4 },
-                              shadowOpacity: 0.4,
-                              shadowRadius: 10,
-                              elevation: 8,
-                            }}
-                          />
-                          <View
-                            className="w-6 h-1 rounded-[3px]"
-                            style={{
-                              backgroundColor: "rgba(255,255,255,0.2)",
-                            }}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-
-                  {/* Mock content below chart */}
+            {/* Trusted By Section */}
+            <View className="mb-6">
+              <Text className="text-white/60 text-xs font-medium text-center mb-3 tracking-wide">
+                TRUSTED BY INDUSTRY LEADERS
+              </Text>
+              <View className="flex-row flex-wrap justify-center gap-3">
+                {trustedCompanies.map((company, index) => (
                   <View
-                    className="pt-4 border-t gap-3"
-                    style={{ borderTopColor: "rgba(255,255,255,0.06)" }}
+                    key={index}
+                    className="px-3 py-2 rounded-lg border border-white/5 bg-white/2"
                   >
-                    <View
-                      className="h-2 rounded-[4px] w-4/5"
-                      style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-                    />
-                    <View
-                      className="h-2 rounded-[4px] w-3/5"
-                      style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-                    />
+                    <Text className="text-white/70 text-xs font-medium">
+                      {company}
+                    </Text>
                   </View>
-                </View>
+                ))}
               </View>
             </View>
-          )}
+
+            {/* Security Badges */}
+            <View className="flex-row justify-center gap-4">
+              <View className="flex-row items-center">
+                <Feather name="shield" size={12} color={COLORS.accent} />
+                <Text className="text-white/50 text-[10px] ml-1">SOC 2 Compliant</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Feather name="lock" size={12} color={COLORS.accent} />
+                <Text className="text-white/50 text-[10px] ml-1">GDPR Ready</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Feather name="award" size={12} color={COLORS.accent} />
+                <Text className="text-white/50 text-[10px] ml-1">ISO 27001</Text>
+              </View>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </View>

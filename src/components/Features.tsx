@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Dimensions } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 
@@ -7,22 +7,15 @@ export default function Features() {
   const [isMobileView, setIsMobileView] = useState(
     Dimensions.get("window").width < 768
   );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const width = Dimensions.get("window").width;
-        setIsMobileView(width < 768);
-      }, 100);
-    };
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setIsMobileView(window.width < 768);
+    });
 
-    const subscription = Dimensions.addEventListener("change", handleResize);
-    return () => {
-      clearTimeout(resizeTimeout);
-      if (typeof subscription?.remove === "function") subscription.remove();
-    };
+    return () => subscription?.remove();
   }, []);
 
   const features = [
@@ -48,164 +41,218 @@ export default function Features() {
     },
   ];
 
-  return (
-    <View
-      className="relative overflow-hidden w-full"
-      // ✅ Using COLORS.surface for the main background color
-      style={{ backgroundColor: COLORS.neutral}} 
-    >
-      {/* Subtle pattern layer (using neutral color for opacity effect) */}
-      <View
-        className="absolute inset-0 bg-transparent"
-        style={{ opacity: 0.01 }} 
-      />
+  const handleScroll = (event: any) => {
+    const slideSize = isMobileView ? 320 : 380;
+    const currentIndex = Math.round(event.nativeEvent.contentOffset.x / slideSize);
+    setActiveIndex(currentIndex);
+  };
 
-      {/* ✅ Scrollable Content Container */}
-      <ScrollView
-        className="w-full"
-        contentContainerStyle={{
-          paddingVertical: isMobileView ? 60 : 100,
-          paddingHorizontal: isMobileView ? 20 : 40,
+  const scrollToIndex = (index: number) => {
+    const slideSize = isMobileView ? 320 : 380;
+    scrollViewRef.current?.scrollTo({
+      x: index * slideSize,
+      animated: true,
+    });
+    setActiveIndex(index);
+  };
+
+  const nextSlide = () => {
+    const nextIndex = (activeIndex + 1) % features.length;
+    scrollToIndex(nextIndex);
+  };
+
+  const prevSlide = () => {
+    const prevIndex = (activeIndex - 1 + features.length) % features.length;
+    scrollToIndex(prevIndex);
+  };
+
+  return (
+    <View className="w-full bg-neutral">
+      
+      {/* Main Content */}
+      <View
+        style={{
+          paddingVertical: isMobileView ? 40 : 80,
+          paddingHorizontal: isMobileView ? 16 : 32,
         }}
-        showsVerticalScrollIndicator={false}
       >
-        <View className="max-w-7xl mx-auto w-full">
-          {/* Section Heading */}
-          <View className="items-center mb-16">
-            <View className="items-center mb-4 relative">
-              <Text
-                className="text-white text-center font-extrabold mb-3 tracking-[-0.8px]"
-                // ✅ Using COLORS.textLight for white text
-                style={{
-                  color: COLORS.textLight, 
-                  fontSize: isMobileView ? 34 : 48,
-                  lineHeight: isMobileView ? 40 : 54,
-                  textShadowColor: "rgba(255,255,255,0.1)",
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
-                }}
-              >
+        <View className="w-full max-w-6xl mx-auto">
+          
+          {/* Section Header */}
+          <View className="items-center mb-12">
+            <View className="items-center mb-3">
+              <Text className="text-white text-center font-black mb-2 tracking-tight text-2xl md:text-3xl">
                 Everything your business needs
               </Text>
-              <View
-                className="w-20 h-1 rounded-[2px]"
-                style={{ backgroundColor: COLORS.accent, opacity: 0.8 }}
-              />
+              <View className="w-16 h-1 rounded-sm bg-accent/80" />
             </View>
-            <Text
-              className="text-white/85 text-center max-w-[700px] tracking-[-0.2px]"
-              // ✅ Using COLORS.textLight for descriptive text
-              style={{
-                color: "rgba(248, 249, 250, 0.85)", // textLight with opacity
-                fontSize: isMobileView ? 16 : 18,
-                lineHeight: isMobileView ? 24 : 28,
-              }}
-            >
-              Advanced tools designed to simplify complex financial operations and
-              drive sustainable growth.
+            <Text className="text-white/80 text-center text-sm md:text-base leading-6 tracking-tight max-w-[600px]">
+              Advanced tools to simplify financial operations and drive growth.
             </Text>
           </View>
 
-          {/* Feature Cards */}
-          <View
-            className={`flex-row flex-wrap justify-center items-stretch gap-8`}
-          >
-            {features.map((f, index) => (
-              <View
-                key={f.title}
-                className="w-full md:w-[48%] xl:w-[31%] 2xl:w-[23%] flex-grow"
-              >
-                <View 
-                  // ✅ Using COLORS.white for card background
-                  className="rounded-[24px] p-8 relative overflow-hidden h-full border shadow-xl"
-                  style={{ backgroundColor: COLORS.white, borderColor: "rgba(0,0,0,0.05)" }}
+          {/* Slider Container */}
+          <View className="relative">
+            
+            {/* Navigation Arrows - Desktop */}
+            {!isMobileView && (
+              <>
+                <TouchableOpacity
+                  onPress={prevSlide}
+                  className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 border border-white/20 justify-center items-center z-10"
                 >
-                  {/* Card Border/Shadow Styling */}
-                  <View
-                    className="absolute inset-0 rounded-[24px] border border-transparent"
-                    style={{
-                      shadowColor: COLORS.black,
-                      shadowOffset: { width: 0, height: 8 },
-                      shadowOpacity: 0.08,
-                      shadowRadius: 16,
-                      elevation: 8,
-                    }}
-                  />
+                  <Feather name="chevron-left" size={24} color={COLORS.white} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={nextSlide}
+                  className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 border border-white/20 justify-center items-center z-10"
+                >
+                  <Feather name="chevron-right" size={24} color={COLORS.white} />
+                </TouchableOpacity>
+              </>
+            )}
+
+            {/* Features Slider */}
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              decelerationRate="fast"
+              snapToInterval={isMobileView ? 320 : 380}
+              snapToAlignment="center"
+              contentContainerStyle={{
+                paddingHorizontal: isMobileView ? 10 : 20,
+                gap: isMobileView ? 16 : 24,
+              }}
+            >
+              {features.map((feature, index) => (
+                <View
+                  key={feature.title}
+                  className="bg-white rounded-2xl p-6 relative overflow-hidden border border-gray-100 shadow-xl"
+                  style={{
+                    width: isMobileView ? 300 : 360,
+                    height: isMobileView ? 280 : 320,
+                  }}
+                >
+                  
                   {/* Accent Top Bar */}
-                  <View
-                    className="absolute top-0 left-0 right-0 h-1 rounded-t-[24px]"
-                    style={{ backgroundColor: COLORS.accent, opacity: 0.8 }}
-                  />
+                  <View className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-accent/80" />
 
                   {/* Icon Section */}
-                  <View className="w-[70px] h-[70px] rounded-[20px] justify-center items-center mb-6 relative overflow-hidden">
-                    <View
-                      className="absolute inset-0 rounded-[20px] border"
-                      style={{
-                        // Accent color for background with opacity
-                        backgroundColor: "rgba(134, 194, 50, 0.1)", 
-                        borderColor: "rgba(134, 194, 50, 0.2)",
-                      }}
-                    />
-                    <Feather name={f.icon as any} size={28} color={COLORS.accent} />
+                  <View className="flex-row items-start mb-4">
+                    <View className="w-12 h-12 rounded-xl justify-center items-center mr-4 bg-accent/10 border border-accent/20">
+                      <Feather 
+                        name={feature.icon as any} 
+                        size={22} 
+                        color={COLORS.accent} 
+                      />
+                    </View>
                     
                     {/* Number Badge */}
-                    <View
-                      className="absolute top-[-8px] right-[-8px] w-7 h-7 rounded-full justify-center items-center border"
-                      style={{
-                        backgroundColor: COLORS.accent,
-                        borderColor: COLORS.white,
-                        shadowColor: COLORS.black,
-                        shadowOffset: { width: 0, height: 3 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 6,
-                        elevation: 4,
-                      }}
-                    >
-                      <Text className="text-white text-xs font-extrabold">
+                    <View className="w-6 h-6 rounded-full justify-center items-center border border-white bg-accent shadow-md">
+                      <Text className="text-white text-[10px] font-black">
                         {index + 1}
                       </Text>
                     </View>
                   </View>
 
-                  {/* Text Content */}
-                  <Text 
-                    className="text-[24px] font-extrabold mb-3 tracking-[-0.5px]"
-                    // ✅ Using COLORS.textDark for main text
-                    style={{ color: COLORS.textDark }} 
-                  >
-                    {f.title}
+                  {/* Content */}
+                  <Text className="text-xl font-black text-textDark mb-3 tracking-tight">
+                    {feature.title}
                   </Text>
-                  <Text 
-                    className="text-[16px] leading-[24px] tracking-[-0.2px] mb-6"
-                    // ✅ Using COLORS.textDark with opacity for description
-                    style={{ color: "rgba(34, 38, 41, 0.75)" }} 
-                  >
-                    {f.desc}
+                  <Text className="text-sm leading-5 text-textDark/70 tracking-tight mb-6">
+                    {feature.desc}
                   </Text>
 
-                  {/* Footer lines (Minimalist Divider) */}
-                  <View
-                    className="mt-auto pt-5 border-t gap-2"
-                    style={{ borderTopColor: "rgba(34, 38, 41, 0.08)" }} // textDark opacity for divider
-                  >
-                    <View 
-                      className="h-1 rounded-[2px] w-3/5"
-                      style={{ backgroundColor: "rgba(34, 38, 41, 0.10)" }} // textDark opacity for line
-                    />
+                  {/* Progress Indicator */}
+                  <View className="mt-auto pt-4 border-t border-gray-200">
+                    <View className="flex-row gap-1">
+                      {features.map((_, dotIndex) => (
+                        <View
+                          key={dotIndex}
+                          className={`h-1 rounded-full ${
+                            dotIndex === index ? 'bg-accent w-6' : 'bg-gray-300 w-2'
+                          }`}
+                        />
+                      ))}
+                    </View>
                   </View>
                 </View>
+              ))}
+            </ScrollView>
+
+            {/* Mobile Navigation Dots */}
+            {isMobileView && (
+              <View className="flex-row justify-center items-center mt-8 gap-2">
+                {features.map((_, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => scrollToIndex(index)}
+                  >
+                    <View
+                      className={`w-2 h-2 rounded-full ${
+                        index === activeIndex ? 'bg-accent' : 'bg-white/30'
+                      }`}
+                    />
+                  </TouchableOpacity>
+                ))}
               </View>
-            ))}
+            )}
+
+            {/* Desktop Navigation Dots */}
+            {!isMobileView && (
+              <View className="flex-row justify-center items-center mt-8 gap-3">
+                {features.map((_, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => scrollToIndex(index)}
+                    className={`p-1 rounded-full ${
+                      index === activeIndex ? 'bg-accent/20' : ''
+                    }`}
+                  >
+                    <View
+                      className={`w-3 h-3 rounded-full border ${
+                        index === activeIndex 
+                          ? 'bg-accent border-accent' 
+                          : 'bg-transparent border-white/40'
+                      }`}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
+
+          {/* Mobile Navigation Arrows */}
+          {isMobileView && (
+            <View className="flex-row justify-center items-center mt-6 gap-4">
+              <TouchableOpacity
+                onPress={prevSlide}
+                className="w-10 h-10 rounded-full bg-white/10 border border-white/20 justify-center items-center"
+              >
+                <Feather name="chevron-left" size={20} color={COLORS.white} />
+              </TouchableOpacity>
+              
+              <Text className="text-white/80 text-sm font-medium">
+                {activeIndex + 1} / {features.length}
+              </Text>
+              
+              <TouchableOpacity
+                onPress={nextSlide}
+                className="w-10 h-10 rounded-full bg-white/10 border border-white/20 justify-center items-center"
+              >
+                <Feather name="chevron-right" size={20} color={COLORS.white} />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </ScrollView>
+      </View>
 
       {/* Bottom Divider */}
-      <View
-        className="absolute bottom-0 left-0 right-0 h-[1px]"
-        style={{ backgroundColor: "rgba(255,255,255,0.06)" }} // White opacity for divider on dark surface
-      />
+      <View className="h-px bg-white/10" />
     </View>
   );
 }
