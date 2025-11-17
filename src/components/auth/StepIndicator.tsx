@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { COLORS } from "../../constants/theme";
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -11,11 +12,15 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
       {[1, 2, 3, 4].map((step) => (
         <View key={step} className="flex-row items-center flex-1">
           <View
-            className={`w-9 h-9 rounded-full justify-center items-center border-2 ${
+            className={`w-10 h-10 rounded-full justify-center items-center border-2 ${
               currentStep >= step
-                ? "bg-accent border-accent"
-                : "bg-gray-100 border-gray-300"
+                ? "bg-blue-500 border-blue-500"
+                : "bg-gray-50 border-gray-300"
             }`}
+            style={{
+              backgroundColor: currentStep >= step ? COLORS.accent : undefined,
+              borderColor: currentStep >= step ? COLORS.accent : undefined,
+            }}
           >
             <Text
               className={`text-sm font-bold ${
@@ -27,9 +32,12 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
           </View>
           {step < 4 && (
             <View
-              className={`flex-1 h-0.5 mx-2 ${
-                currentStep > step ? "bg-accent" : "bg-gray-300"
+              className={`flex-1 h-1 mx-3 ${
+                currentStep > step ? "bg-blue-500" : "bg-gray-300"
               }`}
+              style={{
+                backgroundColor: currentStep > step ? COLORS.accent : undefined,
+              }}
             />
           )}
         </View>

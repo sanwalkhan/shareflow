@@ -1,27 +1,55 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { COLORS } from "../../../constants/theme";
 
 export default function AuthStep4({ formData, handleInputChange, showPassword, setShowPassword }: any) {
+  const passwordFields = [
+    {
+      field: "password",
+      label: "Password *",
+      placeholder: "Create secure password"
+    },
+    {
+      field: "confirmPassword", 
+      label: "Confirm Password *",
+      placeholder: "Re-enter your password"
+    }
+  ];
+
+  const checkboxes = [
+    {
+      label: (
+        <>
+          I agree to the <Text className="text-blue-500 font-semibold">Terms of Service</Text> and{" "}
+          <Text className="text-blue-500 font-semibold">Privacy Policy</Text> *
+        </>
+      ),
+      field: "acceptTerms",
+    },
+    {
+      label: "Send me product updates, security tips, and industry insights",
+      field: "newsletter",
+    },
+  ];
+
   return (
     <View className="flex-1">
-      <Text className="text-textDark text-[22px] font-bold mb-2">Security & Preferences</Text>
-      <Text className="text-secondary text-[15px] mb-6 font-medium">Set up your account security</Text>
+      <Text className="text-gray-900 text-2xl font-bold mb-2">Security & Preferences</Text>
+      <Text className="text-gray-600 text-base mb-6 font-medium">Set up your account security</Text>
 
       {/* Password Fields */}
-      {["password", "confirmPassword"].map((field, i) => (
-        <View key={i} className="w-full mb-5">
-          <Text className="text-textDark text-sm font-semibold mb-2">
-            {field === "password" ? "Password *" : "Confirm Password *"}
+      {passwordFields.map((fieldConfig, index) => (
+        <View key={index} className="w-full mb-5">
+          <Text className="text-gray-900 text-sm font-semibold mb-2">
+            {fieldConfig.label}
           </Text>
           <View className="relative">
             <TextInput
-              placeholder={field === "password" ? "Create secure password" : "Re-enter your password"}
-              placeholderTextColor={COLORS.tertiary + "80"}
-              className="bg-gray-50 rounded-xl px-4 py-3.5 text-[15px] text-textDark border border-gray-300 pr-12"
-              value={formData[field]}
-              onChangeText={(value) => handleInputChange(field, value)}
+              placeholder={fieldConfig.placeholder}
+              placeholderTextColor="#999999"
+              className="bg-gray-50 rounded-xl px-4 py-4 text-base text-gray-900 border border-gray-300 pr-12"
+              value={formData[fieldConfig.field]}
+              onChangeText={(value) => handleInputChange(fieldConfig.field, value)}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
             />
@@ -32,7 +60,7 @@ export default function AuthStep4({ formData, handleInputChange, showPassword, s
               <Feather
                 name={showPassword ? "eye-off" : "eye"}
                 size={18}
-                color={COLORS.tertiary}
+                color="#666666"
               />
             </TouchableOpacity>
           </View>
@@ -40,32 +68,18 @@ export default function AuthStep4({ formData, handleInputChange, showPassword, s
       ))}
 
       {/* Checkboxes */}
-      {[
-        {
-          label: (
-            <>
-              I agree to the <Text className="text-accent font-semibold">Terms of Service</Text> and{" "}
-              <Text className="text-accent font-semibold">Privacy Policy</Text> *
-            </>
-          ),
-          field: "acceptTerms",
-        },
-        {
-          label: "Send me product updates, security tips, and industry insights",
-          field: "newsletter",
-        },
-      ].map((item, i) => (
-        <View key={i} className="w-full mb-5">
+      {checkboxes.map((item, index) => (
+        <View key={index} className="w-full mb-5">
           <View className="flex-row items-start gap-3">
             <TouchableOpacity
               className={`w-5 h-5 rounded border justify-center items-center mt-0.5 ${
-                formData[item.field] ? "bg-accent border-accent" : "bg-gray-50 border-gray-300"
+                formData[item.field] ? "bg-blue-500 border-blue-500" : "bg-gray-50 border-gray-300"
               }`}
               onPress={() => handleInputChange(item.field, !formData[item.field])}
             >
-              {formData[item.field] && <Feather name="check" size={16} color={COLORS.white} />}
+              {formData[item.field] && <Feather name="check" size={16} color="white" />}
             </TouchableOpacity>
-            <Text className="text-secondary text-sm flex-1 leading-5">{item.label}</Text>
+            <Text className="text-gray-600 text-sm flex-1 leading-5">{item.label}</Text>
           </View>
         </View>
       ))}

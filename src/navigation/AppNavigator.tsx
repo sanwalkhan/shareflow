@@ -1,8 +1,7 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { COLORS } from "../constants/theme";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../contexts/AuthContext";
 
 import LandingScreen from "../screens/LandingScreen";
@@ -12,20 +11,15 @@ import ShareholderDashboardScreen from "../screens/shareholder/ShareholderDashbo
 import SigninScreen from "../components/SigninScreen";
 import ForgetPassword from "../components/ForgetPassword";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { user, isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
     return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        backgroundColor: COLORS.primary 
-      }}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
+      <View className="flex-1 justify-center items-center bg-blue-500">
+        <ActivityIndicator size="large" color="white" />
       </View>
     );
   }
@@ -43,10 +37,19 @@ export default function AppNavigator() {
         initialRouteName={getInitialRoute()}
         screenOptions={{
           headerShown: false,
+          animation: 'slide_from_right', // Android-like animation
+          gestureEnabled: true, // Enable Android gestures
+          fullScreenGestureEnabled: true, // Better for Android
         }}
       > 
         {/* Public Routes */}
-        <Stack.Screen name="Landing" component={LandingScreen} />
+        <Stack.Screen 
+          name="Landing" 
+          component={LandingScreen}
+          options={{
+            gestureEnabled: false, // Disable back gesture on landing
+          }}
+        />
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
@@ -56,14 +59,16 @@ export default function AppNavigator() {
           name="AdminDashboard" 
           component={AdminDashboardScreen}
           options={{
-            gestureEnabled: false, // Prevent swipe back
+            gestureEnabled: false, // Prevent swipe back on dashboard
+            animation: 'fade', // Different animation for dashboard
           }}
         />
         <Stack.Screen 
           name="ShareholderDashboard" 
           component={ShareholderDashboardScreen}
           options={{
-            gestureEnabled: false, // Prevent swipe back
+            gestureEnabled: false, // Prevent swipe back on dashboard
+            animation: 'fade', // Different animation for dashboard
           }}
         />
       </Stack.Navigator>

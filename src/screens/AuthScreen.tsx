@@ -5,18 +5,14 @@ import {
   Animated,
   ScrollView,
   KeyboardAvoidingView,
-  Platform,
-  useWindowDimensions,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { COLORS, WINDOW } from "../constants/theme";
+import { COLORS } from "../constants/theme";
 import { useAuth } from "../contexts/AuthContext";
-import { Toast } from "toastify-react-native";
-import { API_BASE_URL } from "../../config";
 
 // Components
 import AuthHeader from "../components/auth/AuthHeader";
-import LeftPanel from "../components/auth/AuthLeftPanel";
 import StepIndicator from "../components/auth/StepIndicator";
 import AuthActions from "../components/auth/AuthActions";
 import AuthStep1 from "../components/auth/steps/AuthStep1";
@@ -24,13 +20,14 @@ import AuthStep2 from "../components/auth/steps/AuthStep2";
 import AuthStep3 from "../components/auth/steps/AuthStep3";
 import AuthStep4 from "../components/auth/steps/AuthStep4";
 import OTPModal from "../components/OTPModal";
-import Button from "../UI/Button";
+import { useStatus } from "../components/feedback/StatusProvider";
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function AuthScreen() {
   const navigation = useNavigation();
   const { login } = useAuth();
-  const { width } = useWindowDimensions();
-  const isMobile = width < 900;
+  const { showLoader, hideLoader, showStatus } = useStatus();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
@@ -85,51 +82,110 @@ export default function AuthScreen() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ✅ Unified toast-based validation feedback
-  const showError = (msg: string) => Toast.error(msg);
-  const showSuccess = (msg: string) => Toast.success(msg);
-
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!formData.companyName?.trim()) return showError("Company name is required"), false;
-        if (!formData.companyType?.trim()) return showError("Company type is required"), false;
-        if (!formData.industry?.trim()) return showError("Industry is required"), false;
-        if (!formData.companySize) return showError("Company size is required"), false;
-        if (!formData.taxId?.trim()) return showError("Tax ID is required"), false;
+        if (!formData.companyName?.trim()) {
+          showStatus("error", "Company name is required");
+          return false;
+        }
+        if (!formData.companyType?.trim()) {
+          showStatus("error", "Company type is required");
+          return false;
+        }
+        if (!formData.industry?.trim()) {
+          showStatus("error", "Industry is required");
+          return false;
+        }
+        if (!formData.companySize) {
+          showStatus("error", "Company size is required");
+          return false;
+        }
+        if (!formData.taxId?.trim()) {
+          showStatus("error", "Tax ID is required");
+          return false;
+        }
         break;
 
       case 2:
-        if (!formData.email?.trim()) return showError("Business email is required"), false;
-        if (!/^\S+@\S+\.\S+$/.test(formData.email))
-          return showError("Please enter a valid business email"), false;
-        if (!formData.phone?.trim()) return showError("Phone number is required"), false;
-        if (!formData.address?.trim()) return showError("Address is required"), false;
-        if (!formData.city?.trim()) return showError("City is required"), false;
-        if (!formData.country?.trim()) return showError("Country is required"), false;
-        if (!formData.postalCode?.trim()) return showError("Postal code is required"), false;
+        if (!formData.email?.trim()) {
+          showStatus("error", "Business email is required");
+          return false;
+        }
+        if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+          showStatus("error", "Please enter a valid business email");
+          return false;
+        }
+        if (!formData.phone?.trim()) {
+          showStatus("error", "Phone number is required");
+          return false;
+        }
+        if (!formData.address?.trim()) {
+          showStatus("error", "Address is required");
+          return false;
+        }
+        if (!formData.city?.trim()) {
+          showStatus("error", "City is required");
+          return false;
+        }
+        if (!formData.country?.trim()) {
+          showStatus("error", "Country is required");
+          return false;
+        }
+        if (!formData.postalCode?.trim()) {
+          showStatus("error", "Postal code is required");
+          return false;
+        }
         break;
 
       case 3:
-        if (!formData.firstName?.trim()) return showError("First name is required"), false;
-        if (!formData.lastName?.trim()) return showError("Last name is required"), false;
-        if (!formData.jobTitle?.trim()) return showError("Job title is required"), false;
-        if (!formData.adminEmail?.trim()) return showError("Admin email is required"), false;
-        if (!/^\S+@\S+\.\S+$/.test(formData.adminEmail))
-          return showError("Please enter a valid admin email"), false;
-        if (formData.email.toLowerCase() === formData.adminEmail.toLowerCase())
-          return showError("Business and admin emails must be different"), false;
+        if (!formData.firstName?.trim()) {
+          showStatus("error", "First name is required");
+          return false;
+        }
+        if (!formData.lastName?.trim()) {
+          showStatus("error", "Last name is required");
+          return false;
+        }
+        if (!formData.jobTitle?.trim()) {
+          showStatus("error", "Job title is required");
+          return false;
+        }
+        if (!formData.adminEmail?.trim()) {
+          showStatus("error", "Admin email is required");
+          return false;
+        }
+        if (!/^\S+@\S+\.\S+$/.test(formData.adminEmail)) {
+          showStatus("error", "Please enter a valid admin email");
+          return false;
+        }
+        if (formData.email.toLowerCase() === formData.adminEmail.toLowerCase()) {
+          showStatus("error", "Business and admin emails must be different");
+          return false;
+        }
         break;
 
       case 4:
-        if (!formData.password?.trim()) return showError("Password is required"), false;
-        if (formData.password.length < 6)
-          return showError("Password must be at least 6 characters"), false;
-        if (!formData.confirmPassword?.trim()) return showError("Confirm your password"), false;
-        if (formData.password !== formData.confirmPassword)
-          return showError("Passwords do not match"), false;
-        if (!formData.acceptTerms)
-          return showError("You must accept the Terms & Privacy Policy"), false;
+        if (!formData.password?.trim()) {
+          showStatus("error", "Password is required");
+          return false;
+        }
+        if (formData.password.length < 6) {
+          showStatus("error", "Password must be at least 6 characters");
+          return false;
+        }
+        if (!formData.confirmPassword?.trim()) {
+          showStatus("error", "Confirm your password");
+          return false;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          showStatus("error", "Passwords do not match");
+          return false;
+        }
+        if (!formData.acceptTerms) {
+          showStatus("error", "You must accept the Terms & Privacy Policy");
+          return false;
+        }
         break;
     }
     return true;
@@ -152,6 +208,7 @@ export default function AuthScreen() {
     }
 
     setIsLoading(true);
+    showLoader("Creating your account...");
 
     const registrationData = {
       ...formData,
@@ -160,7 +217,7 @@ export default function AuthScreen() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register/initiate`, {
+      const response = await fetch(`${process.env.API_BASE}/auth/register/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(registrationData),
@@ -169,19 +226,21 @@ export default function AuthScreen() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        showSuccess("Verification code sent to your admin email!");
+        hideLoader();
+        showStatus("success", "Verification code sent to your admin email!");
         setTempRegistrationId(data.data.tempRegistrationId);
         setRegistrationEmail(formData.adminEmail);
         setShowOTPModal(true);
       } else {
-        const msg =
-          data.errors && Array.isArray(data.errors)
-            ? data.errors.join("\n• ")
-            : data.message || "Registration failed";
-        showError(msg);
+        hideLoader();
+        const msg = data.errors && Array.isArray(data.errors)
+          ? data.errors.join("\n• ")
+          : data.message || "Registration failed";
+        showStatus("error", msg);
       }
     } catch (error: any) {
-      showError(`Network error: ${error.message || error}`);
+      hideLoader();
+      showStatus("error", `Network error: ${error.message || error}`);
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +248,8 @@ export default function AuthScreen() {
 
   const handleVerifyOTP = async (otp: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register/verify`, {
+      showLoader("Verifying your account...");
+      const response = await fetch(`${process.env.API_BASE}/auth/register/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -202,8 +262,9 @@ export default function AuthScreen() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        hideLoader();
         setShowOTPModal(false);
-        showSuccess("Registration successful! Welcome to ShareFlow 🎉");
+        showStatus("success", "Registration successful! Welcome to ShareFlow 🎉");
         if (data.data.token && data.data.user) {
           await login(data.data.token, data.data.user);
         } else {
@@ -213,14 +274,16 @@ export default function AuthScreen() {
         throw new Error(data.message || "OTP verification failed");
       }
     } catch (error: any) {
-      showError(error.message || "OTP verification error");
+      hideLoader();
+      showStatus("error", error.message || "OTP verification error");
       throw error;
     }
   };
 
   const handleResendOTP = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register/resend-otp`, {
+      showLoader("Resending verification code...");
+      const response = await fetch(`${process.env.API_BASE}/auth/register/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -232,13 +295,15 @@ export default function AuthScreen() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        showSuccess("OTP resent successfully!");
+        hideLoader();
+        showStatus("success", "OTP resent successfully!");
         return { success: true };
       } else {
         throw new Error(data.message || "Failed to resend OTP");
       }
     } catch (error: any) {
-      showError(error.message || "Error resending OTP");
+      hideLoader();
+      showStatus("error", error.message || "Error resending OTP");
       throw error;
     }
   };
@@ -267,41 +332,44 @@ export default function AuthScreen() {
     }
   };
 
-  const BackgroundShapes = () => (
+  return (
     <>
-      <View className="absolute w-[300px] h-[300px] rounded-full bg-accent opacity-10 top-[-150px] right-[-100px]" />
-      <View className="absolute w-[200px] h-[200px] rounded-full bg-neutral opacity-10 bottom-[-100px] left-[-50px]" />
-      <View className="absolute w-[100px] h-[100px] rounded-[25px] bg-secondary/30 border border-secondary/50 top-1/5 right-1/10 transform rotate-45" />
-      <View className="absolute w-[80px] h-[80px] rounded-[20px] bg-secondary/30 border border-secondary/50 bottom-[15%] left-[5%] transform -rotate-30" />
-    </>
-  );
+      <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
+        {/* Android-optimized background with matching SigninScreen style */}
+        <View className="absolute top-0 left-0 right-0 bottom-0">
+          <View 
+            className="absolute w-[300px] h-[300px] rounded-full opacity-10 -top-32 -right-16"
+            style={{ backgroundColor: COLORS.accent }}
+          />
+          <View 
+            className="absolute w-[200px] h-[200px] rounded-full opacity-10 -bottom-24 -left-12"
+            style={{ backgroundColor: COLORS.secondary }}
+          />
+        </View>
 
-  // ✅ WEB VERSION
-  if (Platform.OS === "web") {
-    return (
-      <>
-        <View className="flex flex-col h-screen bg-primary overflow-hidden">
-          <BackgroundShapes />
-          <View className="flex-1 overflow-y-auto overflow-x-hidden web-scroll">
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior="padding"
+        >
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             <Animated.View
               className="flex-1"
               style={{
-                minHeight: WINDOW.height,
+                minHeight: SCREEN_HEIGHT - 100,
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }],
               }}
             >
               <AuthHeader onBack={handleBack} />
-              <View
-                className={`flex-1 ${
-                  isMobile ? "flex-col px-4 pb-10" : "flex-row px-10 pb-5"
-                } items-stretch w-full`}
-              >
-                {!isMobile && <LeftPanel />}
+
+              <View className="px-5 pt-4 pb-10">
                 <View
-                  className={`flex-1 rounded-3xl overflow-hidden bg-white ${
-                    isMobile ? "mt-4" : "ml-5"
-                  }`}
+                  className="flex-1 rounded-3xl overflow-hidden bg-white"
                   style={{
                     shadowColor: COLORS.black,
                     shadowOffset: { width: 0, height: 20 },
@@ -310,10 +378,12 @@ export default function AuthScreen() {
                     elevation: 15,
                   }}
                 >
-                  <View className={`flex-1 ${isMobile ? "p-5" : "p-8"} justify-between`}>
+                  <View className="flex-1 p-6 justify-between">
                     <View>
                       <StepIndicator currentStep={currentStep} />
-                      <View className="flex-1 mt-4">{renderStepContent()}</View>
+                      <View className="flex-1 mt-4">
+                        {renderStepContent()}
+                      </View>
                     </View>
 
                     <AuthActions
@@ -333,88 +403,6 @@ export default function AuthScreen() {
                         >
                           Sign in here
                         </Text>
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </Animated.View>
-          </View>
-        </View>
-
-        <OTPModal
-          visible={showOTPModal}
-          onClose={() => setShowOTPModal(false)}
-          onVerify={handleVerifyOTP}
-          onResend={handleResendOTP}
-          email={registrationEmail}
-        />
-      </>
-    );
-  }
-
-  // ✅ MOBILE APP VERSION
-  return (
-    <>
-      <View className="flex-1" style={{ backgroundColor: COLORS.primary }}>
-        <BackgroundShapes />
-
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-        >
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-          >
-            <Animated.View
-              className="flex-1"
-              style={{
-                minHeight: WINDOW.height,
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
-              }}
-            >
-              <AuthHeader onBack={handleBack} />
-
-              <View className="flex-col px-5 pb-5">
-                <LeftPanel />
-
-                <View
-                  className="flex-1 rounded-3xl overflow-hidden bg-white mt-4"
-                  style={{
-                    shadowColor: COLORS.black,
-                    shadowOffset: { width: 0, height: 20 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 30,
-                    elevation: 15,
-                  }}
-                >
-                  <View className="flex-1 p-6 justify-between">
-                    <View>
-                      <StepIndicator currentStep={currentStep} />
-                      <View className="flex-1 mt-4">{renderStepContent()}</View>
-                    </View>
-
-                    <AuthActions
-                      currentStep={currentStep}
-                      isLoading={isLoading}
-                      handlePrevStep={handlePrevStep}
-                      handleNextStep={handleNextStep}
-                      handleSubmit={handleSubmit}
-                    />
-
-                    <View className="items-center pt-5 border-t border-gray-300 mt-6">
-                      <Text className="text-secondary text-sm text-center">
-                        Already have an account?{" "}
-                        <Button
-                          className="text-accent font-bold"
-                          onPress={() => navigation.navigate("Signin" as never)}
-                        >
-                          Sign in here
-                        </Button>
                       </Text>
                     </View>
                   </View>

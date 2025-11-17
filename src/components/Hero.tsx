@@ -99,7 +99,9 @@ export default function Hero() {
             <View className="mb-4">
               <Text className="font-black tracking-tight text-white text-3xl leading-[38px]">
                 Financial Intelligence{"\n"}
-                <Text className="text-accent">Reimagined</Text>
+                <Text
+                  style={{ color: COLORS.accent }}
+                >Reimagined</Text>
               </Text>
               <View className="w-20 h-1 rounded-sm bg-accent/30 mt-2" />
             </View>
