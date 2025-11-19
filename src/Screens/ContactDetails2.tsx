@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, Dimensions } from "react-native";
-import Header2 from "./HRPanel/Header2";
-import Sidebar2 from "./HRPanel/Sidebar2";
+import Header2 from "../components/HrPanel/Header2";
+import Sidebar2 from "../components/HrPanel/Sidebar2";
 
 const { width } = Dimensions.get("window");
 

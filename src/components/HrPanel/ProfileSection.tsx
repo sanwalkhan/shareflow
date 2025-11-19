@@ -6,13 +6,13 @@ const ProfileSection: React.FC = () => {
   <View className="bg-white rounded-xl p-6 shadow flex items-center w-[1243px] h-[690px] ml-[20px] mt-[6px]">
       {/* Avatar */}
       <Image
-        source={require("../assets/Avator.png")}
+        source={require("../../assets/Avator.png")}
         className="w-28 h-28 rounded-full"
       />
 
       {/* Edit Icon */}
       <View className="absolute top-4 right-4">
-        <Image source={require("../assets/Vector.png")} className="w-6 h-6" />
+        <Image source={require("../../assets/Vector.png")} className="w-6 h-6" />
       </View>
 
       {/* Details */}

@@ -24,9 +24,9 @@ import Footer from "./src/Screens/Footer";
 import ContactDetails2 from "./src/Screens/ContactDetails2";
 
 // HRPanel Components
-import Header2 from "./src/components/HRPanel/Header2";
-import Sidebar2 from "./src/components/HRPanel/Sidebar2";
-import ProfileSection from "./src/components/HRPanel/ProfileSection";
+import Header2 from "./src/components/HrPanel/Header2";
+import Sidebar2 from "./src/components/HrPanel/Sidebar2";
+import ProfileSection from "./src/components/HrPanel/ProfileSection";
 
 // Stack Param List
 export type RootStackParamList = {
