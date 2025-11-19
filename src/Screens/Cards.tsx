@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 advancedCard: {
   marginLeft: 100,  // spacing between cards
   backgroundColor: '#FEFFFA',
-  marginTop: -520,   // lift the card upwards
+  marginTop: -320,   // lift the card upwards
 },
 enterpriseCard: {
   marginLeft: 500, // increased spacing

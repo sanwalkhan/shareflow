@@ -127,7 +127,7 @@ const BusinessScreen: React.FC = () => {
         {/* Paragraph */}
 <Text
   className="text-[#4D4D4D] mt-3 text-[13.5px] leading-6"
-  style={{ marginLeft: 245 }}   // 👈 jitna right shift chahiye adjust karo
+  style={{ marginLeft: 250 }}   // 👈 jitna right shift chahiye adjust karo
 >
   Donec a eros justo. Fusce egestas tristique ultrices. Nam tempor,
   augue nec tincidunt molestie, massa nunc varius arcu, at scelerisque

@@ -173,19 +173,23 @@ export default function LoginScreen() {
 
 
              {/* Sign-In Button */}
-<TouchableOpacity className="rounded-xl py-4 mb-4">
+<TouchableOpacity
+  className="rounded-xl mb-4"
+  onPress={() => navigation.navigate("Header2")}
+>
   <LinearGradient
     colors={["#2A2F50", "#28A745"]}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 0 }}
     className="py-4 rounded-2xl items-center justify-center flex-row space-x-2"
   >
-    <LogIn size={20} color="#fff" /> 
+    <LogIn size={20} color="#fff" />
     <Text className="text-white font-bold text-base">
       Sign Into Dashboard
     </Text>
   </LinearGradient>
 </TouchableOpacity>
+
 
 <Text className="text-center text-sm text-gray-500">
   Don’t have an enterprise account?
