@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 
+// Sidebar tabs
 const tabs = [
   { name: "Personal Details", screen: "PersonalDetails" },
   { name: "Contact Details", screen: "ContactDetails2" },
@@ -26,7 +27,7 @@ const Sidebar2: React.FC = () => {
         return (
           <TouchableOpacity
             key={index}
-            onPress={() => navigation.navigate(tab.screen)} // ✅ Navigate to new screen
+            onPress={() => navigation.navigate(tab.screen)}
             className="mt-4"
             activeOpacity={0.8}
           >
@@ -37,9 +38,7 @@ const Sidebar2: React.FC = () => {
                 end={{ x: 1, y: 1 }}
                 className="p-5 rounded-lg"
               >
-                <Text className="font-bold text-center text-white">
-                  {tab.name}
-                </Text>
+                <Text className="font-bold text-center text-white">{tab.name}</Text>
               </LinearGradient>
             ) : (
               <View className="p-5 rounded-lg bg-[#d8e9ff]">

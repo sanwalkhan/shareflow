@@ -22,6 +22,7 @@ import BusinessScreen from "./src/Screens/BusinessScreen";
 import Marketing from "./src/Screens/Marketing";
 import Footer from "./src/Screens/Footer";
 import ContactDetails2 from "./src/Screens/ContactDetails2";
+import Dashboard from "./src/Screens/Dashboard"; // ✅ Dashboard Screen
 
 // HRPanel Components
 import Header2 from "./src/components/HrPanel/Header2";
@@ -46,6 +47,7 @@ export type RootStackParamList = {
   Marketing: undefined;
   Footer: undefined;
   HomeLayout: undefined;
+  Dashboard: undefined;
 
   // HRPanel Components
   Header2: undefined;
@@ -91,6 +93,9 @@ const App: React.FC = () => {
         <Stack.Screen name="Header2" component={Header2} />
         <Stack.Screen name="Sidebar2" component={Sidebar2} />
         <Stack.Screen name="ProfileSection" component={ProfileSection} />
+
+        {/* Dashboard Screen */}
+        <Stack.Screen name="Dashboard" component={Dashboard} />
 
         {/* Sidebar Tabs */}
         <Stack.Screen name="ContactDetails2" component={ContactDetails2} />
