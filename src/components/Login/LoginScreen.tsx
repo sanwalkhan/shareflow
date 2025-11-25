@@ -51,7 +51,7 @@ export default function LoginScreen() {
               {/* Back Button */}
               <TouchableOpacity
   className="absolute top-4 left-4 z-10"
-  onPress={() => navigation.navigate("Header")} // ✅ Navigate to Header
+  onPress={() => navigation.navigate("LandingScreen")}
 >
   <LinearGradient
     colors={["#2A2F50", "#28A745"]}

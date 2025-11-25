@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../../Navigation/Appnavigator";
 
 const Header: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -31,7 +31,7 @@ const Header: React.FC = () => {
       </View>
 
       {/* Register Button */}
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
         <LinearGradient
           colors={["#2A2F50", "#28A745"]}
           start={{ x: 0, y: 0 }}

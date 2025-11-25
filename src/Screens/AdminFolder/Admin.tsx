@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 // Components from LandingPages folder
-import Shareholder from '../../components/Admin/Expenses/Shareholder/Shareholder';
+import Shareholder from '../../components/Admin/Shareholder/Shareholder';
 
 import Expenses from '../../components/Admin/Expenses/Expenses';
 
