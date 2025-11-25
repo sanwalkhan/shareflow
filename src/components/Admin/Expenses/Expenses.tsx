@@ -24,7 +24,7 @@ const Expenses: React.FC = () => {
         >
           <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 32 }}>
             <Image
-              source={require("../../assets/image.png")}
+              source={require("../../../assets/image.png")}
               style={{ width: 40, height: 40, borderRadius: 8 }}
             />
             <Text style={{ color: "white", fontSize: 24, fontWeight: "bold", marginLeft: 8 }}>

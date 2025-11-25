@@ -1,7 +1,7 @@
 // src/Navigation/AppNavigator.tsx
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LandingScreen } from '../Screens/LandingFolder/LandingScreen';
+import LandingScreen from '../Screens/LandingFolder/LandingScreen';
 import Admin from '../Screens/AdminFolder/Admin';
 import HomeLayout from '../Screens/HomeFolder/HomeLayout';
 import Dashboard from '../Screens/DashboardFolder/Dashboard';

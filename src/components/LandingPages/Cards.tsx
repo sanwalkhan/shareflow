@@ -5,7 +5,7 @@ import { TrendingUp, Shield, Zap } from 'lucide-react-native';
 
 interface CardProps {
   icon: 'analytics' | 'security' | 'automation';
-  title: string;
+  title: string ;
   description: string;
   style?: ViewStyle;
 }
