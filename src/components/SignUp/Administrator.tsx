@@ -35,7 +35,7 @@ const Administrator: React.FC = () => {
             <View className="flex-row items-center justify-center mb-8 w-full relative">
               <View className="flex-row items-center">
                 <Image
-                  source={require("../assets/image.png")}
+                 source={require('../../assets/image.png')}
                   className="w-10 h-10 mr-2"
                   style={{ marginTop: 60 }}
                 />

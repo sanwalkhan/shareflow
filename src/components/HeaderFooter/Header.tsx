@@ -1,20 +1,20 @@
-// src/Components/Header.tsx
+// src/components/Header.tsx
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App"; // adjust path if needed
+import { RootStackParamList } from "../../App";
 
 const Header: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <View className="flex-row justify-between items-center px-5 py-4 bg-gray-300">
-      {/* Logo + Text */}
+      {/* Logo */}
       <View className="flex-row items-center">
         <Image
-          source={require("../assets/image.png")}
+          source={require('../../assets/image.png')}
           className="w-7 h-7 mr-2"
         />
         <Text className="text-2xl font-bold text-black">

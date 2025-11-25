@@ -2,9 +2,9 @@ import React from "react";
 import { View, ScrollView, Text, Dimensions } from "react-native";
 
 // HRPanel Components
-import Header2 from "../components/HrPanel/Header2";
-import Sidebar2 from "../components/HrPanel/Sidebar2";
-import ProfileSection from "../components/HrPanel/ProfileSection";
+import Header2 from "../../components/HrPanel/Header2";
+import Sidebar2 from "../../components/HrPanel/Sidebar2";
+import ProfileSection from "../../components/HrPanel/ProfileSection";
 
 const { width } = Dimensions.get("window");
 

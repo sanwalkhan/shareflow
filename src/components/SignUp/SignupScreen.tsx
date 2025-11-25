@@ -33,11 +33,12 @@ const SignupScreen: React.FC = () => {
             {/* Top Bar */}
             <View className="flex-row items-center justify-center mb-6 w-full relative">
               <View className="flex-row items-center">
-                <Image
-                  source={require("../assets/image.png")}
-                  className="w-10 h-10 mr-2"
-                  style={{ marginTop: 60 }}
-                />
+               <Image
+  source={require('../../assets/image.png')}
+  className="w-10 h-10 mr-2"
+  style={{ marginTop: 60 }}
+/>
+
                 <Text className="text-2xl font-bold text-gray-800" style={{ marginTop: 60 }}>
                   ShareFlow
                 </Text>

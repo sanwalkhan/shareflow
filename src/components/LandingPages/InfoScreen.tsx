@@ -11,10 +11,11 @@ const InfoScreen: React.FC = () => {
       {/* LEFT SIDE IMAGE */}
       <View className="w-1/2 pr-4">
         <Image
-          source={require("../assets/Image3.png")} 
-          className="w-full h-60 rounded-xl"
-          resizeMode="cover"
-        />
+  source={require('../../assets/Image3.png')}
+  className="w-full h-60 rounded-xl"
+  resizeMode="cover"
+/>
+
       </View>
 
       {/* RIGHT SIDE CONTENT */}

@@ -7,15 +7,18 @@ import { LinearGradient } from "expo-linear-gradient";
 const cards = [
   {
     title: 'Creating Streamlined Safeguarding Processes with OneRen',
-    image: require('../assets/image18.png'),
+    image: require('../../assets/image18.png'),
+
   },
   {
     title: 'What are your safeguarding responsibilities and how can you manage them?',
-    image: require('../assets/image19.png'),
+   image: require('../../assets/image19.png'),
+
   },
   {
     title: 'Revamping the Membership Model with Triathlon Australia',
-    image: require('../assets/image20.png'),
+   image: require('../../assets/image20.png'),
+
   },
 ];
 

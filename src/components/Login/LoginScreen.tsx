@@ -35,10 +35,11 @@ export default function LoginScreen() {
             <View className="flex-row items-center justify-center mb-6 w-full relative">
               <View className="flex-row items-center">
                 <Image
-                  source={require("../assets/image.png")}
-                  className="w-10 h-10 mr-2"
-                  style={{ marginTop: 60 }}
-                />
+  source={require('../../assets/image.png')}
+  className="w-10 h-10 mr-2"
+  style={{ marginTop: 60 }}
+/>
+
                 <Text
                   className="text-2xl font-bold text-gray-800"
                   style={{ marginTop: 60 }}
@@ -175,7 +176,7 @@ export default function LoginScreen() {
              {/* Sign-In Button */}
 <TouchableOpacity
   className="rounded-xl mb-4"
-  onPress={() => navigation.navigate("Header2")}
+  onPress={() => navigation.navigate("Shareholder")}
 >
   <LinearGradient
     colors={["#2A2F50", "#28A745"]}

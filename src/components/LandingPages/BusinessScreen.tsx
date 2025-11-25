@@ -103,11 +103,12 @@ const BusinessScreen: React.FC = () => {
       ------------------------------------ */}
       <View className="w-full flex-row mt-12">
         {/* Left Image */}
-        <Image
-          source={require("../assets/Image3.png")}
-          className="w-1/2 h-52 rounded-xl"
-          resizeMode="cover"
-        />
+       <Image
+  source={require('../../assets/Image3.png')}
+  className="w-1/2 h-52 rounded-xl"
+  resizeMode="cover"
+/>
+
 
         {/* Right */}
         <View className="w-1/2 pl-5">

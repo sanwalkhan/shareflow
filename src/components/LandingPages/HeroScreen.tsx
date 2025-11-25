@@ -17,7 +17,7 @@ import {
 import InfoScreen from "./InfoScreen";
 import BusinessScreen from "./BusinessScreen";
 import Marketing from "./Marketing";
-import Footer from "./Footer";
+import Footer from "../HeaderFooter/Footer";
 
 const HeroScreen: React.FC = () => {
   return (
@@ -124,11 +124,12 @@ const HeroScreen: React.FC = () => {
 
         {/* RIGHT SIDE IMAGE */}
         <View style={{ flex: 1, alignItems: "center" }}>
-          <Image
-            source={require("../assets/Image2.png")}
-            style={{ width:400, height: 310, marginTop: -374 }}
-            resizeMode="contain"
-          />
+         <Image
+  source={require('../../assets/Image2.png')}
+  style={{ width: 400, height: 310, marginTop: -374 }}
+  resizeMode="contain"
+/>
+
         </View>
       </View>
       
