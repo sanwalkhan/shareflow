@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,7 +21,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 export type RootStackParamList = {
   Shareholder: undefined;
   Expenses: undefined;
-  // Add more screens here if needed
 };
 
 type ShareholderNavigationProp = NativeStackNavigationProp<
@@ -36,7 +36,30 @@ const sidebarItems = ["Shareholder", "Expenses"];
 
 const Shareholder: React.FC = () => {
   const navigation = useNavigation<ShareholderNavigationProp>();
-  const isSmallScreen = screenWidth < 768; // breakpoint for mobile
+  const isSmallScreen = screenWidth < 768;
+
+  // -------------------------
+  // Notification Drawer States
+  // -------------------------
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const slideAnim = React.useRef(new Animated.Value(300)).current;
+
+  const openNotifications = () => {
+    setShowNotifications(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const closeNotifications = () => {
+    Animated.timing(slideAnim, {
+      toValue: 300,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => setShowNotifications(false));
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -80,7 +103,6 @@ const Shareholder: React.FC = () => {
               }}
               onPress={() => {
                 if (item === "Expenses") navigation.navigate("Expenses");
-                // You can also navigate to Shareholder if needed
               }}
             >
               {item === "Shareholder" && (
@@ -174,7 +196,10 @@ const Shareholder: React.FC = () => {
                 </Text>
               </TouchableOpacity>
 
-              <Ionicons name="notifications-outline" size={28} color="gray" />
+              {/* Bell Icon */}
+              <TouchableOpacity onPress={openNotifications}>
+                <Ionicons name="notifications-outline" size={28} color="gray" />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -227,13 +252,82 @@ const Shareholder: React.FC = () => {
               </LinearGradient>
             </View>
 
-            {/* Table placeholder */}
             <ScrollView>
               <Text>Table or main content goes here...</Text>
             </ScrollView>
           </View>
         </View>
       </View>
+
+      {/* -------------------------------------- */}
+      {/* Notification Drawer */}
+      {/* -------------------------------------- */}
+      {showNotifications && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            right: slideAnim,
+            top: 0,
+            height: "100%",
+            width: 300,
+            backgroundColor: "white",
+            shadowColor: "#000",
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 6,
+            padding: 16,
+          }}
+        >
+          {/* Header */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
+
+            <TouchableOpacity onPress={closeNotifications}>
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Mark all read */}
+          <TouchableOpacity
+            style={{
+              paddingVertical: 8,
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ color: "#28A745", fontWeight: "600" }}>
+              Mark All as Read
+            </Text>
+          </TouchableOpacity>
+
+          {/* Dummy notifications */}
+          <ScrollView>
+            {[
+              "Your report has been generated.",
+              "New shareholder added.",
+              "Expense record updated.",
+              "Sarah sent you a message.",
+            ].map((n, i) => (
+              <View
+                key={i}
+                style={{
+                  paddingVertical: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#eee",
+                }}
+              >
+                <Text style={{ fontSize: 15, color: "#333" }}>{n}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </Animated.View>
+      )}
     </View>
   );
 };

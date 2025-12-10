@@ -7,9 +7,10 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { Eye, EyeOff,  LogIn, Building2 } from "lucide-react-native";
+import { Eye, EyeOff, LogIn, Building2 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { COLORS } from "../../Constants/theme";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -20,29 +21,38 @@ export default function LoginScreen() {
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
-    <View className="flex-1 bg-[#E8EDF5]">
+    <View style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-1 items-center justify-center px-6 py-12">
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 24, paddingVertical: 48 }}>
+
           {/* Outer Card */}
           <View
-            className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-6"
-            style={{ width: 800, height: 900 }}
+            style={{
+              width: 800,
+              height: 900,
+              backgroundColor: "#E6F0FF", // subtle blue background
+              borderRadius: 24,
+              padding: 24,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+              elevation: 5,
+            }}
           >
             {/* Top Bar */}
-            <View className="flex-row items-center justify-center mb-6 w-full relative">
-              <View className="flex-row items-center">
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24, width: "100%", position: "relative" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* Keep the original green image */}
                 <Image
-  source={require('../../assets/image.png')}
-  className="w-10 h-10 mr-2"
-  style={{ marginTop: 60 }}
-/>
-
+                  source={require("../../assets/image.png")}
+                  style={{ width: 40, height: 40, marginRight: 8, marginTop: 60 }}
+                />
                 <Text
-                  className="text-2xl font-bold text-gray-800"
-                  style={{ marginTop: 60 }}
+                  style={{ marginTop: 60, color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}
                 >
                   ShareFlow
                 </Text>
@@ -50,61 +60,71 @@ export default function LoginScreen() {
 
               {/* Back Button */}
               <TouchableOpacity
-  className="absolute top-4 left-4 z-10"
-  onPress={() => navigation.navigate("Header")} // ✅ Navigate to Header
->
-  <LinearGradient
-    colors={["#2A2F50", "#28A745"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-    style={{
-      width: 183,
-      height: 41,
-      borderRadius: 12.77,
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    <Text className="text-white font-bold">← Back To Home</Text>
-  </LinearGradient>
-</TouchableOpacity>
-
+                style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
+                onPress={() => navigation.navigate("Header")}
+              >
+                <LinearGradient
+                  colors={[COLORS.button, COLORS.button]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    width: 183,
+                    height: 41,
+                    borderRadius: 12.77,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
 
             {/* Inner Card */}
             <View
-              className="bg-white rounded-3xl shadow-2xl p-8"
-              style={{ width: "90%", alignSelf: "center", height: 700 }}
+              style={{
+                width: "90%",
+                alignSelf: "center",
+                height: 700,
+                backgroundColor: COLORS.white, // inner card fully white
+                borderRadius: 24,
+                padding: 32,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+              }}
             >
-              {/* Secure Sign In Badge */}
+              {/* Secure Badge */}
               <LinearGradient
-                colors={["#2A2F50", "#28A745"]}
+                colors={[COLORS.button, COLORS.button]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="absolute top-6 left-6 px-4 py-1 rounded-xl"
+                style={{ position: "absolute", top: 6, left: 6, paddingHorizontal: 16, paddingVertical: 4, borderRadius: 12 }}
               >
-                <Text className="text-white font-semibold text-sm">
+                <Text style={{ color: COLORS.white, fontWeight: "600", fontSize: 12 }}>
                   Secure Sign-In
                 </Text>
               </LinearGradient>
 
-              {/* Welcome Text */}
-              <Text className="text-3xl font-extrabold text-gray-800 mb-2 text-center mt-10">
+              {/* Welcome */}
+              <Text style={{ color: COLORS.primary, fontSize: 30, fontWeight: "800", marginBottom: 8, textAlign: "center", marginTop: 40 }}>
                 Welcome Back
               </Text>
-              <Text className="text-base text-gray-500 mb-6 text-center">
+              <Text style={{ color: COLORS.gray, fontSize: 16, marginBottom: 24, textAlign: "center" }}>
                 Sign into your ShareFlow account
               </Text>
 
-              {/* Email Field */}
-              <View className="mb-5">
-                <Text className="text-sm font-medium text-gray-700 mb-2">
+              {/* Email */}
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ color: COLORS.primary, fontSize: 14, fontWeight: "500", marginBottom: 6 }}>
                   Email Address
                 </Text>
                 <TextInput
-                  className="w-full bg-gray-100 rounded-xl px-4 py-4 text-gray-800"
+                  style={{ width: "100%", borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16, backgroundColor: "#E6F0FF", color: COLORS.primary }}
                   placeholder="yourname@work.com"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#6C717DFF"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -112,107 +132,99 @@ export default function LoginScreen() {
                 />
               </View>
 
-              {/* Password Field */}
-              <View className="mb-3">
-                <Text className="text-sm font-medium text-gray-700 mb-2">
+              {/* Password */}
+              <View style={{ marginBottom: 12 }}>
+                <Text style={{ color: COLORS.primary, fontSize: 14, fontWeight: "500", marginBottom: 6 }}>
                   Password
                 </Text>
-
-                <View className="relative">
+                <View style={{ position: "relative" }}>
                   <TextInput
-                    className="w-full bg-gray-100 rounded-xl px-4 py-4 text-gray-800 pr-12"
+                    style={{ width: "100%", borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16, paddingRight: 48, backgroundColor: "#E6F0FF", color: COLORS.primary }}
                     placeholder="Enter your password"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#6C717DFF"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                   />
                   <TouchableOpacity
-                    className="absolute right-4 top-4"
+                    style={{ position: "absolute", right: 16, top: 16 }}
                     onPress={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff size={22} color="#6B7280" />
+                      <EyeOff size={22} color={COLORS.primary} />
                     ) : (
-                      <Eye size={22} color="#6B7280" />
+                      <Eye size={22} color={COLORS.primary} />
                     )}
                   </TouchableOpacity>
                 </View>
               </View>
 
-              {/* Remember & Forget Row */}
-              {/* Remember & Forget Row */}
-<View className="flex-row justify-between items-center mb-6">
+              {/* Remember / Forget */}
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => setRememberMe(!rememberMe)}>
+                  <View style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 4,
+                    borderWidth: 2,
+                    marginRight: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: rememberMe ? COLORS.button : COLORS.white,
+                    borderColor: rememberMe ? COLORS.button : COLORS.primary,
+                  }}>
+                    {rememberMe && (
+                      <Text style={{ color: COLORS.white, fontSize: 10, fontWeight: "bold" }}>✓</Text>
+                    )}
+                  </View>
+                  <Text style={{ color: COLORS.primary }}>Remember me</Text>
+                </TouchableOpacity>
 
-  {/* Remember Me */}
-  <TouchableOpacity
-    className="flex-row items-center"
-    onPress={() => setRememberMe(!rememberMe)}
-  >
-    <View
-      className={`w-4 h-4 rounded border-2 mr-2 items-center justify-center ${
-        rememberMe
-          ? "bg-[#34D399] border-[#34D399]"
-          : "bg-white border-gray-300"
-      }`}
-    >
-      {rememberMe && (
-        <Text className="text-white text-xs font-bold">✓</Text>
-      )}
-    </View>
-    <Text className="text-sm text-gray-600">Remember me</Text>
-  </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("ForgetPwd")}>
+                  <Text style={{ color: COLORS.accent, fontWeight: "600" }}>
+                    Forget password?
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-  {/* Forget Password */}
-  <TouchableOpacity onPress={() => navigation.navigate("Forgetpwd")}>
-    <Text className="text-sm text-blue-600 font-semibold">
-      Forget password?
-    </Text>
-  </TouchableOpacity>
-</View>
+              {/* Sign In Button */}
+              <TouchableOpacity
+                style={{ borderRadius: 16, marginBottom: 16 }}
+                onPress={() => navigation.navigate("ShareholderDashboard")}
+              >
+                <LinearGradient
+                  colors={[COLORS.button, COLORS.button]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ paddingVertical: 16, borderRadius: 16, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8 }}
+                >
+                  <LogIn size={20} color={COLORS.white} />
+                  <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 16 }}>
+                    Sign Into Dashboard
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
+              {/* No account text */}
+              <Text style={{ color: COLORS.gray, fontSize: 14, textAlign: "center" }}>
+                Don’t have an enterprise account?
+              </Text>
 
-             {/* Sign-In Button */}
-<TouchableOpacity
-  className="rounded-xl mb-4"
-  onPress={() => navigation.navigate("Shareholder")}
->
-  <LinearGradient
-    colors={["#2A2F50", "#28A745"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-    className="py-4 rounded-2xl items-center justify-center flex-row space-x-2"
-  >
-    <LogIn size={20} color="#fff" />
-    <Text className="text-white font-bold text-base">
-      Sign Into Dashboard
-    </Text>
-  </LinearGradient>
-</TouchableOpacity>
-
-
-<Text className="text-center text-sm text-gray-500">
-  Don’t have an enterprise account?
-</Text>
-
-{/* Create Account Button */}
-<TouchableOpacity
-  className="mt-6"
-  onPress={() => navigation.navigate("Signup")}
->
-  <LinearGradient
-    colors={["#2A2F50", "#28A745"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-    className="py-4 px-6 rounded-2xl items-center justify-center shadow-lg flex-row space-x-2"
-  >
-    <Building2 size={20} color="#fff" /> 
-    <Text className="text-white font-bold text-base">
-      Create Company Account
-    </Text>
-  </LinearGradient>
-</TouchableOpacity>
+              {/* Create Account */}
+              <TouchableOpacity style={{ marginTop: 24 }} onPress={() => navigation.navigate("Signup")}>
+                <LinearGradient
+                  colors={[COLORS.button, COLORS.button]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ paddingVertical: 16, paddingHorizontal: 24, borderRadius: 16, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8 }}
+                >
+                  <Building2 size={20} color={COLORS.white} />
+                  <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 16 }}>
+                    Create Company Account
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
             </View>
           </View>

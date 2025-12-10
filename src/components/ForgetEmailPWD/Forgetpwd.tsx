@@ -11,31 +11,32 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { Lock, Send, X } from "lucide-react-native";
+import { COLORS } from "../../Constants/theme"; // Assuming same COLORS file as Administrator
 
 const ForgetPwd: React.FC = () => {
   const navigation = useNavigation<any>();
   const [email, setEmail] = useState("");
 
   return (
-    <SafeAreaView className="flex-1 bg-[#E8EDF5]">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#E8EDF5" }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 items-center justify-center px-6 py-12">
           {/* Outer Card */}
           <View
-            className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-4"
-            style={{ width: 800, height: 1050 }}
+            className="rounded-3xl shadow-2xl p-4"
+            style={{ width: 800, height: 1050, backgroundColor: "#E6F0FF" }}
           >
             {/* Header */}
             <View className="flex-row items-center justify-center mb-6 w-full relative">
               <View className="flex-row items-center">
                 <Image
-                   source={require('../../assets/image.png')}
+                  source={require('../../assets/image.png')}
                   className="w-10 h-10 mr-2"
                   style={{ marginTop: 60 }}
                 />
                 <Text
-                  className="text-2xl font-bold text-gray-800"
-                  style={{ marginTop: 60 }}
+                  className="text-2xl font-bold"
+                  style={{ marginTop: 60, color: "#193288" }}
                 >
                   ShareFlow
                 </Text>
@@ -47,7 +48,7 @@ const ForgetPwd: React.FC = () => {
                 onPress={() => navigation.goBack()}
               >
                 <LinearGradient
-                  colors={["#2A2F50", "#28A745"]}
+                  colors={[COLORS.button, COLORS.button]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{
@@ -58,18 +59,21 @@ const ForgetPwd: React.FC = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Text className="text-white font-bold">← Back To Home</Text>
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    ← Back To Home
+                  </Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
 
             {/* Inner Card */}
             <View
-              className="bg-white rounded-3xl shadow-2xl p-10 relative"
+              className="rounded-3xl shadow-2xl p-10 relative"
               style={{
                 alignSelf: "center",
                 width: "90%",
                 height: 800,
+                backgroundColor: "#FFFFFF",
               }}
             >
               {/* Close Icon */}
@@ -86,7 +90,7 @@ const ForgetPwd: React.FC = () => {
                 style={{ height: 40, width: 190 }}
               >
                 <LinearGradient
-                  colors={["#2A2F50", "#28A745"]}
+                  colors={[COLORS.button, COLORS.button]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{
@@ -106,54 +110,76 @@ const ForgetPwd: React.FC = () => {
               </TouchableOpacity>
 
               {/* Main Heading */}
-              <Text className="text-2xl font-bold text-gray-800 mb-2">
-                Forget Password?
-              </Text>
-              <Text className="text-gray-600 text-base mb-6">
+              <Text
+  className="text-2xl font-bold mb-2"
+  style={{ color: "#193288" }}
+>
+  Forget Password?
+</Text>
+
+              <Text className="text-gray-500 text-base mb-6">
                 We’ll help you reset password and secure your account.
               </Text>
 
               {/* Step Section */}
-             <View className="mb-10">
-  {/* Steps */}
-  <View className="flex-row items-center justify-center mb-8">
-    {/* Step 1 - Gradient Circle */}
-    <LinearGradient
-      colors={["#2A2F50", "#28A745"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text className="text-white text-sm font-bold">1</Text>
-    </LinearGradient>
-
-    {/* Line */}
-    <View className="w-28 h-[3px] bg-gray-400" />
-
-    {/* Step 2 - Solid Circle */}
-    <View
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#AEA2A2",
-      }}
-    >
-      <Text className="text-white text-sm font-bold">2</Text>
-    </View>
-  </View>
+              <View className="mb-10">
+                {/* Steps */}
+       <View className="flex-row items-center justify-center mb-8">
+  {[1, 2].map((step) => (
+    <React.Fragment key={step}>
+      {step === 1 ? (
+        // Step 1 - Filled
+        <LinearGradient
+          colors={["#193288", "#FFC20E"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>{step}</Text>
+        </LinearGradient>
+      ) : (
+        // Step 2 - Empty
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: "#FFFFFF",
+            borderWidth: 2,
+            borderColor: "#9CA3AF",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#9CA3AF", fontWeight: "bold" }}>{step}</Text>
+        </View>
+      )}
+      {step < 2 && (
+        <View
+          style={{
+            width: 112,
+            height: 3,
+            backgroundColor: step === 1 ? "#193288" : "#9CA3AF",
+            marginHorizontal: 6,
+            marginTop: 19,
+          }}
+        />
+      )}
+    </React.Fragment>
+  ))}
+</View>
 
 
                 {/* Step Headings */}
-                <Text className="text-lg font-bold text-gray-800 mb-2">
+                <Text className="text-lg font-bold text-gray-800 mb-2"
+                  style={{ color: "#193288" }}
+                  >
                   Reset Your Password
                 </Text>
                 <Text className="text-gray-500 text-sm mb-10">
@@ -181,7 +207,7 @@ const ForgetPwd: React.FC = () => {
                   onPress={() => navigation.navigate("VerifyReset")}
                 >
                   <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
+                    colors={[COLORS.button, COLORS.button]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
@@ -200,15 +226,15 @@ const ForgetPwd: React.FC = () => {
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
-              
 
               {/* Security Notice Box */}
               <View
-                className="rounded-xl p-5 mt-8 border border-[#28A745]"
+                className="rounded-xl p-5 mt-8 border"
                 style={{
                   width: 460,
                   alignSelf: "center",
-                  backgroundColor: "rgba(178, 175, 175, 0.5)",
+                  backgroundColor: "#E6F0FF",
+                  borderColor: "#193288",
                 }}
               >
                 <Text className="text-lg font-semibold text-gray-800 mb-1">

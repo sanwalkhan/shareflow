@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { COLORS } from "../../Constants/theme"; // Make sure COLORS has: primary (blue), button (yellow), success (green), white
 
 const Administrator: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -21,28 +22,19 @@ const Administrator: React.FC = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-[#E8EDF5]">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="flex-1 items-center justify-center px-6 py-12">
           {/* Outer Card */}
-          <View
-            className="bg-[#E3EDF9] rounded-3xl shadow-2xl p-6"
-            style={{ width: 800, height: 960 }}
-          >
+          <View className="bg-[#E6F0FF] rounded-3xl shadow-2xl p-6" style={{ width: 800, height: 960 }}>
             {/* Top Bar */}
             <View className="flex-row items-center justify-center mb-8 w-full relative">
               <View className="flex-row items-center">
                 <Image
-                 source={require('../../assets/image.png')}
+                  source={require('../../assets/image.png')}
                   className="w-10 h-10 mr-2"
                   style={{ marginTop: 60 }}
                 />
-                <Text
-                  className="text-2xl font-bold text-gray-800"
-                  style={{ marginTop: 60 }}
-                >
+                <Text className="text-2xl font-bold" style={{ marginTop: 60, color: COLORS.primary }}>
                   ShareFlow
                 </Text>
               </View>
@@ -53,7 +45,7 @@ const Administrator: React.FC = () => {
                 onPress={() => navigation.goBack()}
               >
                 <LinearGradient
-                  colors={["#2A2F50", "#28A745"]}
+                  colors={[COLORS.button, COLORS.button]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={{
@@ -70,13 +62,10 @@ const Administrator: React.FC = () => {
             </View>
 
             {/* Inner Card */}
-            <View
-              className="bg-white rounded-3xl shadow-2xl px-10 pt-10 pb-16 space-y-10"
-              style={{ alignSelf: "center", width: "90%" }}
-            >
+            <View className="bg-white rounded-3xl shadow-2xl px-10 pt-10 pb-16 space-y-10" style={{ alignSelf: "center", width: "90%" }}>
               {/* Heading */}
               <View>
-                <Text className="text-2xl font-extrabold text-gray-800 text-center mb-3">
+                <Text className="text-2xl font-extrabold text-center mb-3" style={{ color: COLORS.primary }}>
                   Administrator Details
                 </Text>
                 <Text className="text-base text-gray-500 text-center">
@@ -85,118 +74,65 @@ const Administrator: React.FC = () => {
               </View>
 
               {/* Stepper */}
-              <View className="flex-row items-center justify-between mb-6 w-full px-4">
-                {/* Step 1 */}
-                <View className="items-center">
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-lg">1</Text>
-                  </LinearGradient>
-                </View>
-
-                {/* Line 1 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#2A2F50",
-                    marginTop: 19,
-                  }}
-                />
-
-                {/* Step 2 */}
-                <View className="items-center">
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-lg">2</Text>
-                  </LinearGradient>
-                </View>
-
-                {/* Line 2 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#2A2F50",
-                    marginTop: 19,
-                  }}
-                />
-
-                {/* Step 3 */}
-                <View className="items-center">
-                  <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-lg">3</Text>
-                  </LinearGradient>
-                </View>
-
-                {/* Line 3 */}
-                <View
-                  style={{
-                    width: 100,
-                    height: 2,
-                    backgroundColor: "#9CA3AF",
-                    marginTop: 19,
-                  }}
-                />
-
-                {/* Step 4 - Empty */}
-                <View className="items-center">
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: "#FFFFFF",
-                      borderWidth: 2,
-                      borderColor: "#9CA3AF",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-gray-500 font-bold text-lg">4</Text>
-                  </View>
-                </View>
-              </View>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24, paddingHorizontal: 16 }}>
+  {[1, 2, 3, 4].map((step, idx) => {
+    const isActive = step <= 3; // First three steps active
+    return (
+      <React.Fragment key={step}>
+        <View style={{ alignItems: "center" }}>
+          {isActive ? (
+            <LinearGradient
+              colors={["#193288", "#FFC20E"]} // Blue-to-yellow gradient for active steps
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>{step}</Text>
+            </LinearGradient>
+          ) : (
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: "#FFFFFF",
+                borderWidth: 2,
+                borderColor: "#9CA3AF",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#9CA3AF", fontWeight: "bold" }}>{step}</Text>
+            </View>
+          )}
+        </View>
+        {idx < 3 && (
+          <View
+            style={{
+              flex: 1,
+              height: 2,
+              backgroundColor: isActive ? "#193288" : "#9CA3AF",
+              marginHorizontal: 4,
+              marginTop: 19,
+            }}
+          />
+        )}
+      </React.Fragment>
+    );
+  })}
+</View>
 
               {/* Form Fields */}
               <View className="space-y-8">
-                {/* First & Last Name */}
                 <View className="flex-row space-x-6">
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-800 mb-2">
-                      First Name
-                    </Text>
+                    <Text className="text-base font-semibold text-gray-800 mb-2">First Name</Text>
                     <TextInput
                       value={firstName}
                       onChangeText={setFirstName}
@@ -204,11 +140,8 @@ const Administrator: React.FC = () => {
                       className="bg-gray-200 rounded-xl px-4 py-4 text-base"
                     />
                   </View>
-
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-800 mb-2">
-                      Last Name
-                    </Text>
+                    <Text className="text-base font-semibold text-gray-800 mb-2">Last Name</Text>
                     <TextInput
                       value={lastName}
                       onChangeText={setLastName}
@@ -218,12 +151,9 @@ const Administrator: React.FC = () => {
                   </View>
                 </View>
 
-                {/* Job Title & Admin Email */}
                 <View className="flex-row space-x-6">
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-800 mb-2">
-                      Job Title
-                    </Text>
+                    <Text className="text-base font-semibold text-gray-800 mb-2">Job Title</Text>
                     <TextInput
                       value={jobTitle}
                       onChangeText={setJobTitle}
@@ -231,11 +161,8 @@ const Administrator: React.FC = () => {
                       className="bg-gray-200 rounded-xl px-4 py-4 text-base"
                     />
                   </View>
-
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-800 mb-2">
-                      Admin Email
-                    </Text>
+                    <Text className="text-base font-semibold text-gray-800 mb-2">Admin Email</Text>
                     <TextInput
                       value={adminEmail}
                       onChangeText={setAdminEmail}
@@ -248,25 +175,21 @@ const Administrator: React.FC = () => {
 
               {/* Buttons */}
               <View className="flex-row justify-between space-x-6 pt-4">
-                {/* Previous */}
                 <TouchableOpacity
                   className="flex-1 rounded-xl items-center justify-center"
                   style={{ height: 55, backgroundColor: "#D1D5DB" }}
                   onPress={() => navigation.goBack()}
                 >
-                  <Text className="text-gray-700 font-semibold text-base">
-                    ← Previous
-                  </Text>
+                  <Text className="text-gray-700 font-semibold text-base">← Previous</Text>
                 </TouchableOpacity>
 
-                {/* Complete */}
                 <TouchableOpacity
                   className="flex-1 rounded-xl items-center justify-center"
                   style={{ height: 55 }}
                   onPress={() => navigation.navigate("Password")}
                 >
                   <LinearGradient
-                    colors={["#2A2F50", "#28A745"]}
+                    colors={[COLORS.button, COLORS.button]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
@@ -277,9 +200,7 @@ const Administrator: React.FC = () => {
                       alignItems: "center",
                     }}
                   >
-                    <Text className="text-white font-bold text-base">
-                      Complete →
-                    </Text>
+                    <Text className="text-white font-bold text-base">Complete →</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
@@ -288,7 +209,7 @@ const Administrator: React.FC = () => {
               <View
                 style={{
                   height: 3,
-                  backgroundColor: "#000000",
+                  backgroundColor: COLORS.primary,
                   width: "90%",
                   alignSelf: "center",
                   marginVertical: 20,
@@ -298,11 +219,11 @@ const Administrator: React.FC = () => {
 
               {/* Already Have Account */}
               <View className="flex-row justify-center mt-4">
-                <Text className="text-sm text-gray-500">
+                <Text className="text-sm" style={{ color: COLORS.primary }}>
                   Already have an Account?{" "}
                 </Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                  <Text className="text-sm text-green-600 font-medium">
+                  <Text className="text-sm font-medium" style={{ color: COLORS.button }}>
                     Sign in here
                   </Text>
                 </TouchableOpacity>

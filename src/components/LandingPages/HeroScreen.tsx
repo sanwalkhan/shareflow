@@ -1,12 +1,6 @@
+// src/components/HeroScreen.tsx
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
 
 import {
   AdvancedAnalyticsCard,
@@ -19,35 +13,39 @@ import BusinessScreen from "./BusinessScreen";
 import Marketing from "./Marketing";
 import Footer from "../HeaderFooter/Footer";
 
+const { width: screenWidth } = Dimensions.get("window");
+
 const HeroScreen: React.FC = () => {
   return (
-    <ScrollView className="flex-1 bg-white">
-
-      {/* ============================
-          HERO SECTION (NO BACKGROUND IMAGE)
-      ============================ */}
+    <ScrollView style={{ flex: 1, backgroundColor: "#001867ff" }}>
+      {/* HERO SECTION */}
       <View
-        style={{
-          backgroundColor: "#003C1F",
-          paddingTop: 48,
-          paddingBottom: 64,
-          paddingHorizontal: 24,
-          height: 960,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+  style={{
+    paddingVertical: 24, // reduce vertical padding
+    paddingHorizontal: 24,
+    flexDirection: screenWidth > 768 ? "row" : "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+   minHeight: screenWidth > 768 ? 300 : 200, // desktop 300, mobile 200
+// optional: set explicit height
+  }}
+>
 
         {/* LEFT SIDE TEXT */}
-        <View style={{ flex: 1, paddingRight: 20 }}>
+        <View
+          style={{
+            flex: 1,
+            paddingLeft: screenWidth > 768 ? 60 : 0, // move text slightly right
+            alignItems: screenWidth > 768 ? "flex-start" : "center",
+            marginTop: screenWidth > 768 ? 70 : 20, // ye line add karo
+          }}
+        >
           <Text
             style={{
               fontFamily: "Poppins-SemiBold",
-              fontSize: 45,
-              color: "#FFFFFF",
-              marginTop: -334,
-              marginLeft: 34,
+              fontSize: screenWidth > 768 ? 52 : 36,
+              color: "#ffffff",
+              textAlign: "left",
             }}
           >
             Financial Intelligence
@@ -56,10 +54,10 @@ const HeroScreen: React.FC = () => {
           <Text
             style={{
               fontFamily: "Poppins-Bold",
-              fontSize: 45,
-              color: "#00FF99",
-              marginTop: -5,
-              marginLeft: 34,
+              fontSize: screenWidth > 768 ? 52 : 36,
+              color: "#ffffff",
+              marginTop: 8,
+              textAlign: "left",
             }}
           >
             Reimagined
@@ -69,114 +67,132 @@ const HeroScreen: React.FC = () => {
           <View
             style={{
               flexDirection: "row",
-              marginTop: 20,
-              marginLeft: 23,
+              marginTop: 24,
+              justifyContent: "flex-start",
+              flexWrap: "wrap",
             }}
           >
-            <TouchableOpacity>
-              <LinearGradient
-                colors={["#2A2F50", "#28A745"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#FFC20E",
+                paddingVertical: 14,
+                paddingHorizontal: 28,
+                borderRadius: 8,
+                marginRight: 15,
+                marginBottom: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text
                 style={{
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                  borderRadius: 8,
-                  marginRight: 15,
+                  color: "#001867ff",
+                  fontSize: 20,
+                  fontWeight: "bold",
                 }}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 18,
-                    fontWeight: "600",
-                  }}
-                >
-                  Register
-                </Text>
-              </LinearGradient>
+                Register
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              <LinearGradient
-                colors={["#4CAF4F", "#28A745"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#FFC20E",
+                paddingVertical: 14,
+                paddingHorizontal: 28,
+                borderRadius: 8,
+                alignItems: "center",
+                marginBottom: 12,
+              }}
+            >
+              <Text
                 style={{
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                  borderRadius: 8,
+                  color: "#001867ff",
+                  fontSize: 20,
+                  fontWeight: "bold",
                 }}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 18,
-                    fontWeight: "600",
-                  }}
-                >
-                  Watch Demo
-                </Text>
-              </LinearGradient>
+                Watch Demo
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* RIGHT SIDE IMAGE */}
-        <View style={{ flex: 1, alignItems: "center" }}>
-         <Image
-  source={require('../../assets/Image2.png')}
-  style={{ width: 400, height: 310, marginTop: -374 }}
-  resizeMode="contain"
-/>
+        <View
+  style={{
+    flex: 1,
+    alignItems: "flex-end",
+    marginTop: screenWidth > 768 ? 0 : 30,
+  }}
+>
+  <Image
+    source={require('../../assets/Image2.png')}
+    style={{
+      width: screenWidth > 768 ? 400 : screenWidth * 0.7, // chhota width
+      height: screenWidth > 768 ? 350 : (screenWidth * 0.7 * 350) / 400, // maintain aspect ratio
+    }}
+    resizeMode="contain"
+  />
+</View>
+</View>
 
-        </View>
-      </View>
-      
+      {/* SECTION TITLE ABOVE CARDS */}
+      <View
+  style={{
+    paddingHorizontal: 24,
+    paddingVertical: 64, // thoda aur neeche space
+    alignItems: "center", // center align
+  }}
+>
+  <Text
+    style={{
+      fontFamily: "Poppins-SemiBold",
+      fontSize: screenWidth > 768 ? 28 : 22,
+      color: "#ffffff",
+      textAlign: "center", // center text
+    }}
+  >
+    Everything Your Business Needs
+  </Text>
 
-      {/* ============================
-          SECTION TITLE ABOVE CARDS
-      ============================ */}
-      <View className="px-6 py-12 items-center">
-  <View className="items-center mt-[-480]">
-    <Text
-      style={{
-        width: 434,
-        fontFamily: "Poppins-SemiBold",
-        fontSize: 25,
-        color: "#ffffffff",
-        textAlign: "center",
-      }}
-    >
-      Everything Your Business Needs
-    </Text>
+  <View
+    style={{
+      width: screenWidth > 768 ? 350 : 200,
+      height: 3,
+      backgroundColor: "#ffffff",
+      marginTop: 8,
+    }}
+  />
 
-    <View
-      style={{
-        width: 350,
-        height: 3,
-        backgroundColor: "#ffffffff",
-        marginTop: 4,
-      }}
-    />
-  </View>
-
-  <Text className="text-[white] text-center mt-4">
+  <Text
+    style={{
+      fontFamily: "Poppins-Bold",
+      fontSize: screenWidth > 768 ? 18 : 16,
+      color: "#ffffff",
+      marginTop: 16, // thoda aur neeche
+      textAlign: "center",
+    }}
+  >
     Who is Nextcent suitable for?
   </Text>
 </View>
 
 
-      {/* ============================
-           FEATURE CARDS
-      ============================ */}
-      <AdvancedAnalyticsCard />
-      <EnterpriseSecurityCard />
-      <SmartAutomationCard />
+      {/* FEATURE CARDS */}
+      <View
+        style={{
+          flexDirection: screenWidth > 768 ? "row" : "column",
+          justifyContent: "space-between",
+          paddingHorizontal: 24,
+          marginBottom: 32,
+        }}
+      >
+        <AdvancedAnalyticsCard />
+        <EnterpriseSecurityCard />
+        <SmartAutomationCard />
+      </View>
 
-      {/* ============================
-           ADDITIONAL SECTIONS
-      ============================ */}
+      {/* ADDITIONAL SECTIONS */}
       <InfoScreen />
       <BusinessScreen />
       <Marketing />

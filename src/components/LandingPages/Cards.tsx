@@ -1,23 +1,21 @@
-// Cards.tsx
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle, ScrollView, Dimensions } from 'react-native';
 import { TrendingUp, Shield, Zap } from 'lucide-react-native';
 
 interface CardProps {
   icon: 'analytics' | 'security' | 'automation';
-  title: string ;
+  title: string;
   description: string;
   style?: ViewStyle;
 }
 
 export const Cards: React.FC<CardProps> = ({ icon, title, description, style }) => {
-  const IconComponent =
-    icon === 'analytics' ? TrendingUp : icon === 'security' ? Shield : Zap;
+  const IconComponent = icon === 'analytics' ? TrendingUp : icon === 'security' ? Shield : Zap;
 
   return (
     <View style={[styles.card, style]}>
       <View style={styles.iconWrapper}>
-        <IconComponent size={56} color="#3FBF7F" strokeWidth={3} />
+        <IconComponent size={56} color="#FFFFFF" strokeWidth={3} /> {/* icon color white */}
       </View>
       <Text style={styles.cardTitle}>{title}</Text>
       <Text style={styles.cardDescription}>{description}</Text>
@@ -25,90 +23,88 @@ export const Cards: React.FC<CardProps> = ({ icon, title, description, style }) 
   );
 };
 
-// Individual cards with custom styles
+// Individual cards
 export const AdvancedAnalyticsCard = () => (
   <Cards
     icon="analytics"
     title="Advanced Analytics"
     description="Our membership management software provides full automation of membership renewals and payments."
-    style={styles.advancedCard}
+    style={styles.cardBase}
   />
 );
-
 export const EnterpriseSecurityCard = () => (
   <Cards
     icon="security"
     title="Enterprise Security"
     description="Our membership management software provides full automation of membership renewals and payments."
-    style={styles.enterpriseCard}
+    style={styles.cardBase}
   />
 );
-
 export const SmartAutomationCard = () => (
   <Cards
     icon="automation"
     title="Smart Automation"
     description="Our membership management software provides full automation of membership renewals and payments."
-    style={styles.smartCard}
+    style={styles.cardBase}
   />
 );
 
+const screenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   card: {
-    width: 350,
-    height: 400,
-    backgroundColor: '#FEFFFA',
+    backgroundColor: '#FFFFFF', // pure white
     borderRadius: 28,
     padding: 25,
-    marginBottom: 8,
+    marginHorizontal: 8, // spacing between cards
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  
+    elevation: 6,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    flexShrink: 0, // prevent shrinking
   },
   iconWrapper: {
-    marginBottom: 28,
-    backgroundColor: '#E8F5EE',
-    padding: 28,
+    marginBottom: 20,
+    backgroundColor: '#001867ff', // accent background for icon
+    padding: 20,
     borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cardTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#111827',
-    marginBottom: 18,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#001867ff', // accent color
+    marginBottom: 10,
     textAlign: 'center',
   },
   cardDescription: {
-    fontSize: 17,
-    color: '#6B7280',
-    lineHeight: 26,
+    fontSize: 16,
+    color: '#333333', // neutral/dark color
+    lineHeight: 22,
     textAlign: 'center',
   },
-  // Custom styles for each card
-advancedCard: {
-  marginLeft: 100,  // spacing between cards
-  backgroundColor: '#FEFFFA',
-  marginTop: -320,   // lift the card upwards
-},
-enterpriseCard: {
-  marginLeft: 500, // increased spacing
- backgroundColor: '#FEFFFA',
-  marginTop: -410, 
-},
-smartCard: {
-     marginLeft: 900,
-      marginTop: -410, 
-   backgroundColor: '#FEFFFA',
-},
-
+  cardBase: {
+    width: screenWidth / 3.8, // reduced width, 3 cards per line comfortably
+    minHeight: 380,
+  },
 });
+
+// Wrapper for horizontal scrolling (optional)
+export const CardsRow: React.FC = () => (
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{ paddingHorizontal: 16, justifyContent: 'space-between' }}
+  >
+    <AdvancedAnalyticsCard />
+    <EnterpriseSecurityCard />
+    <SmartAutomationCard />
+  </ScrollView>
+);
 
 export default Cards;

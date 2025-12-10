@@ -1,6 +1,14 @@
 // src/components/Expenses.tsx
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Dimensions,
+  Animated,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
@@ -11,6 +19,29 @@ const sidebarItems = ["Shareholder", "Expenses"];
 const Expenses: React.FC = () => {
   const navigation = useNavigation();
   const isSmallScreen = screenWidth < 768; // breakpoint for mobile
+
+  // -------------------------
+  // Notification Drawer States
+  // -------------------------
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const slideAnim = React.useRef(new Animated.Value(300)).current;
+
+  const openNotifications = () => {
+    setShowNotifications(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const closeNotifications = () => {
+    Animated.timing(slideAnim, {
+      toValue: 300,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => setShowNotifications(false));
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
@@ -102,7 +133,10 @@ const Expenses: React.FC = () => {
                 <Text style={{ color: "#333", fontWeight: "600", fontSize: 14 }}>Search for everything</Text>
               </TouchableOpacity>
 
-              <Ionicons name="notifications-outline" size={28} color="gray" />
+              {/* Bell Icon */}
+              <TouchableOpacity onPress={openNotifications}>
+                <Ionicons name="notifications-outline" size={28} color="gray" />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -172,6 +206,69 @@ const Expenses: React.FC = () => {
           </View>
         </View>
       </View>
+
+      {/* -------------------------------------- */}
+      {/* Notification Drawer */}
+      {/* -------------------------------------- */}
+      {showNotifications && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            right: slideAnim,
+            top: 0,
+            height: "100%",
+            width: 300,
+            backgroundColor: "white",
+            shadowColor: "#000",
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 6,
+            padding: 16,
+          }}
+        >
+          {/* Header */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
+
+            <TouchableOpacity onPress={closeNotifications}>
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Mark all read */}
+          <TouchableOpacity style={{ paddingVertical: 8, marginBottom: 12 }}>
+            <Text style={{ color: "#28A745", fontWeight: "600" }}>Mark All as Read</Text>
+          </TouchableOpacity>
+
+          {/* Dummy notifications */}
+          <ScrollView>
+            {[
+              "Your report has been generated.",
+              "New expense added.",
+              "Payment approved.",
+              "Reminder: Submit your receipts.",
+            ].map((n, i) => (
+              <View
+                key={i}
+                style={{
+                  paddingVertical: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#eee",
+                }}
+              >
+                <Text style={{ fontSize: 15, color: "#333" }}>{n}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </Animated.View>
+      )}
     </View>
   );
 };

@@ -1,74 +1,115 @@
 // InfoSection.tsx
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
+const { width: screenWidth } = Dimensions.get("window");
 
 const InfoScreen: React.FC = () => {
   return (
-    <View className="w-full flex-row px-6 py-10 items-center">
-
+    <View
+      style={{
+        flexDirection: screenWidth > 768 ? "row" : "column",
+        backgroundColor: "#ffffff",
+        paddingHorizontal: 24,
+        paddingVertical: 32,
+        alignItems: "flex-start",
+        justifyContent: "center",
+      
+      }}
+    >
       {/* LEFT SIDE IMAGE */}
-      <View className="w-1/2 pr-4">
+      <View
+        style={{
+          width: screenWidth > 768 ? "50%" : "100%",
+          paddingRight: screenWidth > 768 ? 24 : 0,
+          marginTop: screenWidth > 768 ? 130 : 40, // move image slightly down
+          marginBottom: screenWidth > 768 ? 0 : 20,
+        }}
+      >
         <Image
-  source={require('../../assets/Image3.png')}
-  className="w-full h-60 rounded-xl"
-  resizeMode="cover"
-/>
-
+          source={require('../../assets/Image3.png')}
+          style={{
+            width: "90%",
+            height: screenWidth > 768 ? 580 : 200,
+            borderRadius: 16,
+          }}
+          resizeMode="cover"
+        />
       </View>
 
       {/* RIGHT SIDE CONTENT */}
-      <View className="w-1/2 pl-4">
+      <View
+        style={{
+          width: screenWidth > 768 ? "50%" : "100%",
+          paddingLeft: screenWidth > 768 ? 24 : 0,
+          alignItems: "flex-start", // left-aligned
+        }}
+      >
+        {/* Heading */}
         <Text
+          style={{
+            fontFamily: "Inter-SemiBold",
+            fontSize: screenWidth > 768 ? 36 : 28,
+            color: "#001867ff",
+            lineHeight: screenWidth > 768 ? 42 : 36,
+            marginTop: 196,
+            textAlign: "left",
+          }}
+        >
+          The unseen of spending three years at Pixelgrade
+        </Text>
+
+        {/* Paragraph */}
+       <Text
   style={{
-    width: 521,
-    height: 77,
-    fontFamily: "Inter-SemiBold",
-    fontSize: 31.24,
-    color: "#4D4D4D",
-    lineHeight: 36, // perfect spacing
-    marginLeft:22,
+    fontFamily: "Inter-Regular",
+    fontSize: 20,
+    color: "#222629",
+    lineHeight: 28,
+    textAlign: "left",
+    marginBottom: 24,
   }}
 >
-  The unseen of spending three years{"\n"}
-  at Pixelgrade
-<View className="px-6 mt-4">
-  <Text
-    style={{
-      color: "#000000",             // black text
-      fontFamily: "Inter-Regular",   // your font
-      fontSize: 16,                  // readable
-      lineHeight: 24,                // space between lines
-      textAlign: "justify", 
-      marginLeft:-18,         // aligns both left and right edges
-    }}
-  >
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet
-    justo ipsum. Sed accumsan quam vitae est varius fringilla. Pellentesque
-    placerat vestibulum lorem sed porta. Nullam mattis tristique iaculis.
-    Nullam pulvinar sit amet risus pretium auctor. Etiam quis massa pulvinar,
-    aliquam quam vitae, tempus sem. Donec elementum pulvinar odio.
-  </Text>
-</View>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  Sed sit amet justo ipsum. {"\n"}Sed accumsan quam vitae est varius fringilla.
+  Pellentesque placerat vestibulum {"\n"}lorem sed porta.Nullam mattis tristique iaculis.
+  Nullam pulvinar sit amet risus {"\n"}  pretium  auctor. Etiam quis massa pulvinar,
+  aliquam quam vitae, tempus sem.{"\n"} Donec elementum pulvinar odio.
 </Text>
 
         {/* BUTTON */}
-       <TouchableOpacity className="mt-40 w-36 rounded-xl overflow-hidden ml-[30]">
-  <LinearGradient
-    colors={["#2A2F50", "#28A745"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }}
-    className="px-5 py-3 rounded-xl"
+       <View style={{ alignItems: "center", marginTop: 16 }}>
+  <TouchableOpacity
+    style={{
+      width: 160,
+      borderRadius: 12,
+      overflow: "hidden",
+    }}
   >
-    <Text className="text-white font-semibold text-center">
-      Learn More
-    </Text>
-  </LinearGradient>
-</TouchableOpacity>
-
-      </View>
-
+    <LinearGradient
+      colors={["#FFC20E", "#FFC20E"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={{
+        paddingVertical: 12,
+        alignItems: "center",
+        borderRadius: 12,
+      }}
+    >
+      <Text
+        style={{
+          color: "#001867ff",
+          fontWeight: "bold",
+          fontSize: 16,
+        }}
+      >
+        Learn More
+      </Text>
+    </LinearGradient>
+  </TouchableOpacity>
+</View>
+</View>
     </View>
   );
 };
