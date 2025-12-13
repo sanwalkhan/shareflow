@@ -1,32 +1,33 @@
+// BusinessScreen.tsx (responsive for web + mobile)
 import React from "react";
-import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, Image, TouchableOpacity, useWindowDimensions, ScrollView } from "react-native";
 import { Users, Building, CreditCard, Wallet } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
 const BusinessScreen: React.FC = () => {
-  const isDesktop = screenWidth > 768;
+  const { width: sw } = useWindowDimensions();
+  const isDesktop = sw >= 1200;
+  const isTablet = sw >= 768 && sw < 1200;
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#ffffff",
-        paddingHorizontal: 24,
-        paddingVertical: 20,
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        backgroundColor: "#FFFFFF",
+        paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
+        paddingTop: 16,
+        paddingBottom: 16,
       }}
+      showsVerticalScrollIndicator={false}
     >
-      {/* SECTION 1: Heading */}
-      <View style={{ marginBottom: 24, alignItems: "center" }}>
+      {/* Heading */}
+      <View style={{ marginBottom: 16, alignItems: "center" }}>
         <Text
           style={{
             fontFamily: "Poppins-Bold",
-            fontSize: isDesktop ? 36 : 28,
-            lineHeight: isDesktop ? 44 : 34,
+            fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
             color: "#00124D",
             textAlign: "center",
-            fontWeight: "700",
           }}
         >
           Helping a local
@@ -34,12 +35,9 @@ const BusinessScreen: React.FC = () => {
         <Text
           style={{
             fontFamily: "Poppins-Bold",
-            fontSize: isDesktop ? 36 : 28,
-            lineHeight: isDesktop ? 44 : 34,
+            fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
             color: "#FFC20E",
             textAlign: "center",
-            fontWeight: "700",
-            marginTop: -4,
           }}
         >
           business reinvent itself
@@ -47,7 +45,7 @@ const BusinessScreen: React.FC = () => {
         <Text
           style={{
             fontFamily: "Poppins-Regular",
-            fontSize: 14,
+            fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
             color: "#00124D",
             marginTop: 8,
             textAlign: "center",
@@ -57,16 +55,17 @@ const BusinessScreen: React.FC = () => {
         </Text>
       </View>
 
-      {/* SECTION 2: Stats Boxes 2x2 */}
+      {/* Stats Boxes */}
       <View
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "center",
-          marginBottom: 40,
+          gap: 12,
+          marginBottom: 24,
         }}
       >
-        {[
+        {[ 
           { icon: <Users color="#00124D" size={36} />, title: "2,245,341", subtitle: "Members" },
           { icon: <Building color="#00124D" size={36} />, title: "684,931", subtitle: "Clubs" },
           { icon: <CreditCard color="#00124D" size={36} />, title: "1,234,567", subtitle: "Payments" },
@@ -75,12 +74,11 @@ const BusinessScreen: React.FC = () => {
           <View
             key={index}
             style={{
-              width: isDesktop ? "34%" : "25%",
-              height: 90,
+              width: isDesktop ? "23%" : isTablet ? "45%" : "48%",
+              minHeight: 90,
               backgroundColor: "#fff",
               borderRadius: 16,
               padding: 12,
-              marginBottom: 16,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
@@ -89,78 +87,77 @@ const BusinessScreen: React.FC = () => {
               shadowOpacity: 0.1,
               shadowRadius: 5,
               elevation: 3,
-              marginLeft: index % 2 !== 0 ? 12 : 0, // spacing between 2 cards
+              marginBottom: 12,
             }}
           >
             {box.icon}
-            <View style={{ marginLeft: 18 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#00124D" }}>
-                {box.title}
-              </Text>
-              <Text style={{ fontSize: 13, color: "#00124D", marginTop: 2 }}>
-                {box.subtitle}
-              </Text>
+            <View style={{ marginLeft: 16 }}>
+              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#00124D" }}>{box.title}</Text>
+              <Text style={{ fontSize: 13, color: "#00124D", marginTop: 2 }}>{box.subtitle}</Text>
             </View>
           </View>
         ))}
       </View>
 
-      {/* SECTION 3: Image + Text */}
+      {/* Image + Text */}
       <View
         style={{
-          flexDirection: isDesktop ? "row" : "column",
-          alignItems: "center",
-          justifyContent: "space-between",
+          flexDirection: isDesktop || isTablet ? "row" : "column",
+          alignItems: "stretch",
+          gap: isDesktop || isTablet ? 40 : 24,
         }}
       >
-        {/* Image Left */}
-        <Image
-          source={require("../../assets/Image3.png")}
-          style={{
-            width: isDesktop ? "48%" : "100%",
-            height: isDesktop ? 520 : 180,
-            borderRadius: 16,
-            marginBottom: isDesktop ? 0 : 12,
-          }}
-          resizeMode="cover"
-        />
+        {/* Image */}
+        <View style={{ flex: 1 }}>
+          <Image
+            source={require("../../assets/Image3.png")}
+            style={{
+              width: "80%",
+              height: "80%",
+              borderRadius: 16,
+              aspectRatio: 4 / 3,
+            }}
+            resizeMode="cover"
+          />
+        </View>
 
-        {/* Text Right */}
+        {/* Text */}
         <View
           style={{
-            width: isDesktop ? "48%" : "100%",
-            paddingLeft: isDesktop ? 24 : 0,
-            alignItems: isDesktop ? "flex-start" : "center",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: isDesktop || isTablet ? "flex-start" : "center",
           }}
         >
           <Text
             style={{
               fontFamily: "Poppins-Bold",
-              fontSize: isDesktop ? 28 : 22,
+              fontSize: isDesktop ? 28 : isTablet ? 24 : 22,
               color: "#00124D",
-              lineHeight: isDesktop ? 36 : 28,
-              textAlign: isDesktop ? "left" : "center",
-              marginTop: -200,
+              lineHeight: isDesktop ? 36 : isTablet ? 32 : 28,
+              textAlign: isDesktop || isTablet ? "left" : "center",
+              marginBottom: 12,
             }}
           >
             How to design your site footer like we did
           </Text>
-<Text
-  style={{
-    fontFamily: "Poppins-Regular",
-    fontSize: isDesktop ? 18 : 15,
-    color: "#00124D",
-    lineHeight: isDesktop ? 24 : 22,
-    textAlign: isDesktop ? "left" : "center",
-    marginBottom: 32,
-  }}
->
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus pretium,{"\n"} justo in
-  scelerisque tincidunt, odio justo fermentum libero, at pulvinar elit {"\n"} mauris vitae
-  nunc. Curabitur vitae nisl nec lorem tincidunt consectetur.{"\n"}Vestibulum ante ipsum primis
-  in faucibus orci luctus et ultrices posuere{"\n"} cubilia curae; Sed et eros sit amet odio
-  convallis lacinia.{"\n"} Proin sit amet ligula at arcu volutpat efficitur.
-</Text>
+
+          <Text
+            style={{
+              fontFamily: "Poppins-Regular",
+              fontSize: isDesktop ? 18 : isTablet ? 16 : 14,
+              color: "#00124D",
+              lineHeight: isDesktop ? 24 : isTablet ? 22 : 20,
+              textAlign: isDesktop || isTablet ? "left" : "center",
+              marginBottom: 16,
+            }}
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus pretium, justo in
+            scelerisque tincidunt, odio justo fermentum libero, at pulvinar elit mauris vitae
+            nunc. Curabitur vitae nisl nec lorem tincidunt consectetur. Vestibulum ante ipsum primis
+            in faucibus orci luctus et ultrices posuere cubilia curae; Sed et eros sit amet odio
+            convallis lacinia. Proin sit amet ligula at arcu volutpat efficitur.
+          </Text>
 
           <TouchableOpacity style={{ width: 160 }}>
             <LinearGradient
@@ -186,7 +183,7 @@ const BusinessScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

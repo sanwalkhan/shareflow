@@ -7,10 +7,15 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../Constants/theme";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const CARD_MAX_WIDTH = 800; // max width for web/tablet
+const CARD_MIN_WIDTH = 360; // min width for small mobile
 
 const SignupScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -22,19 +27,20 @@ const SignupScreen: React.FC = () => {
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
 
+  const cardWidth = Math.min(Math.max(SCREEN_WIDTH * 0.95, CARD_MIN_WIDTH), CARD_MAX_WIDTH);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 24, paddingVertical: 48 }}>
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 16, paddingVertical: 24 }}>
           
           {/* Outer Card */}
           <View
             style={{
-              width: 800,
-              height: 1050,
-              backgroundColor: "#E6F0FF", // light blue touch
+              width: cardWidth,
+              backgroundColor: "#E6F0FF",
               borderRadius: 24,
-              padding: 24,
+              padding: 16,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.25,
@@ -46,44 +52,48 @@ const SignupScreen: React.FC = () => {
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24, width: "100%", position: "relative" }}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Image
-                  source={require('../../assets/image.png')}
-                  style={{ width: 40, height: 40, marginRight: 8, marginTop: 60 }}
+                  source={require("../../assets/image.png")}
+                  style={{ width: 40, height: 40, marginRight: 8 }}
                 />
-                <Text style={{ marginTop: 60, color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}>
+                <Text style={{ color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}>
                   ShareFlow
                 </Text>
               </View>
 
-              {/* Back Button */}
-              <TouchableOpacity
-                style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
-                onPress={() => navigation.goBack()}
-              >
-                <LinearGradient
-                  colors={[COLORS.button, COLORS.button]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{
-                    width: 183,
-                    height: 41,
-                    borderRadius: 12.77,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+              {/* Back To Home Button (Web/Tablet Only) */}
+              {SCREEN_WIDTH >= 768 && (
+                <TouchableOpacity
+                  style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
+                  onPress={() => navigation.goBack()}
                 >
-                  <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                  <LinearGradient
+                    colors={[COLORS.button, COLORS.button]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: Math.min(cardWidth * 0.5, 200),
+                      height: 41,
+                      borderRadius: 12.77,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: COLORS.white, fontWeight: "bold" }}>
+                      ← Back To Home
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Inner Card */}
             <View
               style={{
-                width: "90%",
+                width: "95%",
                 alignSelf: "center",
-                backgroundColor: COLORS.white, // inner card fully white
+                backgroundColor: COLORS.white,
                 borderRadius: 24,
-                padding: 32,
+                padding: 16,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
@@ -92,59 +102,58 @@ const SignupScreen: React.FC = () => {
               }}
             >
               {/* Progress Stepper */}
-              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24, paddingHorizontal: 16 }}>
-  {[1,2,3,4].map((step, idx) => {
-    const isActive = step === 1;
-    return (
-      <React.Fragment key={step}>
-        <View style={{ alignItems: "center" }}>
-          {isActive ? (
-            <LinearGradient
-              colors={["#193288", "#FFC20E"]} // Blue to Yellow gradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>{step}</Text>
-            </LinearGradient>
-          ) : (
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: "#FFFFFF",
-                borderWidth: 2,
-                borderColor: "#9CA3AF",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "#9CA3AF", fontWeight: "bold" }}>{step}</Text>
-            </View>
-          )}
-        </View>
-        {idx < 3 && (
-          <View
-            style={{
-              width: 100,
-              height: 2,
-              backgroundColor: isActive ? "#193288" : "#9CA3AF", // active line blue
-              marginTop: 19,
-            }}
-          />
-        )}
-      </React.Fragment>
-    );
-  })}
-</View>
-
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24, paddingHorizontal: 8 }}>
+                {[1, 2, 3, 4].map((step, idx) => {
+                  const isActive = step === 1;
+                  return (
+                    <React.Fragment key={step}>
+                      <View style={{ alignItems: "center" }}>
+                        {isActive ? (
+                          <LinearGradient
+                            colors={["#193288", "#FFC20E"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 18,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>{step}</Text>
+                          </LinearGradient>
+                        ) : (
+                          <View
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 18,
+                              backgroundColor: "#FFFFFF",
+                              borderWidth: 2,
+                              borderColor: "#9CA3AF",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={{ color: "#9CA3AF", fontWeight: "bold" }}>{step}</Text>
+                          </View>
+                        )}
+                      </View>
+                      {idx < 3 && (
+                        <View
+                          style={{
+                            flex: 1,
+                            height: 2,
+                            backgroundColor: isActive ? "#193288" : "#9CA3AF",
+                            marginTop: 17,
+                          }}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </View>
 
               {/* Heading */}
               <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 8, textAlign: "center", color: COLORS.primary }}>
@@ -156,15 +165,17 @@ const SignupScreen: React.FC = () => {
 
               {/* Form Fields */}
               {[
-                {label: "Business Email", value: email, setter: setEmail, placeholder: "contact@company.com"},
-                {label: "Phone Number", value: phone, setter: setPhone, placeholder: "+1 (123) 456-7890"},
-                {label: "Street Address", value: street, setter: setStreet, placeholder: "Enter company headquarters"},
-                {label: "City", value: city, setter: setCity, placeholder: "Enter City"},
-                {label: "Postal Code", value: postalCode, setter: setPostalCode, placeholder: "ZIP/Postal Code"},
-                {label: "Country", value: country, setter: setCountry, placeholder: "Enter Country"}
+                { label: "Business Email", value: email, setter: setEmail, placeholder: "contact@company.com" },
+                { label: "Phone Number", value: phone, setter: setPhone, placeholder: "+1 (123) 456-7890" },
+                { label: "Street Address", value: street, setter: setStreet, placeholder: "Enter company headquarters" },
+                { label: "City", value: city, setter: setCity, placeholder: "Enter City" },
+                { label: "Postal Code", value: postalCode, setter: setPostalCode, placeholder: "ZIP/Postal Code" },
+                { label: "Country", value: country, setter: setCountry, placeholder: "Enter Country" }
               ].map((field, idx) => (
                 <View key={idx} style={{ marginBottom: 16 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "bold", color: COLORS.primary, marginBottom: 6 }}>{field.label}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: "bold", color: COLORS.primary, marginBottom: 6 }}>
+                    {field.label}
+                  </Text>
                   <TextInput
                     value={field.value}
                     onChangeText={field.setter}

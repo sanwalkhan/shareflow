@@ -1,11 +1,8 @@
 // MarketingPage.tsx
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { ChevronRight, ArrowRight } from 'lucide-react-native';
 import { LinearGradient } from "expo-linear-gradient";
-
-const { width: screenWidth } = Dimensions.get("window");
-const isDesktop = screenWidth > 768;
 
 const cards = [
   {
@@ -23,23 +20,29 @@ const cards = [
 ];
 
 const Marketing: React.FC = () => {
+  const { width: sw } = useWindowDimensions();
+  const isDesktop = sw >= 1200;
+  const isTablet = sw >= 768 && sw < 1200;
+
   return (
-    <View
-      style={{
-        flex: 1,
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
         backgroundColor: "#ffffff",
-        paddingHorizontal: isDesktop ? 40 : 16,
+        paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
         paddingVertical: 20,
+        alignItems: 'stretch',
       }}
+      showsVerticalScrollIndicator={false}
     >
       {/* Heading */}
       <Text
         style={{
           textAlign: "center",
-          fontSize: isDesktop ? 32 : 24,
+          fontSize: isDesktop ? 32 : isTablet ? 28 : 24,
           fontWeight: "700",
           color: "#00124D",
-          marginTop:73,
+          marginTop: 24,
         }}
       >
         Caring is the new marketing
@@ -48,7 +51,7 @@ const Marketing: React.FC = () => {
       <Text
         style={{
           textAlign: "center",
-          fontSize: isDesktop ? 16 : 14,
+          fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
           color: "#666666",
           marginTop: 8,
           lineHeight: 22,
@@ -65,35 +68,38 @@ const Marketing: React.FC = () => {
           flexDirection: isDesktop ? "row" : "column",
           justifyContent: "space-between",
           marginTop: 20,
+          gap: 16,
         }}
       >
         {cards.map((card, index) => (
-         <View
-  key={index}
-  style={{
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-    marginBottom: isDesktop ? 0 : 16,
-    width: isDesktop ? "24%" : "100%", // increased width a bit on desktop
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    height: isDesktop ? 400 : 400, // slightly taller for desktop, adjusted mobile
-  }}
->
-
-
+          <View
+            key={index}
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 12,
+              overflow: "hidden",
+              marginBottom: isDesktop ? 0 : 16,
+              width: isDesktop ? "32%" : isTablet ? "48%" : "100%",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 2,
+              flexGrow: 1,
+              minHeight: 400, // auto adjust card height
+              paddingBottom: 16,
+            }}
+          >
             {/* Image */}
             <Image
               source={card.image}
               style={{
-                width: "100%",
-                height: isDesktop ? 290 : 210,
+                width: "90%",
+                aspectRatio: 4 / 3,
+                borderRadius: 12,
                 resizeMode: "cover",
+                marginTop: 16,
               }}
             />
 
@@ -130,7 +136,6 @@ const Marketing: React.FC = () => {
               style={{
                 borderRadius: 20,
                 marginTop: 8,
-                marginBottom: 12,
               }}
             >
               <TouchableOpacity
@@ -153,32 +158,31 @@ const Marketing: React.FC = () => {
       </View>
 
       {/* Get a Demo Button */}
-      <LinearGradient
-        colors={['#FFC20E', '#FFC20E']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{
-          borderRadius: 20,
-          marginTop: 78,
-          alignSelf: "center",
-        }}
-      >
-        <TouchableOpacity
+      <View style={{ marginTop: 32, alignItems: "center" }}>
+        <LinearGradient
+          colors={['#FFC20E', '#FFC20E']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
           style={{
-            paddingVertical: 10,
-            paddingHorizontal: 24,
-            flexDirection: "row",
-            alignItems: "center",
-        
+            borderRadius: 20,
           }}
         >
-          <Text style={{ color: "#00124D", fontWeight: "700", marginRight: 6 }}>
-            Get a Demo
-          </Text>
-          <ArrowRight size={18} color="#00124D" />
-        </TouchableOpacity>
-      </LinearGradient>
-    </View>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 10,
+              paddingHorizontal: 24,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#00124D", fontWeight: "700", marginRight: 6 }}>
+              Get a Demo
+            </Text>
+            <ArrowRight size={18} color="#00124D" />
+          </TouchableOpacity>
+        </LinearGradient>
+      </View>
+    </ScrollView>
   );
 };
 

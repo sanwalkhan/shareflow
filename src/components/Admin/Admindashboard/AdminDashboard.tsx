@@ -65,10 +65,14 @@ const AdminDashboard: React.FC = () => {
   const navigation = useNavigation<AdminNavigationProp>();
   const [activeTab, setActiveTab] = React.useState("Dashboard");
   const [showNotifications, setShowNotifications] = React.useState(false);
+
   const slideAnim = React.useRef(new Animated.Value(300)).current;
+  const sidebarAnim = React.useRef(new Animated.Value(-sidebarWidth)).current;
+  const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
 
   const isSmallScreen = screenWidth < breakpoint;
 
+  // Notifications
   const openNotifications = () => {
     setShowNotifications(true);
     Animated.timing(slideAnim, {
@@ -77,7 +81,6 @@ const AdminDashboard: React.FC = () => {
       useNativeDriver: false,
     }).start();
   };
-
   const closeNotifications = () => {
     Animated.timing(slideAnim, {
       toValue: 300,
@@ -86,9 +89,26 @@ const AdminDashboard: React.FC = () => {
     }).start(() => setShowNotifications(false));
   };
 
+  // Mobile sidebar
+  const openMobileSidebar = () => {
+    setMobileSidebarOpen(true);
+    Animated.timing(sidebarAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+  const closeMobileSidebar = () => {
+    Animated.timing(sidebarAnim, {
+      toValue: -sidebarWidth,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => setMobileSidebarOpen(false));
+  };
+
   return (
     <View style={{ flex: 1, flexDirection: isSmallScreen ? "column" : "row", backgroundColor: "#E6F0FF" }}>
-      {/* Sidebar */}
+      {/* DESKTOP SIDEBAR */}
       {!isSmallScreen && (
         <LinearGradient
           colors={["#193288", "#FFC20E"]}
@@ -130,9 +150,9 @@ const AdminDashboard: React.FC = () => {
         </LinearGradient>
       )}
 
-      {/* Main Section */}
+      {/* MAIN SECTION */}
       <View style={{ flex: 1 }}>
-        {/* Header */}
+        {/* HEADER */}
         <View
           style={{
             flexDirection: "row",
@@ -143,21 +163,29 @@ const AdminDashboard: React.FC = () => {
             paddingVertical: 12,
           }}
         >
-          <MaskedView
-            maskElement={
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Ionicons name="speedometer-outline" size={24} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff" }}>Admin Dashboard</Text>
-              </View>
-            }
-          >
-            <LinearGradient colors={[COLORS.primary, COLORS.primary]}>
-              <Text style={{ fontSize: 24, fontWeight: "600", opacity: 0 }}>Admin Dashboard</Text>
-            </LinearGradient>
-          </MaskedView>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {isSmallScreen && (
+              <TouchableOpacity onPress={openMobileSidebar} style={{ marginRight: 12 }}>
+                <Ionicons name="menu" size={28} color="#fff" />
+              </TouchableOpacity>
+            )}
+            <MaskedView
+              maskElement={
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Ionicons name="speedometer-outline" size={24} color="#fff" style={{ marginRight: 6 }} />
+                  <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff" }}>Admin Dashboard</Text>
+                </View>
+              }
+            >
+              <LinearGradient colors={[COLORS.primary, COLORS.primary]}>
+                <Text style={{ fontSize: 24, fontWeight: "600", opacity: 0 }}>Admin Dashboard</Text>
+              </LinearGradient>
+            </MaskedView>
+          </View>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
+              onPress={() => navigation.navigate("Dashboard")}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -181,7 +209,7 @@ const AdminDashboard: React.FC = () => {
           </View>
         </View>
 
-        {/* Scrollable Main Content */}
+        {/* SCROLLABLE MAIN CONTENT */}
         <ScrollView contentContainerStyle={{ padding: 12 }}>
           {/* Stats Cards */}
           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 16 }}>
@@ -281,7 +309,74 @@ const AdminDashboard: React.FC = () => {
         </ScrollView>
       </View>
 
-      {/* Notification Drawer */}
+      {/* MOBILE SIDEBAR OVERLAY */}
+      {isSmallScreen && mobileSidebarOpen && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "100%",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            zIndex: 50,
+          }}
+        >
+          <Animated.View
+            style={{
+              width: sidebarWidth,
+              height: "100%",
+              backgroundColor: "#193288",
+              padding: 26,
+              transform: [{ translateX: sidebarAnim }],
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+              <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold" }}>
+                ShareFlow
+              </Text>
+
+              <TouchableOpacity onPress={closeMobileSidebar}>
+                <Ionicons name="close" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            {sidebarItems.map((item) => {
+              const isActive = activeTab === item.label;
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  onPress={() => {
+                    setActiveTab(item.label);
+                    closeMobileSidebar();
+                  }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingVertical: 14,
+                    paddingHorizontal: 16,
+                    marginBottom: 16,
+                    borderRadius: 16,
+                    backgroundColor: isActive ? COLORS.button : "transparent",
+                  }}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={22}
+                    color={isActive ? COLORS.accent : "#fff"}
+                    style={{ marginRight: 12 }}
+                  />
+                  <Text style={{ color: isActive ? COLORS.accent : "#fff", fontSize: 16, fontWeight: "600" }}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </Animated.View>
+        </View>
+      )}
+
+      {/* NOTIFICATION DRAWER */}
       {showNotifications && (
         <Animated.View
           style={{

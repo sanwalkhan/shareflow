@@ -1,116 +1,128 @@
-// InfoSection.tsx
+// InfoScreen.tsx
 import React from "react";
-import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, Image, TouchableOpacity, useWindowDimensions, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width: screenWidth } = Dimensions.get("window");
-
 const InfoScreen: React.FC = () => {
+  const { width: sw } = useWindowDimensions();
+  const isDesktop = sw >= 1200;
+  const isTablet = sw >= 768 && sw < 1200;
+
+  const headingFontSize = isDesktop ? 36 : isTablet ? 30 : 22;
+  const paragraphFontSize = isDesktop ? 18 : isTablet ? 16 : 14;
+  const lineHeight = isDesktop ? 42 : isTablet ? 28 : 22;
+
   return (
-    <View
-      style={{
-        flexDirection: screenWidth > 768 ? "row" : "column",
-        backgroundColor: "#ffffff",
-        paddingHorizontal: 24,
-        paddingVertical: 32,
-        alignItems: "flex-start",
-        justifyContent: "center",
-      
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        backgroundColor: "#FFFFFF",
+        paddingHorizontal: isDesktop ? 80 : 16,
+        paddingTop: 40, // top padding for breathing space
+        flexGrow: 0, // ensures no extra space below
       }}
     >
-      {/* LEFT SIDE IMAGE */}
       <View
         style={{
-          width: screenWidth > 768 ? "50%" : "100%",
-          paddingRight: screenWidth > 768 ? 24 : 0,
-          marginTop: screenWidth > 768 ? 130 : 40, // move image slightly down
-          marginBottom: screenWidth > 768 ? 0 : 20,
+          flexDirection: isDesktop || isTablet ? "row" : "column",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          gap: isDesktop || isTablet ? 40 : 24,
         }}
       >
-        <Image
-          source={require('../../assets/Image3.png')}
+        {/* IMAGE */}
+        <View
           style={{
-            width: "90%",
-            height: screenWidth > 768 ? 580 : 200,
-            borderRadius: 16,
-          }}
-          resizeMode="cover"
-        />
-      </View>
-
-      {/* RIGHT SIDE CONTENT */}
-      <View
-        style={{
-          width: screenWidth > 768 ? "50%" : "100%",
-          paddingLeft: screenWidth > 768 ? 24 : 0,
-          alignItems: "flex-start", // left-aligned
-        }}
-      >
-        {/* Heading */}
-        <Text
-          style={{
-            fontFamily: "Inter-SemiBold",
-            fontSize: screenWidth > 768 ? 36 : 28,
-            color: "#001867ff",
-            lineHeight: screenWidth > 768 ? 42 : 36,
-            marginTop: 196,
-            textAlign: "left",
+            width: isDesktop || isTablet ? "50%" : "100%",
+            alignItems: "center",
           }}
         >
-          The unseen of spending three years at Pixelgrade
-        </Text>
+          <Image
+            source={require("../../assets/Image3.png")}
+            style={{
+              width: "100%",
+              maxWidth: 500,
+              aspectRatio: 4 / 3,
+              borderRadius: 16,
+            }}
+            resizeMode="cover"
+          />
+        </View>
 
-        {/* Paragraph */}
-       <Text
-  style={{
-    fontFamily: "Inter-Regular",
-    fontSize: 20,
-    color: "#222629",
-    lineHeight: 28,
-    textAlign: "left",
-    marginBottom: 24,
-  }}
->
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  Sed sit amet justo ipsum. {"\n"}Sed accumsan quam vitae est varius fringilla.
-  Pellentesque placerat vestibulum {"\n"}lorem sed porta.Nullam mattis tristique iaculis.
-  Nullam pulvinar sit amet risus {"\n"}  pretium  auctor. Etiam quis massa pulvinar,
-  aliquam quam vitae, tempus sem.{"\n"} Donec elementum pulvinar odio.
-</Text>
+        {/* CONTENT */}
+        <View
+          style={{
+            width: isDesktop || isTablet ? "50%" : "100%",
+            alignItems: isDesktop || isTablet ? "flex-start" : "center",
+          }}
+        >
+          {/* HEADING */}
+          <Text
+            style={{
+              fontFamily: "Inter-SemiBold",
+              fontSize: headingFontSize,
+              lineHeight: lineHeight,
+              color: "#001867",
+              textAlign: isDesktop || isTablet ? "left" : "center",
+              marginBottom: 8,
+              flexShrink: 1,
+            }}
+          >
+            The unseen of spending three years at Pixelgrade
+          </Text>
 
-        {/* BUTTON */}
-       <View style={{ alignItems: "center", marginTop: 16 }}>
-  <TouchableOpacity
-    style={{
-      width: 160,
-      borderRadius: 12,
-      overflow: "hidden",
-    }}
-  >
-    <LinearGradient
-      colors={["#FFC20E", "#FFC20E"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={{
-        paddingVertical: 12,
-        alignItems: "center",
-        borderRadius: 12,
-      }}
-    >
-      <Text
-        style={{
-          color: "#001867ff",
-          fontWeight: "bold",
-          fontSize: 16,
-        }}
-      >
-        Learn More
-      </Text>
-    </LinearGradient>
-  </TouchableOpacity>
-</View>
-</View>
-    </View>
+          {/* PARAGRAPH */}
+          <Text
+            style={{
+              fontFamily: "Inter-Regular",
+              fontSize: paragraphFontSize,
+              lineHeight: paragraphFontSize * 1.6,
+              color: "#222629",
+              textAlign: isDesktop || isTablet ? "left" : "center",
+              marginBottom: 12,
+              flexShrink: 1,
+            }}
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet
+            justo ipsum. Sed accumsan quam vitae est varius fringilla. Pellentesque
+            placerat vestibulum lorem sed porta. Nullam mattis tristique iaculis.
+            Nullam pulvinar sit amet risus pretium auctor. Etiam quis massa
+            pulvinar, aliquam quam vitae, tempus sem. Donec elementum pulvinar odio.
+          </Text>
+
+          {/* BUTTON */}
+          <TouchableOpacity
+            style={{
+              width: 160,
+              borderRadius: 12,
+              overflow: "hidden",
+              alignSelf: isDesktop || isTablet ? "flex-start" : "center",
+            }}
+          >
+            <LinearGradient
+              colors={["#FFC20E", "#FFC20E"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{
+                paddingVertical: 12,
+                alignItems: "center",
+                borderRadius: 12,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#001867",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                }}
+              >
+                Learn More
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 

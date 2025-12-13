@@ -1,21 +1,37 @@
 // Footer.tsx
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 
 const Footer: React.FC = () => {
+  const { width: sw } = useWindowDimensions();
+  const isDesktop = sw >= 1200;
+  const isTablet = sw >= 768 && sw < 1200;
+
+  // Widths dynamically based on screen
+  const logoWidth = isDesktop ? '30%' : isTablet ? '45%' : '100%';
+  const sectionWidth = isDesktop ? '15%' : isTablet ? '30%' : '100%';
+  const stayWidth = isDesktop ? '15%' : isTablet ? '30%' : '100%';
+
   return (
     <View
       style={{
-        backgroundColor: '#001867ff', // dark blue background
-        paddingHorizontal: 24,
-        paddingVertical: 40, // more space on top
+        backgroundColor: '#001867',
+        paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
+        paddingVertical: 40,
       }}
     >
       {/* Top section */}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 20 }}>
+      <View
+        style={{
+          flexDirection: isDesktop || isTablet ? 'row' : 'column',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          gap: 24,
+        }}
+      >
         {/* Logo & Social */}
-        <View style={{ width: '45%', marginBottom: 16 }}>
+        <View style={{ width: logoWidth, marginBottom: 24 }}>
           <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>
             Nexcent
           </Text>
@@ -31,27 +47,23 @@ const Footer: React.FC = () => {
         </View>
 
         {/* Company */}
-        <View style={{ width: '20%', marginBottom: 16 }}>
+        <View style={{ width: sectionWidth, marginBottom: 24 }}>
           <Text style={{ color: '#ffffff', fontWeight: '600', marginBottom: 8 }}>Company</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>About us</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Blog</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Contact us</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Pricing</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Testimonials</Text>
+          {['About us', 'Blog', 'Contact us', 'Pricing', 'Testimonials'].map((item, i) => (
+            <Text key={i} style={{ color: '#ffffff', marginBottom: 4 }}>{item}</Text>
+          ))}
         </View>
 
         {/* Support */}
-        <View style={{ width: '20%', marginBottom: 16 }}>
+        <View style={{ width: sectionWidth, marginBottom: 24 }}>
           <Text style={{ color: '#ffffff', fontWeight: '600', marginBottom: 8 }}>Support</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Help center</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Terms of service</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Legal</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Privacy policy</Text>
-          <Text style={{ color: '#ffffff', marginBottom: 4 }}>Status</Text>
+          {['Help center', 'Terms of service', 'Legal', 'Privacy policy', 'Status'].map((item, i) => (
+            <Text key={i} style={{ color: '#ffffff', marginBottom: 4 }}>{item}</Text>
+          ))}
         </View>
 
         {/* Stay up to date */}
-        <View style={{ width: '15%', marginBottom: 16 }}>
+        <View style={{ width: stayWidth, marginBottom: 24 }}>
           <Text style={{ color: '#ffffff', fontWeight: '600', marginBottom: 8 }}>Stay up to date</Text>
           <View
             style={{
@@ -60,7 +72,7 @@ const Footer: React.FC = () => {
               overflow: 'hidden',
               borderWidth: 1,
               borderColor: '#ffffff',
-              alignItems: 'center', // keep button aligned with input
+              alignItems: 'center',
             }}
           >
             <TextInput
@@ -75,14 +87,14 @@ const Footer: React.FC = () => {
             />
             <TouchableOpacity
               style={{
-                backgroundColor: '#FFC20E', // yellow button
+                backgroundColor: '#FFC20E',
                 justifyContent: 'center',
                 alignItems: 'center',
                 paddingHorizontal: 16,
-                height: '100%', // make button same height as input
+                height: '100%',
               }}
             >
-              <Text style={{ color: '#001867ff', fontWeight: 'bold', fontSize: 16 }}>→</Text>
+              <Text style={{ color: '#001867', fontWeight: 'bold', fontSize: 16 }}>→</Text>
             </TouchableOpacity>
           </View>
         </View>
