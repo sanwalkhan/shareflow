@@ -7,190 +7,146 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../Constants/theme";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const isMobile = SCREEN_WIDTH < 768;
-
 const Administrator: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { width } = useWindowDimensions(); // ✅ automatically updates on resize
+  const isMobile = width < 768; // mobile breakpoint
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
 
+  const cardWidth = isMobile ? width - 32 : Math.min(width * 0.8, 800);
+
   return (
-    <SafeAreaView className="flex-1 bg-[#E8EDF5]">
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <View className="flex-1 items-center justify-center px-4 py-8">
+        <View style={{ flex: 1, alignItems: "center", paddingVertical: 24 }}>
 
           {/* Outer Card */}
           <View
-            className="bg-[#E6F0FF] rounded-3xl shadow-2xl p-6"
             style={{
-              width: isMobile ? SCREEN_WIDTH - 32 : 800,
-              minHeight: isMobile ? "auto" : 860, // ⬅️ WEBSITE HEIGHT REDUCED
+              width: cardWidth,
+              backgroundColor: "#E6F0FF",
+              borderRadius: 24,
+              padding: 34,
+              shadowColor: "#000",
+              shadowOpacity: 0.2,
+              shadowRadius: 6,
+              elevation: 5,
+            
             }}
           >
-
-            {/* Top Bar */}
-            <View className="flex-row items-center justify-center mb-6 w-full relative">
-              <View className="flex-row items-center">
+            {/* Header */}
+            <View style={{ alignItems: "center", marginBottom: 24, position: "relative", width: "100%" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Image
                   source={require('../../assets/image.png')}
-                  className="w-10 h-10 mr-2"
-                  style={{ marginTop: isMobile ? 10 : 60 }}
+                  style={{ width: 40, height: 40, marginRight: 8 }}
                 />
-                <Text
-                  className="text-2xl font-bold"
-                  style={{ marginTop: isMobile ? 10 : 60, color: COLORS.primary }}
-                >
-                  ShareFlow
-                </Text>
+                <Text style={{ color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}>ShareFlow</Text>
               </View>
 
-              {/* Back Button – WEBSITE VIEW (TOP LEFT) */}
-              {!isMobile && (
+              {/* Back Button */}
+              {isMobile ? (
+                <View style={{ marginTop: 12 }}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <LinearGradient
+                      colors={[COLORS.button, COLORS.button]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{
+                        width: 140,
+                        height: 36,
+                        borderRadius: 12,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 14 }}>
+                        ← Back To Home
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              ) : (
                 <TouchableOpacity
-                  className="absolute top-2 left-2 z-10"
                   onPress={() => navigation.goBack()}
+                  style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
                 >
                   <LinearGradient
                     colors={[COLORS.button, COLORS.button]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
-                      width: 183,
-                      height: 41,
+                      width: 180,
+                      height: 40,
                       borderRadius: 12,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
-                    <Text className="text-white font-bold">← Back To Home</Text>
+                    <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               )}
             </View>
 
-            {/* Back Button – MOBILE VIEW (BELOW SHAREFLOW TEXT) */}
-            {isMobile && (
-              <View className="w-full items-center mb-4">
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <LinearGradient
-                    colors={[COLORS.button, COLORS.button]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      width: 140,
-                      height: 36,
-                      borderRadius: 12,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text className="text-white font-bold text-sm">← Back To Home</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            )}
-
             {/* Inner Card */}
             <View
-              className="bg-white rounded-3xl shadow-2xl px-6 pt-8 pb-12 space-y-6"
               style={{
-                alignSelf: "center",
-                width: isMobile ? "95%" : "90%",
+                width: "100%",
+                backgroundColor: COLORS.white,
+                borderRadius: 24,
+                padding: 24,
+               
               }}
             >
-
               {/* Heading */}
-              <View>
-                <Text
-                  className="text-xl font-extrabold text-center mb-2"
-                  style={{ color: COLORS.primary }}
-                >
-                  Administrator Details
-                </Text>
-                <Text className="text-sm text-gray-500 text-center">
-                  Primary account administrator information
-                </Text>
-              </View>
+              <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center", color: COLORS.primary, marginBottom: 8 }}>
+                Administrator Details
+              </Text>
+              <Text style={{ fontSize: 14, color: "#6C717D", textAlign: "center", marginBottom: 16 }}>
+                Primary account administrator information
+              </Text>
 
               {/* Stepper */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: 16,
-                  paddingHorizontal: isMobile ? 4 : 16,
-                }}
-              >
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 16 }}>
                 {[1, 2, 3, 4].map((step, idx) => {
                   const isActive = step <= 3;
                   return (
                     <React.Fragment key={step}>
                       <View style={{ alignItems: "center" }}>
-                        {isActive ? (
-                          <LinearGradient
-                            colors={["#193288", "#FFC20E"]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={{
-                              width: isMobile ? 28 : 40,
-                              height: isMobile ? 28 : 40,
-                              borderRadius: isMobile ? 14 : 20,
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: "#FFFFFF",
-                                fontWeight: "bold",
-                                fontSize: isMobile ? 12 : 16,
-                              }}
-                            >
-                              {step}
-                            </Text>
-                          </LinearGradient>
-                        ) : (
-                          <View
-                            style={{
-                              width: isMobile ? 28 : 40,
-                              height: isMobile ? 28 : 40,
-                              borderRadius: isMobile ? 14 : 20,
-                              backgroundColor: "#FFFFFF",
-                              borderWidth: 2,
-                              borderColor: "#9CA3AF",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: "#9CA3AF",
-                                fontWeight: "bold",
-                                fontSize: isMobile ? 12 : 16,
-                              }}
-                            >
-                              {step}
-                            </Text>
-                          </View>
-                        )}
+                        <View
+                          style={{
+                            width: isMobile ? 28 : 40,
+                            height: isMobile ? 28 : 40,
+                            borderRadius: isMobile ? 14 : 20,
+                            backgroundColor: isActive ? COLORS.primary : "#fff",
+                            borderWidth: isActive ? 0 : 2,
+                            borderColor: "#9CA3AF",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ color: isActive ? "#fff" : "#9CA3AF", fontWeight: "bold", fontSize: isMobile ? 12 : 16 }}>
+                            {step}
+                          </Text>
+                        </View>
                       </View>
-
                       {idx < 3 && (
                         <View
                           style={{
                             flex: 1,
                             height: 2,
-                            backgroundColor: isActive ? "#193288" : "#9CA3AF",
+                            backgroundColor: isActive ? COLORS.primary : "#9CA3AF",
                             marginHorizontal: 2,
                             marginTop: isMobile ? 12 : 19,
                           }}
@@ -202,111 +158,73 @@ const Administrator: React.FC = () => {
               </View>
 
               {/* Form Fields */}
-              <View className="space-y-4">
-                <View className={isMobile ? "" : "flex-row space-x-4"}>
-                  <View className="flex-1 mb-2">
-                    <Text className="text-base font-semibold text-gray-800 mb-1">First Name</Text>
+              <View style={{ gap: 12 }}>
+                <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>First Name</Text>
                     <TextInput
                       value={firstName}
                       onChangeText={setFirstName}
                       placeholder="Enter First Name"
-                      className="bg-gray-200 rounded-xl px-4 py-4 text-base"
+                      style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5" }}
                     />
                   </View>
-
-                  <View className="flex-1 mb-2">
-                    <Text className="text-base font-semibold text-gray-800 mb-1">Last Name</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>Last Name</Text>
                     <TextInput
                       value={lastName}
                       onChangeText={setLastName}
                       placeholder="Enter Last Name"
-                      className="bg-gray-200 rounded-xl px-4 py-4 text-base"
+                      style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5" }}
                     />
                   </View>
                 </View>
 
-                <View className={isMobile ? "" : "flex-row space-x-4"}>
-                  <View className="flex-1 mb-2">
-                    <Text className="text-base font-semibold text-gray-800 mb-1">Job Title</Text>
+                <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>Job Title</Text>
                     <TextInput
                       value={jobTitle}
                       onChangeText={setJobTitle}
                       placeholder="Enter Job Title"
-                      className="bg-gray-200 rounded-xl px-4 py-4 text-base"
+                      style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5" }}
                     />
                   </View>
-
-                  <View className="flex-1 mb-2">
-                    <Text className="text-base font-semibold text-gray-800 mb-1">Admin Email</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600" }}>Admin Email</Text>
                     <TextInput
                       value={adminEmail}
                       onChangeText={setAdminEmail}
                       placeholder="admin@company.com"
-                      className="bg-gray-200 rounded-xl px-4 py-4 text-base"
+                      style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5" }}
                     />
                   </View>
                 </View>
               </View>
 
               {/* Buttons */}
-              <View className="flex-row justify-between space-x-4 pt-4">
+              <View style={{ flexDirection: "row", gap: 12, marginTop: 20 }}>
                 <TouchableOpacity
-                  className="flex-1 rounded-xl items-center justify-center"
-                  style={{
-                    height: isMobile ? 45 : 55,
-                    backgroundColor: "#D1D5DB",
-                  }}
+                  style={{ flex: 1, height: 48, backgroundColor: "#D1D5DB", borderRadius: 12, justifyContent: "center", alignItems: "center" }}
                   onPress={() => navigation.goBack()}
                 >
-                  <Text className="text-gray-700 font-semibold text-sm">← Previous</Text>
+                  <Text style={{ color: "#4B5563", fontWeight: "bold" }}>← Previous</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="flex-1 rounded-xl items-center justify-center"
-                  style={{ height: isMobile ? 45 : 55 }}
+                  style={{ flex: 1, height: 48, borderRadius: 12 }}
                   onPress={() => navigation.navigate("Password")}
                 >
                   <LinearGradient
                     colors={[COLORS.button, COLORS.button]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: 14,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                    style={{ flex: 1, justifyContent: "center", alignItems: "center", borderRadius: 12 }}
                   >
-                    <Text className="text-white font-bold text-sm">Complete →</Text>
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Complete →</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
-
-              {/* Divider */}
-              <View
-                style={{
-                  height: 2,
-                  backgroundColor: COLORS.primary,
-                  width: "100%",
-                  alignSelf: "center",
-                  marginVertical: 16,
-                }}
-              />
-
-              {/* Already Have Account */}
-              <View className="flex-row justify-center mt-2">
-                <Text className="text-xs" style={{ color: COLORS.primary }}>
-                  Already have an Account?{" "}
-                </Text>
-
-                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                  <Text className="text-xs font-medium" style={{ color: COLORS.button }}>
-                    Sign in here
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
             </View>
           </View>
         </View>

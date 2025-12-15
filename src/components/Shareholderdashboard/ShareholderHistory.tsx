@@ -1,5 +1,5 @@
 // src/screens/ShareholderHistory.tsx
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Animated, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
@@ -7,8 +7,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-const { width: screenWidth } = Dimensions.get("window");
-const isMobile = screenWidth < 768;
 const sidebarWidth = 250;
 
 const COLORS = {
@@ -47,8 +45,24 @@ const ShareholderHistory: React.FC = () => {
   const [activeTab, setActiveTab] = useState("History");
   const [showSidebar, setShowSidebar] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMobile, setIsMobile] = useState(Dimensions.get("window").width < 768);
 
   const slideAnim = useRef(new Animated.Value(-sidebarWidth)).current;
+  const notifAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    const onChange = ({ window }: { window: { width: number; height: number } }) => {
+      setIsMobile(window.width < 768);
+      if (window.width >= 768) setShowSidebar(false); // hide mobile sidebar on desktop
+    };
+
+    const subscription = Dimensions.addEventListener("change", onChange);
+
+    return () => {
+      if (subscription?.remove) subscription.remove();
+      else Dimensions.removeEventListener("change", onChange);
+    };
+  }, []);
 
   const toggleSidebar = () => {
     if (!showSidebar) {
@@ -60,6 +74,23 @@ const ShareholderHistory: React.FC = () => {
       );
     }
   };
+
+  const openNotifications = () => {
+    setShowNotifications(true);
+    Animated.timing(notifAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start();
+  };
+
+  const closeNotifications = () => {
+    Animated.timing(notifAnim, { toValue: 300, duration: 300, useNativeDriver: false }).start(() =>
+      setShowNotifications(false)
+    );
+  };
+
+  const dummyNotifications = [
+    { title: "Payment Received", time: "2 min ago" },
+    { title: "Dividend Released", time: "10 min ago" },
+    { title: "Report Updated", time: "1 hour ago" },
+  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: "#E6F0FF", flexDirection: "row" }}>
@@ -86,12 +117,7 @@ const ShareholderHistory: React.FC = () => {
                   navigation.navigate(item.route as any);
                 }}
               >
-                <Ionicons
-                  name={item.icon as any}
-                  size={22}
-                  color={isActive ? "#000" : "#fff"}
-                  style={{ marginRight: 12 }}
-                />
+                <Ionicons name={item.icon as any} size={22} color={isActive ? "#000" : "#fff"} style={{ marginRight: 12 }} />
                 <Text style={{ color: isActive ? "#000" : "#fff", fontSize: 16, fontWeight: "600" }}>
                   {item.label}
                 </Text>
@@ -139,12 +165,7 @@ const ShareholderHistory: React.FC = () => {
                   toggleSidebar();
                 }}
               >
-                <Ionicons
-                  name={item.icon as any}
-                  size={22}
-                  color={isActive ? "#000" : "#fff"}
-                  style={{ marginRight: 12 }}
-                />
+                <Ionicons name={item.icon as any} size={22} color={isActive ? "#000" : "#fff"} style={{ marginRight: 12 }} />
                 <Text style={{ color: isActive ? "#000" : "#fff", fontSize: 16, fontWeight: "600" }}>
                   {item.label}
                 </Text>
@@ -157,16 +178,7 @@ const ShareholderHistory: React.FC = () => {
       {/* Main Content */}
       <View style={{ flex: 1 }}>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            backgroundColor: COLORS.primary,
-            paddingHorizontal: 16,
-            paddingVertical: 20,
-          }}
-        >
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: COLORS.primary, paddingHorizontal: 16, paddingVertical: 20 }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {isMobile && (
               <TouchableOpacity onPress={toggleSidebar} style={{ marginRight: 12 }}>
@@ -187,84 +199,50 @@ const ShareholderHistory: React.FC = () => {
             </MaskedView>
           </View>
 
-          {/* Desktop: Search + Bell */}
+          {/* Header Buttons */}
           {!isMobile && (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: COLORS.button,
-                  paddingVertical: 6,
-                  paddingHorizontal: 10,
-                  borderRadius: 8,
-                  marginRight: 12,
-                  minWidth: 140,
-                  height: 50,
-                  justifyContent: "center",
-                }}
-              >
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", backgroundColor: COLORS.button, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, marginRight: 12, height: 50 }}>
                 <Ionicons name="search-outline" size={18} color="#14339bff" style={{ marginRight: 6 }} />
                 <Text style={{ color: "#14339bff", fontWeight: "800", fontSize: 14 }}>Search for everything</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={openNotifications} style={{ marginLeft: 12 }}>
                 <Ionicons name="notifications-outline" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
           )}
 
-          {/* Mobile: Only Bell */}
           {isMobile && (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={openNotifications}>
               <Ionicons name="notifications-outline" size={28} color="#fff" />
             </TouchableOpacity>
           )}
         </View>
 
-        {/* Mobile: Search Button Above Main Content */}
+        {/* Mobile Search Button */}
         {isMobile && (
           <View style={{ padding: 20 }}>
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: COLORS.button,
-                paddingVertical: 10,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-              }}
-            >
+            <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", backgroundColor: COLORS.button, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12 }}>
               <Ionicons name="search-outline" size={20} color="#14339bff" style={{ marginRight: 8 }} />
               <Text style={{ color: "#14339bff", fontWeight: "800", fontSize: 16 }}>Search for everything</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Scrollable Main Content */}
-        <ScrollView style={{ paddingHorizontal: 20 }} showsVerticalScrollIndicator={false}>
+        {/* Scrollable Content */}
+        <ScrollView style={{ paddingHorizontal: 20 }}>
           {/* Top Cards */}
-          <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16, marginBottom: 16 }}>
+          <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16, marginTop: isMobile ? 0 : 20, marginBottom: 16 }}>
             {topCards.map((card, idx) => (
-              <View
-                key={idx}
-                style={{
-                  backgroundColor: COLORS.cardBackground,
-                  padding: 16,
-                  borderRadius: 12,
-                  flex: 1,
-                  marginBottom: isMobile ? 12 : 0,
-                }}
-              >
+              <View key={idx} style={{ backgroundColor: COLORS.cardBackground, padding: 16, borderRadius: 12, flex: 1 }}>
                 <Text style={{ color: COLORS.cardText, fontSize: 16, fontWeight: "600" }}>{card.title}</Text>
               </View>
             ))}
           </View>
 
-          {/* Bottom Large Card */}
+          {/* Shareholder Summary */}
           <View style={{ backgroundColor: COLORS.cardBackground, borderRadius: 12, padding: 16, marginTop: 16 }}>
-            <Text style={{ color: COLORS.cardText, fontSize: 18, fontWeight: "700", marginBottom: 12 }}>
-              Shareholder Summary
-            </Text>
+            <Text style={{ color: COLORS.cardText, fontSize: 18, fontWeight: "700", marginBottom: 12 }}>Shareholder Summary</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
               <Text style={{ color: COLORS.cardText }}>Total Equity</Text>
               <Text style={{ color: COLORS.cardText }}>10%</Text>
@@ -277,21 +255,29 @@ const ShareholderHistory: React.FC = () => {
               <Text style={{ color: COLORS.cardText }}>Total Profit</Text>
               <Text style={{ color: COLORS.cardText }}>₹1,50,000</Text>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
-              <Text style={{ color: COLORS.cardText }}>Total Expenses</Text>
-              <Text style={{ color: COLORS.cardText }}>₹50,000</Text>
-            </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
-              <Text style={{ color: COLORS.cardText }}>Profit After Expenses</Text>
-              <Text style={{ color: COLORS.cardText }}>₹1,00,000</Text>
-            </View>
-
-            <Text style={{ color: COLORS.cardText, fontSize: 16, fontWeight: "600", marginTop: 16 }}>
-              Shareholder Profit Distribution
-            </Text>
           </View>
         </ScrollView>
       </View>
+
+      {/* Notifications Panel */}
+      {showNotifications && (
+        <Animated.View style={{ position: "absolute", right: notifAnim, top: 0, width: 300, height: "100%", backgroundColor: "#fff", padding: 16, zIndex: 999 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 16 }}>
+            <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
+            <TouchableOpacity onPress={closeNotifications}>
+              <Ionicons name="close" size={24} color="#000" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView>
+            {dummyNotifications.map((notif, idx) => (
+              <View key={idx} style={{ paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "#ccc" }}>
+                <Text>{notif.title}</Text>
+                <Text style={{ fontSize: 12, color: "#666" }}>{notif.time}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </Animated.View>
+      )}
     </View>
   );
 };

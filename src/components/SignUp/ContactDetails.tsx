@@ -7,19 +7,32 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 import { COLORS } from "../../Constants/theme";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_MAX_WIDTH = 800;
 const CARD_MIN_WIDTH = 360;
 
 const ContactDetails: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { width } = useWindowDimensions();
+
+  // SAFE WIDTH: minimum 360px, responsive
+  const SAFE_WIDTH = Math.max(width, CARD_MIN_WIDTH);
+
+  // RESPONSIVE FLAGS
+  const isMobile = SAFE_WIDTH < 600;
+
+  // CARD WIDTH
+  const cardWidth = Math.min(
+    Math.max(SAFE_WIDTH * 0.95, CARD_MIN_WIDTH),
+    CARD_MAX_WIDTH
+  );
+
   const [legalName, setLegalName] = useState("");
   const [companyType, setCompanyType] = useState("");
   const [industry, setIndustry] = useState("");
@@ -36,16 +49,17 @@ const ContactDetails: React.FC = () => {
     "Public Limited",
   ];
 
-  const cardWidth = Math.min(Math.max(SCREEN_WIDTH * 0.95, CARD_MIN_WIDTH), CARD_MAX_WIDTH);
-  const isMobile = SCREEN_WIDTH < 600; // breakpoint for mobile layout
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, alignItems: "center", paddingVertical: 24 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+          paddingVertical: 24,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Outer Card */}
+        {/* OUTER CARD */}
         <View
           style={{
             width: cardWidth,
@@ -53,257 +67,211 @@ const ContactDetails: React.FC = () => {
             borderRadius: 24,
             padding: 24,
             shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 4,
+            shadowOpacity: 0.2,
+            shadowRadius: 6,
             elevation: 5,
           }}
         >
-          {/* Header */}
-          <View style={{ width: "100%", marginBottom: 24, alignItems: "center" }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+          {/* HEADER */}
+          <View style={{ alignItems: "center", marginBottom: 24 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Image
                 source={require("../../assets/image.png")}
                 style={{ width: 40, height: 40, marginRight: 8 }}
               />
-              <Text style={{ color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}>ShareFlow</Text>
-            </View>
-
-            {/* Back To Home button placement responsive */}
-            {isMobile ? (
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={{ width: 180, height: 40, borderRadius: 12, marginTop: 12 }}
-              >
-                <LinearGradient
-                  colors={[COLORS.button, COLORS.button]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ flex: 1, justifyContent: "center", alignItems: "center", borderRadius: 12 }}
-                >
-                  <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
+              <Text
                 style={{
-                  position: "absolute",
-                  top: 4,
-                  left: 4,
-                  width: 180,
-                  height: 40,
-                  borderRadius: 12,
-                  zIndex: 10,
+                  color: COLORS.primary,
+                  fontSize: 24,
+                  fontWeight: "bold",
                 }}
               >
-                <LinearGradient
-                  colors={[COLORS.button, COLORS.button]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={{ flex: 1, justifyContent: "center", alignItems: "center", borderRadius: 12 }}
-                >
-                  <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            )}
+                ShareFlow
+              </Text>
+            </View>
+
+            {/* Back Button */}
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{
+                marginTop: SAFE_WIDTH < 500 ? 12 : 0,
+                width: 180,
+                height: 40,
+                borderRadius: 12,
+                position: SAFE_WIDTH < 500 ? "relative" : "absolute",
+                top: SAFE_WIDTH < 500 ? undefined : 4,
+                left: SAFE_WIDTH < 500 ? undefined : 4,
+              }}
+            >
+              <LinearGradient
+                colors={[COLORS.button, COLORS.button]}
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 12,
+                }}
+              >
+                <Text style={{ color: COLORS.white, fontWeight: "bold" }}>
+                  ← Back To Home
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
 
-          {/* Inner Card */}
+          {/* INNER CARD */}
           <View
             style={{
-              width: "100%",
               backgroundColor: COLORS.white,
               borderRadius: 24,
               padding: 24,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
             }}
           >
-            {/* Stepper */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24 }}>
+            {/* STEPPER */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 24,
+              }}
+            >
               {[1, 2, 3, 4].map((step, idx) => {
                 const isActive = step <= 2;
                 return (
                   <React.Fragment key={step}>
-                    <View style={{ alignItems: "center" }}>
-                      {isActive ? (
-                        <LinearGradient
-                          colors={["#193288", "#FFC20E"]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
+                    <View>
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          backgroundColor: isActive
+                            ? COLORS.primary
+                            : COLORS.white,
+                          borderWidth: isActive ? 0 : 2,
+                          borderColor: "#9CA3AF",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
                           style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 18,
-                            justifyContent: "center",
-                            alignItems: "center",
+                            color: isActive ? "#fff" : "#9CA3AF",
+                            fontWeight: "bold",
                           }}
                         >
-                          <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>{step}</Text>
-                        </LinearGradient>
-                      ) : (
-                        <View
-                          style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 18,
-                            backgroundColor: COLORS.white,
-                            borderWidth: 2,
-                            borderColor: "#9CA3AF",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Text style={{ color: "#9CA3AF", fontWeight: "bold" }}>{step}</Text>
-                        </View>
-                      )}
+                          {step}
+                        </Text>
+                      </View>
                     </View>
                     {idx < 3 && (
-                      <View style={{ flex: 1, height: 2, backgroundColor: isActive ? "#193288" : "#9CA3AF", marginHorizontal: 4, marginTop: 17 }} />
+                      <View
+                        style={{
+                          flex: 1,
+                          height: 2,
+                          backgroundColor: isActive
+                            ? COLORS.primary
+                            : "#9CA3AF",
+                          marginTop: 17,
+                        }}
+                      />
                     )}
                   </React.Fragment>
                 );
               })}
             </View>
 
-            {/* Heading */}
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 4, textAlign: "center", color: COLORS.primary }}>
-              Company Information
-            </Text>
-            <Text style={{ fontSize: 14, color: COLORS.gray, marginBottom: 16, textAlign: "center" }}>
-              Enter your company’s official details below
-            </Text>
-
-            {/* Form Fields */}
-            <View style={{ gap: 12, alignItems: "center", width: "100%" }}>
-              {/* Row 1 */}
-              <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12, width: "100%" }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Company Legal Name</Text>
+            {/* FORM */}
+            <View style={{ gap: 12 }}>
+              {[ 
+                ["Company Legal Name", legalName, setLegalName],
+                ["Company Type", companyType, setCompanyType],
+                ["Industry", industry, setIndustry],
+                ["Company Status", companyStatus, setCompanyStatus],
+                ["Year Founded", yearFounded, setYearFounded],
+                ["Tax ID", taxId, setTaxId],
+              ].map(([label, value, setter]: any, i) => (
+                <View key={i}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "600",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {label}
+                  </Text>
                   <TextInput
-                    value={legalName}
-                    onChangeText={setLegalName}
-                    placeholder="Enter company legal name"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
+                    value={value}
+                    onChangeText={setter}
+                    placeholder={label}
+                    style={{
+                      height: 48,
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      backgroundColor: "#E8EDF5",
+                    }}
                   />
                 </View>
+              ))}
 
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Company Type</Text>
-                  <TextInput
-                    value={companyType}
-                    onChangeText={setCompanyType}
-                    placeholder="Select company type"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
-                  />
-                </View>
-              </View>
+              {/* REGISTRATION */}
+              <TouchableOpacity
+                onPress={() => setShowDropdown(!showDropdown)}
+                style={{
+                  height: 48,
+                  borderRadius: 12,
+                  backgroundColor: "#E8EDF5",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 12,
+                }}
+              >
+                <Text>{registrationNum || "Select registration type"}</Text>
+                <ChevronDown size={20} />
+              </TouchableOpacity>
 
-              {/* Row 2 */}
-              <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12, width: "100%" }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Industry</Text>
-                  <TextInput
-                    value={industry}
-                    onChangeText={setIndustry}
-                    placeholder="Select industry"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
-                  />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Company Status</Text>
-                  <TextInput
-                    value={companyStatus}
-                    onChangeText={setCompanyStatus}
-                    placeholder="Select company status"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
-                  />
-                </View>
-              </View>
-
-              {/* Row 3 */}
-              <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12, width: "100%" }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Year Founded</Text>
-                  <TextInput
-                    value={yearFounded}
-                    onChangeText={setYearFounded}
-                    placeholder="Enter founding year"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
-                  />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Tax ID</Text>
-                  <TextInput
-                    value={taxId}
-                    onChangeText={setTaxId}
-                    placeholder="Enter tax ID"
-                    style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", color: COLORS.textDark }}
-                  />
-                </View>
-              </View>
-
-              {/* Row 4 - Registration */}
-              <View style={{ width: "100%" }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.textDark, marginBottom: 4 }}>Registration Number</Text>
-                <TouchableOpacity
-                  onPress={() => setShowDropdown(!showDropdown)}
-                  style={{ height: 48, borderRadius: 12, paddingHorizontal: 12, backgroundColor: "#E8EDF5", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
-                >
-                  <Text style={{ color: COLORS.textDark }}>{registrationNum || "Select registration type"}</Text>
-                  <ChevronDown color="#555" size={20} />
-                </TouchableOpacity>
-
-                {showDropdown && (
-                  <View style={{ marginTop: 4, borderRadius: 12, backgroundColor: "#F3F6FA", overflow: "hidden" }}>
-                    {registrationOptions.map((option, i) => (
-                      <TouchableOpacity
-                        key={i}
-                        onPress={() => {
-                          setRegistrationNum(option);
-                          setShowDropdown(false);
-                        }}
-                        style={{ paddingVertical: 12, paddingHorizontal: 12, borderBottomWidth: i < registrationOptions.length - 1 ? 1 : 0, borderColor: "#D1D5DB" }}
-                      >
-                        <Text style={{ color: COLORS.textDark }}>{option}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
-              </View>
+              {showDropdown &&
+                registrationOptions.map((opt, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() => {
+                      setRegistrationNum(opt);
+                      setShowDropdown(false);
+                    }}
+                    style={{ padding: 12 }}
+                  >
+                    <Text>{opt}</Text>
+                  </TouchableOpacity>
+                ))}
             </View>
 
-            {/* Complete Button */}
+            {/* COMPLETE */}
             <TouchableOpacity
-              style={{ height: 52, marginTop: 16, borderRadius: 12 }}
               onPress={() => navigation.navigate("Administrator")}
+              style={{ height: 52, marginTop: 20 }}
             >
               <LinearGradient
                 colors={[COLORS.button, COLORS.button]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1, borderRadius: 12, justifyContent: "center", alignItems: "center" }}
+                style={{
+                  flex: 1,
+                  borderRadius: 12,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 16 }}>Complete →</Text>
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontWeight: "bold",
+                    fontSize: 16,
+                  }}
+                >
+                  Complete →
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
-
-            {/* Horizontal Line */}
-            <View style={{ height: 3, backgroundColor: COLORS.primary, width: "90%", alignSelf: "center", marginVertical: 20 }} />
-
-            {/* Already Have Account */}
-            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 4 }}>
-              <Text style={{ fontSize: 14, color: COLORS.gray }}>Already have an Account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                <Text style={{ fontSize: 14, color: COLORS.button, fontWeight: "600" }}>Sign in here</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </ScrollView>

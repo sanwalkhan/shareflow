@@ -119,8 +119,8 @@ const Header: React.FC<HeaderProps> = ({ title, openNotifications, isMobile }) =
   >
     {/* Title + Heart icon aligned center */}
     <View style={{ flexDirection: "row", alignItems: "center" }}>
-      <Ionicons name="heart-outline" size={24} color="#fff" style={{ marginRight: 6 }} />
-      <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff" }}>{title}</Text>
+      <Ionicons name="heart-outline" size={24} color="#fff" style={{ marginLeft: 32, marginTop:6, }} />
+      <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff", marginLeft:1, }}>{title}</Text>
     </View>
 
     {/* Desktop buttons */}
@@ -164,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ title, openNotifications, isMobile }) =
 
     {/* Mobile notification icon */}
     {isMobile && (
-      <TouchableOpacity onPress={openNotifications} style={{ marginLeft: 12 }}>
+      <TouchableOpacity onPress={openNotifications} style={{ marginLeft: 1 }}>
         <Ionicons name="notifications-outline" size={28} color="#fff" />
       </TouchableOpacity>
     )}

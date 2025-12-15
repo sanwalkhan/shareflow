@@ -1,5 +1,5 @@
 // src/screens/ShareholderReport.tsx
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
@@ -31,15 +31,12 @@ const COLORS = {
   warning: "#f59e0b",
   danger: "#dc2626",
   textDark: "#111827",
-  tertiary: "#6b7280",
 };
 
 // -------------------------
 // Constants
 // -------------------------
-const { width: screenWidth } = Dimensions.get("window");
 const sidebarWidth = 250;
-const isMobile = screenWidth < 768;
 
 // Sidebar Items
 const sidebarItems = [
@@ -70,8 +67,22 @@ const ShareholderReport: React.FC = () => {
   const navigation = useNavigation<ShareholderNavigationProp>();
   const [activeTab, setActiveTab] = useState("Report");
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(!isMobile);
+  const [showSidebar, setShowSidebar] = useState(false);
   const slideAnim = useRef(new Animated.Value(300)).current;
+
+  // Responsive State
+  const [isMobile, setIsMobile] = useState(Dimensions.get("window").width < 768);
+
+  useEffect(() => {
+    const onChange = ({ window }: { window: { width: number; height: number } }) => {
+      setIsMobile(window.width < 768);
+      if (window.width >= 768) setShowSidebar(true); // Desktop always show sidebar
+    };
+    Dimensions.addEventListener("change", onChange);
+    // Initial sidebar state
+    setShowSidebar(Dimensions.get("window").width >= 768);
+    return () => Dimensions.removeEventListener("change", onChange);
+  }, []);
 
   const toggleSidebar = () => setShowSidebar(!showSidebar);
 
@@ -177,7 +188,6 @@ const ShareholderReport: React.FC = () => {
             </MaskedView>
           </View>
 
-          {/* Desktop: Search + Bell */}
           {!isMobile && (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TouchableOpacity
@@ -205,7 +215,6 @@ const ShareholderReport: React.FC = () => {
             </View>
           )}
 
-          {/* Mobile: Only Bell Icon in header */}
           {isMobile && (
             <TouchableOpacity onPress={openNotifications}>
               <Ionicons name="notifications-outline" size={28} color="#fff" />
@@ -213,7 +222,7 @@ const ShareholderReport: React.FC = () => {
           )}
         </View>
 
-        {/* Mobile: Search Button Above Main Content */}
+        {/* Mobile Search */}
         {isMobile && (
           <View style={{ padding: 20 }}>
             <TouchableOpacity
@@ -234,10 +243,10 @@ const ShareholderReport: React.FC = () => {
           </View>
         )}
 
-        {/* Scrollable Main */}
+        {/* Scrollable Content */}
         <ScrollView style={{ paddingHorizontal: 20 }} showsVerticalScrollIndicator={false}>
           {/* Topics */}
-          <View style={{ flexDirection: screenWidth > 768 ? "row" : "column", gap: 16, marginBottom: 16 }}>
+          <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16, marginBottom: 16 }}>
             <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
               <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Workout Topics</Text>
               {topicsData.map((topic) => (
@@ -268,7 +277,7 @@ const ShareholderReport: React.FC = () => {
           </View>
 
           {/* Top Users */}
-          <View style={{ flexDirection: screenWidth > 768 ? "row" : "column", gap: 16 }}>
+          <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16 }}>
             <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
               <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Top Users (Workout)</Text>
               {leaderboardData.map((user, index) => (
