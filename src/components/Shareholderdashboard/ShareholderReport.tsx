@@ -2,49 +2,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
+import Sidebar from "../SidebarComponent/sidebar";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
 
-// -------------------------
-// Navigation Types
-// -------------------------
-export type RootStackParamList = {
-  Dashboard: undefined;
-  ShareholderReport: undefined;
-  ShareholderFvrt: undefined;
-  ShareholderHistory: undefined;
-};
-
-type ShareholderNavigationProp = NativeStackNavigationProp<RootStackParamList, "ShareholderReport">;
-
-// -------------------------
-// Colors
-// -------------------------
 const COLORS = {
   primary: "#193288",
   accent: "#001867ff",
-  button: "#FFC20E",
   success: "#16a34a",
-  warning: "#f59e0b",
   danger: "#dc2626",
+  warning: "#f59e0b",
   textDark: "#111827",
 };
-
-// -------------------------
-// Constants
-// -------------------------
-const sidebarWidth = 250;
-
-// Sidebar Items
-const sidebarItems = [
-  { label: "Dashboard", icon: "speedometer-outline" },
-  { label: "Report", icon: "document-text-outline" },
-  { label: "Favourite", icon: "heart-outline" },
-  { label: "History", icon: "time-outline" },
-];
 
 // Sample Data
 const topicsData = [
@@ -60,31 +29,35 @@ const leaderboardData = [
   { id: "4", name: "Luis Silverman", score: 80, change: "down" },
 ];
 
-// -------------------------
-// Component
-// -------------------------
 const ShareholderReport: React.FC = () => {
-  const navigation = useNavigation<ShareholderNavigationProp>();
-  const [activeTab, setActiveTab] = useState("Report");
+  // Responsive
+  const [windowWidth, setWindowWidth] = useState(Dimensions.get("window").width);
+  const isMobile = windowWidth < 700;
+
+  // Sidebar
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarAnim = useRef(new Animated.Value(-260)).current;
+
+  // Notifications
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
   const slideAnim = useRef(new Animated.Value(300)).current;
 
-  // Responsive State
-  const [isMobile, setIsMobile] = useState(Dimensions.get("window").width < 768);
-
   useEffect(() => {
-    const onChange = ({ window }: { window: { width: number; height: number } }) => {
-      setIsMobile(window.width < 768);
-      if (window.width >= 768) setShowSidebar(true); // Desktop always show sidebar
-    };
+    const onChange = ({ window }: { window: { width: number; height: number } }) => setWindowWidth(window.width);
     Dimensions.addEventListener("change", onChange);
-    // Initial sidebar state
-    setShowSidebar(Dimensions.get("window").width >= 768);
     return () => Dimensions.removeEventListener("change", onChange);
   }, []);
 
-  const toggleSidebar = () => setShowSidebar(!showSidebar);
+  const toggleSidebar = () => {
+    if (sidebarOpen) {
+      Animated.timing(sidebarAnim, { toValue: -260, duration: 300, useNativeDriver: false }).start(() =>
+        setSidebarOpen(false)
+      );
+    } else {
+      setSidebarOpen(true);
+      Animated.timing(sidebarAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start();
+    }
+  };
 
   const openNotifications = () => {
     setShowNotifications(true);
@@ -99,61 +72,8 @@ const ShareholderReport: React.FC = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#E6F0FF", flexDirection: "row" }}>
-      {/* Sidebar */}
-      {showSidebar && (
-        <View
-          style={{
-            width: sidebarWidth,
-            padding: 26,
-            backgroundColor: COLORS.primary,
-            position: isMobile ? "absolute" : "relative",
-            zIndex: 1000,
-            height: "100%",
-          }}
-        >
-          {isMobile && (
-            <TouchableOpacity onPress={toggleSidebar} style={{ marginBottom: 20 }}>
-              <Ionicons name="close-outline" size={28} color="#fff" />
-            </TouchableOpacity>
-          )}
-          <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold", marginBottom: 32 }}>ShareFlow</Text>
-          {sidebarItems.map((item) => {
-            const isActive = activeTab === item.label;
-            return (
-              <TouchableOpacity
-                key={item.label}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: 14,
-                  paddingHorizontal: 16,
-                  marginBottom: 20,
-                  borderRadius: 16,
-                  backgroundColor: isActive ? COLORS.button : "transparent",
-                }}
-                onPress={() => {
-                  setActiveTab(item.label);
-                  if (item.label === "Dashboard") navigation.navigate("ShareholderDashboard");
-                  else if (item.label === "Report") navigation.navigate("ShareholderReport");
-                  else if (item.label === "Favourite") navigation.navigate("Shareholderfvrt");
-                  else if (item.label === "History") navigation.navigate("ShareholderHistory");
-                  if (isMobile) setShowSidebar(false);
-                }}
-              >
-                <Ionicons
-                  name={item.icon as any}
-                  size={22}
-                  color={isActive ? COLORS.accent : "#fff"}
-                  style={{ marginRight: 12 }}
-                />
-                <Text style={{ color: isActive ? COLORS.accent : "#fff", fontSize: 16, fontWeight: "600" }}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
+      {/* Desktop Sidebar */}
+      {!isMobile && <Sidebar />}
 
       {/* Main Content */}
       <View style={{ flex: 1 }}>
@@ -174,18 +94,7 @@ const ShareholderReport: React.FC = () => {
                 <Ionicons name="menu-outline" size={28} color="#fff" />
               </TouchableOpacity>
             )}
-            <MaskedView
-              maskElement={
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Ionicons name="document-text-outline" size={24} color="#fff" style={{ marginRight: 6 }} />
-                  <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff" }}>Report</Text>
-                </View>
-              }
-            >
-              <LinearGradient colors={[COLORS.primary, COLORS.primary]}>
-                <Text style={{ fontSize: 24, fontWeight: "600", opacity: 0 }}>Report</Text>
-              </LinearGradient>
-            </MaskedView>
+            {!isMobile && <Text style={{ color: "#fff", fontSize: 24, fontWeight: "600" }}>Report</Text>}
           </View>
 
           {!isMobile && (
@@ -194,7 +103,7 @@ const ShareholderReport: React.FC = () => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: COLORS.button,
+                  backgroundColor: "#fff",
                   paddingVertical: 6,
                   paddingHorizontal: 10,
                   borderRadius: 8,
@@ -204,113 +113,105 @@ const ShareholderReport: React.FC = () => {
                   justifyContent: "center",
                 }}
               >
-                <Ionicons name="search-outline" size={18} color="#14339bff" style={{ marginRight: 6 }} />
-                <Text style={{ color: "#14339bff", fontWeight: "800", fontSize: 14 }}>
-                  Search for everything
-                </Text>
+                <Ionicons name="search-outline" size={18} color={COLORS.accent} style={{ marginRight: 6 }} />
+                <Text style={{ color: COLORS.accent, fontWeight: "800", fontSize: 14 }}>Search for everything</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={openNotifications}>
                 <Ionicons name="notifications-outline" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
           )}
-
-          {isMobile && (
-            <TouchableOpacity onPress={openNotifications}>
-              <Ionicons name="notifications-outline" size={28} color="#fff" />
-            </TouchableOpacity>
-          )}
         </View>
-
-        {/* Mobile Search */}
-        {isMobile && (
-          <View style={{ padding: 20 }}>
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: COLORS.button,
-                paddingVertical: 10,
-                paddingHorizontal: 16,
-                borderRadius: 12,
-              }}
-            >
-              <Ionicons name="search-outline" size={20} color="#14339bff" style={{ marginRight: 8 }} />
-              <Text style={{ color: "#14339bff", fontWeight: "800", fontSize: 16 }}>
-                Search for everything
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
 
         {/* Scrollable Content */}
         <ScrollView style={{ paddingHorizontal: 20 }} showsVerticalScrollIndicator={false}>
           {/* Topics */}
           <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16, marginBottom: 16 }}>
-            <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
-              <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Workout Topics</Text>
-              {topicsData.map((topic) => (
-                <View key={topic.id} style={{ marginBottom: 12 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 4 }}>{topic.name}</Text>
-                  <View style={{ height: 6, backgroundColor: "#e5e7eb", borderRadius: 3 }}>
-                    <View
-                      style={{ width: `${topic.progress}%`, height: "100%", backgroundColor: topic.color, borderRadius: 3 }}
-                    />
+            {[{ title: "Workout Topics" }, { title: "Management Topics" }].map((section, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
+                <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>
+                  {section.title}
+                </Text>
+                {topicsData.map((topic) => (
+                  <View key={topic.id} style={{ marginBottom: 12 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 4 }}>{topic.name}</Text>
+                    <View style={{ height: 6, backgroundColor: "#e5e7eb", borderRadius: 3 }}>
+                      <View
+                        style={{ width: `${topic.progress}%`, height: "100%", backgroundColor: topic.color, borderRadius: 3 }}
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
-            </View>
-
-            <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
-              <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Management Topics</Text>
-              {topicsData.map((topic) => (
-                <View key={topic.id} style={{ marginBottom: 12 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 4 }}>{topic.name}</Text>
-                  <View style={{ height: 6, backgroundColor: "#e5e7eb", borderRadius: 3 }}>
-                    <View
-                      style={{ width: `${topic.progress}%`, height: "100%", backgroundColor: topic.color, borderRadius: 3 }}
-                    />
-                  </View>
-                </View>
-              ))}
-            </View>
+                ))}
+              </View>
+            ))}
           </View>
 
           {/* Top Users */}
           <View style={{ flexDirection: isMobile ? "column" : "row", gap: 16 }}>
-            <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
-              <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Top Users (Workout)</Text>
-              {leaderboardData.map((user, index) => (
-                <View key={user.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 12, backgroundColor: "#f3f4f6", padding: 12, borderRadius: 12 }}>
-                  <Image source={{ uri: `https://i.pravatar.cc/50?img=${index + 1}` }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 12 }} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontWeight: "600", fontSize: 16, color: COLORS.textDark }}>{user.name}</Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
-                      <Text style={{ fontWeight: "700", marginRight: 6 }}>{user.score}</Text>
-                      {user.change === "up" ? <ChevronUp size={16} color={COLORS.success} /> : <ChevronDown size={16} color={COLORS.danger} />}
+            {["Top Users (Workout)", "Top Users (Management)"].map((section, idx) => (
+              <View key={idx} style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
+                <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>{section}</Text>
+                {leaderboardData.map((user, index) => (
+                  <View
+                    key={user.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginBottom: 12,
+                      backgroundColor: "#f3f4f6",
+                      padding: 12,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: `https://i.pravatar.cc/50?img=${idx * 4 + index + 1}` }}
+                      style={{ width: 50, height: 50, borderRadius: 25, marginRight: 12 }}
+                    />
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontWeight: "600", fontSize: 16, color: COLORS.textDark }}>{user.name}</Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
+                        <Text style={{ fontWeight: "700", marginRight: 6 }}>{user.score}</Text>
+                        {user.change === "up" ? (
+                          <ChevronUp size={16} color={COLORS.success} />
+                        ) : (
+                          <ChevronDown size={16} color={COLORS.danger} />
+                        )}
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
-
-            <View style={{ flex: 1, backgroundColor: "#fff", borderRadius: 16, padding: 16 }}>
-              <Text style={{ fontWeight: "700", fontSize: 18, color: COLORS.textDark, marginBottom: 12 }}>Top Users (Management)</Text>
-              {leaderboardData.map((user, index) => (
-                <View key={user.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 12, backgroundColor: "#f3f4f6", padding: 12, borderRadius: 12 }}>
-                  <Image source={{ uri: `https://i.pravatar.cc/50?img=${index + 5}` }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 12 }} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontWeight: "600", fontSize: 16, color: COLORS.textDark }}>{user.name}</Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
-                      <Text style={{ fontWeight: "700", marginRight: 6 }}>{user.score}</Text>
-                      {user.change === "up" ? <ChevronUp size={16} color={COLORS.success} /> : <ChevronDown size={16} color={COLORS.danger} />}
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
+                ))}
+              </View>
+            ))}
           </View>
         </ScrollView>
+
+        {/* Mobile Sidebar Overlay */}
+        {isMobile && sidebarOpen && (
+          <>
+            <TouchableOpacity
+              style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.3)", zIndex: 998 }}
+              onPress={toggleSidebar}
+            />
+            <Animated.View
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: sidebarAnim,
+                width: 260,
+                backgroundColor: "#fff",
+                zIndex: 999,
+                elevation: 10,
+                shadowColor: "#000",
+                shadowOpacity: 0.2,
+                shadowOffset: { width: 2, height: 0 },
+                shadowRadius: 4,
+              }}
+            >
+              <Sidebar mobile onClose={toggleSidebar} />
+            </Animated.View>
+          </>
+        )}
 
         {/* Notification Drawer */}
         {showNotifications && (
@@ -330,24 +231,14 @@ const ShareholderReport: React.FC = () => {
               zIndex: 1000,
             }}
           >
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}
+            >
               <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
               <TouchableOpacity onPress={closeNotifications}>
                 <Ionicons name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={{ paddingVertical: 8, marginBottom: 12 }}>
-              <Text style={{ color: COLORS.success, fontWeight: "600" }}>Mark All as Read</Text>
-            </TouchableOpacity>
-
-            <ScrollView>
-              {leaderboardData.map((user, idx) => (
-                <View key={idx} style={{ paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "#ccc" }}>
-                  <Text>{user.name} scored {user.score}</Text>
-                </View>
-              ))}
-            </ScrollView>
           </Animated.View>
         )}
       </View>

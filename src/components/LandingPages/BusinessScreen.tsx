@@ -62,7 +62,7 @@ const BusinessScreen: React.FC = () => {
           flexWrap: "wrap",
           justifyContent: "center",
           gap: 12,
-          marginBottom: 24,
+          marginBottom: 4,
         }}
       >
         {[ 
@@ -116,6 +116,7 @@ const BusinessScreen: React.FC = () => {
               height: "80%",
               borderRadius: 16,
               aspectRatio: 4 / 3,
+              marginTop:142,
             }}
             resizeMode="cover"
           />

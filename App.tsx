@@ -7,6 +7,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 /* Header */
 import Header from "./src/components/HeaderFooter/Header";
+/* Sidebar */
+import sidebar from "./src/components/SidebarComponent/sidebar";
 
 /* Landing Pages */
 import HeroScreen from "./src/components/LandingPages/HeroScreen";
@@ -42,6 +44,18 @@ import Shareholder from "./src/components/Admin/Expenses/Shareholder/Shareholder
 import Expenses from "./src/components/Admin/Expenses/Expenses";
 import Adminreport from "./src/components/Admin/Admindashboard/Adminreport";
 import AdminDashboard from "./src/components/Admin/Admindashboard/AdminDashboard";
+import ADDashboard from "./src/components/Admin/Admindashboard/ADDashboard";
+import AdminAnalytic from "./src/components/Admin/Admindashboard/AdminAnalytic";
+import Adminfvrt from "./src/components/Admin/Admindashboard/Adminfvrt";
+import AdminHelp from "./src/components/Admin/Admindashboard/AdminHelp";
+import AdminHistory from "./src/components/Admin/Admindashboard/AdminHistory";
+import AdminMessage from "./src/components/Admin/Admindashboard/AdminMessage";
+import Adminpayrol from "./src/components/Admin/Admindashboard/Adminpayrol";
+import Adminsetting from "./src/components/Admin/Admindashboard/Adminsetting";
+import ADReport from "./src/components/Admin/Admindashboard/ADReport";
+import AdminShareholder from "./src/components/Admin/Admindashboard/AdminShareholder";
+import AdminExpenses from "./src/components/Admin/Admindashboard/AdminExpenses";
+
 
 
 /* Shareholder Dashboard */
@@ -49,6 +63,12 @@ import ShareholderDashboard from "./src/components/Shareholderdashboard/Sharehol
 import ShareholderReport from "./src/components/Shareholderdashboard/ShareholderReport";
 import Shareholderfvrt from "./src/components/Shareholderdashboard/Shareholderfvrt";
 import ShareholderHistory from "./src/components/Shareholderdashboard/ShareholderHistory";
+import ShareholderAnalytic from "./src/components/Shareholderdashboard/ShareholderAnalytic";
+import ShareholderHelp from "./src/components/Shareholderdashboard/ShareholderHelp";
+import ShareholderMessage from "./src/components/Shareholderdashboard/ShareholderMessage";
+import Shareholderpayrol from "./src/components/Shareholderdashboard/Shareholderpayrol";
+import Shareholdersetting from "./src/components/Shareholderdashboard/Shareholdersetting";
+
 
 
 /* Stack Param List */
@@ -80,6 +100,26 @@ export type RootStackParamList = {
   Shareholderfvrt;
   ShareholderHistory;
   Admindashboard;
+  sidebar;
+  ShareholderAnalytic;
+  ShareholderHelp;
+  ShareholderMessage;
+  Shareholderpayrol;
+  Shareholdersetting;
+  ADDashboard;
+  AdminAnalytic;
+  Adminfvrt;
+  AdminHelp;
+  AdminHistory;
+  AdminMessage;
+  Adminpayrol;
+  Adminsetting;
+  ADReport;
+  ADDashboard;
+  AdminShareholder;
+  AdminExpenses;
+  
+
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -133,6 +173,19 @@ const App: React.FC = () => {
         <Stack.Screen name="Expenses" component={Expenses} />
         <Stack.Screen name="Adminreport" component={Adminreport} />
          <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
+         <Stack.Screen name="AdminAnalytic" component={AdminAnalytic} />
+         <Stack.Screen name="Adminfvrt" component={Adminfvrt} />
+
+         <Stack.Screen name="AdminHelp" component={AdminHelp} />
+         <Stack.Screen name="AdminHistory" component={AdminHistory} />
+         <Stack.Screen name="AdminMessage" component={AdminMessage} />
+         <Stack.Screen name="Adminpayrol" component={Adminpayrol} />
+       
+         <Stack.Screen name="Adminsetting" component={Adminsetting} />
+         <Stack.Screen name="ADReport" component={ADReport} />
+         <Stack.Screen name="ADDashboard" component={ADDashboard} />
+          <Stack.Screen name="AdminShareholder" component={AdminShareholder} />
+          <Stack.Screen name="AdminExpenses" component={AdminExpenses} />
 
 
          {/* Shareholder */}
@@ -140,6 +193,16 @@ const App: React.FC = () => {
             <Stack.Screen name="ShareholderReport" component={ShareholderReport} />
              <Stack.Screen name="Shareholderfvrt" component={Shareholderfvrt} />
              <Stack.Screen name="ShareholderHistory" component={ShareholderHistory} />
+               <Stack.Screen name="ShareholderAnalytic" component={ShareholderAnalytic} />
+                <Stack.Screen name="Shareholderpayrol" component={Shareholderpayrol} />
+                 <Stack.Screen name="Shareholdersetting" component={Shareholdersetting} /> 
+              <Stack.Screen name="ShareholderHelp" component={ShareholderHelp} />
+                     <Stack.Screen name="ShareholderMessage" component={ShareholderMessage} />
+                     
+
+               {/* SidebarComponent */}
+             <Stack.Screen name="sidebar" component={sidebar} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -5,8 +5,10 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const InfoScreen: React.FC = () => {
   const { width: sw } = useWindowDimensions();
+
   const isDesktop = sw >= 1200;
   const isTablet = sw >= 768 && sw < 1200;
+  const isMobile = sw < 768;
 
   const headingFontSize = isDesktop ? 36 : isTablet ? 30 : 22;
   const paragraphFontSize = isDesktop ? 18 : isTablet ? 16 : 14;
@@ -18,8 +20,8 @@ const InfoScreen: React.FC = () => {
       contentContainerStyle={{
         backgroundColor: "#FFFFFF",
         paddingHorizontal: isDesktop ? 80 : 16,
-        paddingTop: 40, // top padding for breathing space
-        flexGrow: 0, // ensures no extra space below
+        paddingTop: 40,
+        paddingBottom: isMobile ? 60 : 40, // extra bottom padding for mobile
       }}
     >
       <View
@@ -35,6 +37,7 @@ const InfoScreen: React.FC = () => {
           style={{
             width: isDesktop || isTablet ? "50%" : "100%",
             alignItems: "center",
+            marginBottom: isMobile ? 20 : 0, // spacing below image on mobile
           }}
         >
           <Image
@@ -64,7 +67,7 @@ const InfoScreen: React.FC = () => {
               lineHeight: lineHeight,
               color: "#001867",
               textAlign: isDesktop || isTablet ? "left" : "center",
-              marginBottom: 8,
+              marginBottom: 12,
               flexShrink: 1,
             }}
           >
@@ -79,7 +82,7 @@ const InfoScreen: React.FC = () => {
               lineHeight: paragraphFontSize * 1.6,
               color: "#222629",
               textAlign: isDesktop || isTablet ? "left" : "center",
-              marginBottom: 12,
+              marginBottom: isMobile ? 24 : 12, // extra spacing before button on mobile
               flexShrink: 1,
             }}
           >

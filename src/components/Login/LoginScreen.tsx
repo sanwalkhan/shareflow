@@ -88,17 +88,29 @@ export default function LoginScreen() {
               </TouchableOpacity>
             )}
 
-            {/* Logo */}
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* Logo + ShareFlow Text */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Image
                 source={require("../../assets/image.png")}
-                style={{ width: 40, height: 40, marginRight: 8 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  resizeMode: "contain",
+                  marginRight: 8,
+                }}
               />
               <Text
                 style={{
                   fontSize: 24,
                   fontWeight: "bold",
                   color: COLORS.primary,
+                  lineHeight: 40, // align with image height
                 }}
               >
                 ShareFlow
@@ -137,21 +149,27 @@ export default function LoginScreen() {
             }}
           >
             {/* Secure Badge */}
-            <LinearGradient
-              colors={[COLORS.button, COLORS.button]}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ADDashboard")}
               style={{
                 position: "absolute",
                 top: 8,
                 left: 8,
-                paddingHorizontal: 14,
-                paddingVertical: 4,
-                borderRadius: 12,
               }}
             >
-              <Text style={{ color: COLORS.white, fontSize: 12 }}>
-                Secure Sign-In
-              </Text>
-            </LinearGradient>
+              <LinearGradient
+                colors={[COLORS.button, COLORS.button]}
+                style={{
+                  paddingHorizontal: 14,
+                  paddingVertical: 4,
+                  borderRadius: 12,
+                }}
+              >
+                <Text style={{ color: COLORS.white, fontSize: 12 }}>
+                  Secure Sign-In
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
 
             {/* Title */}
             <Text
@@ -243,29 +261,19 @@ export default function LoginScreen() {
                     borderWidth: 2,
                     borderColor: COLORS.primary,
                     marginRight: 8,
-                    backgroundColor: rememberMe
-                      ? COLORS.button
-                      : COLORS.white,
+                    backgroundColor: rememberMe ? COLORS.button : COLORS.white,
                   }}
                 />
                 <Text>Remember me</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ForgetPwd")}
-              >
-                <Text style={{ color: COLORS.accent }}>
-                  Forget password?
-                </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("ForgetPwd")}>
+                <Text style={{ color: COLORS.accent }}>Forget password?</Text>
               </TouchableOpacity>
             </View>
 
             {/* Login Button */}
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("ShareholderDashboard")
-              }
-            >
+            <TouchableOpacity onPress={() => navigation.navigate("ShareholderDashboard")}>
               <LinearGradient
                 colors={[COLORS.button, COLORS.button]}
                 style={{

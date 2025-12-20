@@ -45,12 +45,27 @@ const ForgetPwd: React.FC = () => {
             }}
           >
             {/* Header */}
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center", // vertical center
+                justifyContent: "center",
+                marginBottom: 16,
+                paddingTop: isMobile ? 8 : 60,
+              }}
+            >
               <Image
                 source={require("../../assets/image.png")}
-                style={{ width: 40, height: 40, marginRight: 8, marginTop: isMobile ? 8 : 60 }}
+                style={{ width: 40, height: 40, marginRight: 8 }}
               />
-              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#193288", marginTop: isMobile ? 8 : 60 }}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "bold",
+                  color: "#193288",
+                  lineHeight: 40, // match logo height for perfect alignment
+                }}
+              >
                 ShareFlow
               </Text>
             </View>
@@ -147,9 +162,9 @@ const ForgetPwd: React.FC = () => {
                         {idx < 1 && (
                           <View
                             style={{
-                              width: 50,             // fixed width for line
+                              width: 50,
                               height: 2,
-                              backgroundColor: "#193288", // blue color
+                              backgroundColor: "#193288",
                               marginHorizontal: 6,
                               alignSelf: "center",
                             }}

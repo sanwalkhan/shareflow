@@ -7,32 +7,24 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-const sidebarWidth = 250;
+// ✅ Import Sidebar
+import Sidebar from "../SidebarComponent/sidebar";
 
 const COLORS = {
   primary: "#14339b",
   button: "#FFC20E",
-  textDark: "#111827",
   cardBackground: "#000",
   cardText: "#fff",
 };
 
 // Navigation types
 export type RootStackParamList = {
-  Dashboard: undefined;
+  ShareholderDashboard: undefined;
   ShareholderReport: undefined;
   ShareholderFvrt: undefined;
   ShareholderHistory: undefined;
 };
 type ShareholderNavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
-// Sidebar items
-const sidebarItems = [
-  { label: "Dashboard", icon: "speedometer-outline", route: "ShareholderDashboard" },
-  { label: "Report", icon: "document-text-outline", route: "ShareholderReport" },
-  { label: "Favourite", icon: "heart-outline", route: "Shareholderfvrt" },
-  { label: "History", icon: "time-outline", route: "ShareholderHistory" },
-];
 
 const topCards = [
   { title: "Equality Validation" },
@@ -42,38 +34,24 @@ const topCards = [
 
 const ShareholderHistory: React.FC = () => {
   const navigation = useNavigation<ShareholderNavigationProp>();
-  const [activeTab, setActiveTab] = useState("History");
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [activeTab, setActiveTab] = useState("history");
   const [isMobile, setIsMobile] = useState(Dimensions.get("window").width < 768);
-
-  const slideAnim = useRef(new Animated.Value(-sidebarWidth)).current;
+  const [mobileSidebar, setMobileSidebar] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const notifAnim = useRef(new Animated.Value(300)).current;
 
   useEffect(() => {
     const onChange = ({ window }: { window: { width: number; height: number } }) => {
       setIsMobile(window.width < 768);
-      if (window.width >= 768) setShowSidebar(false); // hide mobile sidebar on desktop
+      if (window.width >= 768) setMobileSidebar(false);
     };
 
     const subscription = Dimensions.addEventListener("change", onChange);
-
     return () => {
       if (subscription?.remove) subscription.remove();
       else Dimensions.removeEventListener("change", onChange);
     };
   }, []);
-
-  const toggleSidebar = () => {
-    if (!showSidebar) {
-      setShowSidebar(true);
-      Animated.timing(slideAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start();
-    } else {
-      Animated.timing(slideAnim, { toValue: -sidebarWidth, duration: 300, useNativeDriver: false }).start(() =>
-        setShowSidebar(false)
-      );
-    }
-  };
 
   const openNotifications = () => {
     setShowNotifications(true);
@@ -86,93 +64,19 @@ const ShareholderHistory: React.FC = () => {
     );
   };
 
-  const dummyNotifications = [
-    { title: "Payment Received", time: "2 min ago" },
-    { title: "Dividend Released", time: "10 min ago" },
-    { title: "Report Updated", time: "1 hour ago" },
-  ];
-
   return (
-    <View style={{ flex: 1, backgroundColor: "#E6F0FF", flexDirection: "row" }}>
-      {/* Desktop Sidebar */}
+    <View style={{ flex: 1, flexDirection: "row", backgroundColor: "#E6F0FF" }}>
+      {/* Sidebar */}
       {!isMobile && (
-        <View style={{ width: sidebarWidth, padding: 26, backgroundColor: COLORS.primary }}>
-          <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold", marginBottom: 32 }}>ShareFlow</Text>
-          {sidebarItems.map((item) => {
-            const isActive = activeTab === item.label;
-            return (
-              <TouchableOpacity
-                key={item.label}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: 14,
-                  paddingHorizontal: 16,
-                  marginBottom: 20,
-                  borderRadius: 16,
-                  backgroundColor: isActive ? COLORS.button : "transparent",
-                }}
-                onPress={() => {
-                  setActiveTab(item.label);
-                  navigation.navigate(item.route as any);
-                }}
-              >
-                <Ionicons name={item.icon as any} size={22} color={isActive ? "#000" : "#fff"} style={{ marginRight: 12 }} />
-                <Text style={{ color: isActive ? "#000" : "#fff", fontSize: 16, fontWeight: "600" }}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <Sidebar activeTab={activeTab} onSelect={setActiveTab} mobile={false} />
       )}
-
-      {/* Mobile Sidebar */}
-      {isMobile && showSidebar && (
-        <Animated.View
-          style={{
-            position: "absolute",
-            left: slideAnim,
-            top: 0,
-            width: sidebarWidth,
-            height: "100%",
-            backgroundColor: COLORS.primary,
-            zIndex: 1000,
-            padding: 26,
-          }}
-        >
-          <TouchableOpacity onPress={toggleSidebar} style={{ marginBottom: 20 }}>
-            <Ionicons name="close-outline" size={28} color="#fff" />
-          </TouchableOpacity>
-          <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold", marginBottom: 32 }}>ShareFlow</Text>
-          {sidebarItems.map((item) => {
-            const isActive = activeTab === item.label;
-            return (
-              <TouchableOpacity
-                key={item.label}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: 14,
-                  paddingHorizontal: 16,
-                  marginBottom: 20,
-                  borderRadius: 16,
-                  backgroundColor: isActive ? COLORS.button : "transparent",
-                }}
-                onPress={() => {
-                  setActiveTab(item.label);
-                  navigation.navigate(item.route as any);
-                  toggleSidebar();
-                }}
-              >
-                <Ionicons name={item.icon as any} size={22} color={isActive ? "#000" : "#fff"} style={{ marginRight: 12 }} />
-                <Text style={{ color: isActive ? "#000" : "#fff", fontSize: 16, fontWeight: "600" }}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </Animated.View>
+      {isMobile && mobileSidebar && (
+        <Sidebar
+          activeTab={activeTab}
+          onSelect={setActiveTab}
+          mobile
+          onClose={() => setMobileSidebar(false)}
+        />
       )}
 
       {/* Main Content */}
@@ -181,7 +85,7 @@ const ShareholderHistory: React.FC = () => {
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: COLORS.primary, paddingHorizontal: 16, paddingVertical: 20 }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {isMobile && (
-              <TouchableOpacity onPress={toggleSidebar} style={{ marginRight: 12 }}>
+              <TouchableOpacity onPress={() => setMobileSidebar(true)} style={{ marginRight: 12 }}>
                 <Ionicons name="menu-outline" size={28} color="#fff" />
               </TouchableOpacity>
             )}
@@ -202,13 +106,28 @@ const ShareholderHistory: React.FC = () => {
           {/* Header Buttons */}
           {!isMobile && (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", backgroundColor: COLORS.button, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, marginRight: 12, height: 50 }}>
-                <Ionicons name="search-outline" size={18} color="#14339bff" style={{ marginRight: 6 }} />
-                <Text style={{ color: "#14339bff", fontWeight: "800", fontSize: 14 }}>Search for everything</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={openNotifications} style={{ marginLeft: 12 }}>
-                <Ionicons name="notifications-outline" size={28} color="#fff" />
-              </TouchableOpacity>
+              <TouchableOpacity
+  style={{
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: '#fff', // white background
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginRight: 12,
+    height: 50,
+  }}
+>
+  <Ionicons name="search-outline" size={18} color={COLORS.accent} style={{ marginRight: 6 }} />
+  <Text style={{ color: COLORS.accent, fontWeight: "800", fontSize: 14 }}>
+    Search for everything
+  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity onPress={openNotifications} style={{ marginLeft: 12 }}>
+  <Ionicons name="notifications-outline" size={28} color="#fff" />
+</TouchableOpacity>
+
             </View>
           )}
 
@@ -262,20 +181,10 @@ const ShareholderHistory: React.FC = () => {
       {/* Notifications Panel */}
       {showNotifications && (
         <Animated.View style={{ position: "absolute", right: notifAnim, top: 0, width: 300, height: "100%", backgroundColor: "#fff", padding: 16, zIndex: 999 }}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 16 }}>
-            <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
-            <TouchableOpacity onPress={closeNotifications}>
-              <Ionicons name="close" size={24} color="#000" />
-            </TouchableOpacity>
-          </View>
-          <ScrollView>
-            {dummyNotifications.map((notif, idx) => (
-              <View key={idx} style={{ paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "#ccc" }}>
-                <Text>{notif.title}</Text>
-                <Text style={{ fontSize: 12, color: "#666" }}>{notif.time}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 12 }}>Notifications</Text>
+          <TouchableOpacity onPress={closeNotifications}>
+            <Ionicons name="close" size={24} color="#000" />
+          </TouchableOpacity>
         </Animated.View>
       )}
     </View>

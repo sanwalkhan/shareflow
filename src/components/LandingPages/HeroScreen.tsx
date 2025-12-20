@@ -1,4 +1,4 @@
-// src/components/HeroScreen.tsx
+// src/components/LandingPages/HeroScreen.tsx
 import React from "react";
 import {
   View,
@@ -7,7 +7,9 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
+  Platform,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import {
   AdvancedAnalyticsCard,
@@ -22,310 +24,282 @@ import Footer from "../HeaderFooter/Footer";
 
 const HeroScreen: React.FC = () => {
   const { width, height } = useWindowDimensions();
+  const navigation = useNavigation<any>();
 
-  const isSmallMobile = width <= 380;       // ✔ Best for 360 width
+  const isSmallMobile = width <= 380;
+  const isMobile = width < 768;
   const isTablet = width >= 768;
   const isDesktop = width >= 1200;
 
-  // ---- FONT SIZES ----
   const headingFontSize = isDesktop
     ? 60
     : isTablet
     ? 52
     : isSmallMobile
-    ? 32
+    ? 28
     : 36;
+  const subHeadingFontSize = isSmallMobile ? 24 : headingFontSize;
 
-  const subHeadingFontSize = headingFontSize;
-
-  // ---- CARD WIDTH ----
   const cardContainerStyle = {
-    width: isTablet ? "32%" : "100%",
-    marginBottom: 16,
+    width: isTablet || isDesktop ? "32%" : "100%",
+    marginTop: 16,
   } as const;
 
-  // ---- HERO IMAGE SIZE FOR SMALL MOBILE ----
   const heroImageStyle = {
     width: "100%",
-    maxWidth: isDesktop ? 450 : isTablet ? 380 : isSmallMobile ? 260 : 320,
-    aspectRatio: 400 / 350,
+    maxWidth: isDesktop ? 450 : isTablet ? 380 : isSmallMobile ? 220 : 320,
+    aspectRatio: 300 / 350,
   };
 
-  // ---- SECTION PADDING BASED ON HEIGHT (360×925 support) ----
-  const sectionVerticalPadding = height <= 925 ? 40 : 60;
+  const sectionVerticalPadding = height <= 925 ? 30 : 60;
+
+  const goToAdminDashboard = () => {
+    navigation.navigate("AdminStack", { screen: "ADDashboard" });
+  };
+
+  // ================= CARD OVERLAP =================
+  const cardSectionMarginTop = isMobile ? -120 : isTablet ? -540 : -200;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#001867ff" }}>
-      {/* ========== HERO SECTION ========== */}
-      <View
-        style={{
-          width: "100%",
-          paddingVertical: sectionVerticalPadding,
-          paddingHorizontal: 24,
-        }}
-      >
-        {isTablet ? (
-          // ---------- Tablet/Desktop ----------
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            {/* LEFT: TEXT */}
-            <View
-              style={{
-                flex: 1,
-                paddingRight: 24,
-                alignItems: "flex-start",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "Poppins-SemiBold",
-                  fontSize: headingFontSize,
-                  color: "#ffffff",
-                }}
-              >
-                Financial Intelligence
-              </Text>
-
-              <Text
-                style={{
-                  fontFamily: "Poppins-Bold",
-                  fontSize: subHeadingFontSize,
-                  color: "#ffffff",
-                  marginTop: 8,
-                }}
-              >
-                Reimagined
-              </Text>
-
-              {/* BUTTONS */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginTop: 24,
-                  flexWrap: "wrap",
-                }}
-              >
-                <TouchableOpacity
+    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
+      {/* ================= BLUE SECTION ================= */}
+      <View style={{ backgroundColor: "#001867ff", position: "relative" }}>
+        {/* HERO CONTENT */}
+        <View
+          style={{
+            paddingVertical: sectionVerticalPadding,
+            paddingHorizontal: 24,
+            paddingBottom: isMobile ? 60 : isTablet ? 400 : 300,
+          }}
+        >
+          {isTablet || isDesktop ? (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flex: 1, paddingRight: 24 }}>
+                <Text
                   style={{
-                    backgroundColor: "#FFC20E",
-                    paddingVertical: 14,
-                    paddingHorizontal: 28,
-                    borderRadius: 8,
-                    marginRight: 15,
-                    marginBottom: 12,
+                    fontSize: headingFontSize,
+                    color: "#fff",
+                    fontFamily: "Poppins-SemiBold",
                   }}
                 >
-                  <Text
-                    style={{
-                      color: "#001867ff",
-                      fontSize: 20,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Register
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
+                  Financial Intelligence
+                </Text>
+                <Text
                   style={{
-                    backgroundColor: "#FFC20E",
-                    paddingVertical: 14,
-                    paddingHorizontal: 28,
-                    borderRadius: 8,
-                    marginBottom: 12,
+                    fontSize: subHeadingFontSize,
+                    color: "#fff",
+                    fontFamily: "Poppins-Bold",
+                    marginTop: 8,
                   }}
                 >
-                  <Text
-                    style={{
-                      color: "#001867ff",
-                      fontSize: 20,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Watch Demo
-                  </Text>
-                </TouchableOpacity>
+                  Reimagined
+                </Text>
+
+                <View style={{ flexDirection: "row", marginTop: 24 }}>
+                  <TouchableOpacity style={btnStyle} onPress={goToAdminDashboard}>
+                    <Text style={btnText}>Register</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={btnStyle}>
+                    <Text style={btnText}>Watch Demo</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={{ flex: 1, alignItems: "flex-end" }}>
+                <Image
+                  source={require("../../assets/Image2.png")}
+                  style={heroImageStyle}
+                  resizeMode="contain"
+                />
               </View>
             </View>
-
-            {/* RIGHT: IMAGE */}
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
+          ) : (
+            <View style={{ alignItems: "center" }}>
               <Image
                 source={require("../../assets/Image2.png")}
                 style={heroImageStyle}
                 resizeMode="contain"
               />
-            </View>
-          </View>
-        ) : (
-          // ---------- MOBILE (360) ----------
-          <>
-            <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
-              <Image
-                source={require("../../assets/Image2.png")}
-                style={heroImageStyle}
-                resizeMode="contain"
-              />
-            </View>
-
-            <View
-              style={{
-                width: "100%",
-                alignItems: "center",
-                paddingHorizontal: isSmallMobile ? 6 : 10,
-              }}
-            >
               <Text
                 style={{
-                  fontFamily: "Poppins-SemiBold",
                   fontSize: headingFontSize,
-                  color: "#ffffff",
+                  color: "#fff",
+                  fontFamily: "Poppins-SemiBold",
                   textAlign: "center",
+                  marginTop: 16,
                 }}
               >
                 Financial Intelligence
               </Text>
-
               <Text
                 style={{
-                  fontFamily: "Poppins-Bold",
                   fontSize: subHeadingFontSize,
-                  color: "#ffffff",
-                  marginTop: 8,
+                  color: "#fff",
+                  fontFamily: "Poppins-Bold",
                   textAlign: "center",
+                  marginTop: 6,
                 }}
               >
                 Reimagined
               </Text>
-
-              {/* BUTTONS */}
               <View
                 style={{
                   flexDirection: "row",
-                  marginTop: isSmallMobile ? 16 : 24,
+                  marginTop: 16,
                   justifyContent: "center",
                   flexWrap: "wrap",
+                  gap: 10,
                 }}
               >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#FFC20E",
-                    paddingVertical: 12,
-                    paddingHorizontal: isSmallMobile ? 20 : 28,
-                    borderRadius: 8,
-                    marginRight: 10,
-                    marginBottom: 12,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#001867ff",
-                      fontSize: isSmallMobile ? 16 : 20,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Register
-                  </Text>
+                <TouchableOpacity style={btnStyle} onPress={goToAdminDashboard}>
+                  <Text style={btnText}>Register</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#FFC20E",
-                    paddingVertical: 12,
-                    paddingHorizontal: isSmallMobile ? 20 : 28,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#001867ff",
-                      fontSize: isSmallMobile ? 16 : 20,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Watch Demo
-                  </Text>
+                <TouchableOpacity style={btnStyle}>
+                  <Text style={btnText}>Watch Demo</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </>
+          )}
+
+          {/* ================= SECTION TITLE FOR MOBILE ================= */}
+          {isMobile && (
+            <View
+              style={{
+                alignItems: "center",
+                marginTop: 20,
+                marginBottom: 10,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: "#fff",
+                  fontFamily: "Poppins-SemiBold",
+                  textAlign: "center",
+                }}
+              >
+                Everything Your Business Needs
+              </Text>
+              <View
+                style={{
+                  width: 200,
+                  height: 3,
+                  backgroundColor: "#fff",
+                  marginTop: 8,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "#fff",
+                  fontFamily: "Poppins-Bold",
+                  marginTop: 10,
+                  textAlign: "center",
+                }}
+              >
+                Who is Nextcent suitable for?
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* ================= SECTION TITLE FOR WEB/TABLET ================= */}
+        {!isMobile && (
+          <View
+            style={{
+              position: "absolute",
+              top: 420,
+              width: "100%",
+              alignItems: "center",
+              zIndex: 10,
+              paddingTop: 16,
+              paddingBottom: 8,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 28,
+                color: "#fff",
+                fontFamily: "Poppins-SemiBold",
+                textAlign: "center",
+              }}
+            >
+              Everything Your Business Needs
+            </Text>
+            <View
+              style={{
+                width: 350,
+                height: 3,
+                backgroundColor: "#fff",
+                marginTop: 8,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                color: "#fff",
+                fontFamily: "Poppins-Bold",
+                marginTop: 10,
+                textAlign: "center",
+              }}
+            >
+              Who is Nextcent suitable for?
+            </Text>
+          </View>
         )}
       </View>
 
-      {/* ========== SECTION TITLE ========== */}
+      {/* ================= WHITE CARD SECTION ================= */}
       <View
         style={{
+          backgroundColor: "#fff",
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          paddingVertical: 24,
           paddingHorizontal: 24,
-          paddingVertical: isTablet ? 80 : sectionVerticalPadding,
-          alignItems: "center",
         }}
       >
-        <Text
-          style={{
-            fontFamily: "Poppins-SemiBold",
-            fontSize: isTablet ? 28 : 22,
-            color: "#ffffff",
-          }}
-        >
-          Everything Your Business Needs
-        </Text>
-
         <View
           style={{
-            width: isTablet ? 350 : 200,
-            height: 3,
-            backgroundColor: "#ffffff",
-            marginTop: 8,
-          }}
-        />
-
-        <Text
-          style={{
-            fontFamily: "Poppins-Bold",
-            fontSize: isTablet ? 18 : 16,
-            color: "#ffffff",
-            marginTop: 16,
-            textAlign: "center",
+            flexDirection: isMobile ? "column" : "row",
+            justifyContent: "space-between",
+            marginTop: cardSectionMarginTop, // moved slightly up for mobile
+            gap: 0, // remove extra space
           }}
         >
-          Who is Nextcent suitable for?
-        </Text>
-      </View>
-
-      {/* ========== CARDS ========== */}
-      <View
-        style={{
-          flexDirection: isTablet ? "row" : "column",
-          justifyContent: isTablet ? "space-between" : "flex-start",
-          alignItems: isTablet ? "flex-start" : "center",
-          paddingHorizontal: 24,
-          marginBottom: 40,
-        }}
-      >
-        <View style={cardContainerStyle}>
-          <AdvancedAnalyticsCard />
-        </View>
-        <View style={cardContainerStyle}>
-          <EnterpriseSecurityCard />
-        </View>
-        <View style={cardContainerStyle}>
-          <SmartAutomationCard />
+          <View style={cardContainerStyle}>
+            <AdvancedAnalyticsCard />
+          </View>
+          <View style={cardContainerStyle}>
+            <EnterpriseSecurityCard />
+          </View>
+          <View style={cardContainerStyle}>
+            <SmartAutomationCard />
+          </View>
         </View>
       </View>
 
-      {/* OTHER SECTIONS */}
+      {/* ================= OTHER SECTIONS ================= */}
       <InfoScreen />
       <BusinessScreen />
       <Marketing />
       <Footer />
     </ScrollView>
   );
+};
+
+const btnStyle = {
+  backgroundColor: "#FFC20E",
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+  marginRight: 10,
+};
+
+const btnText = {
+  color: "#001867",
+  fontSize: 16,
+  fontWeight: "bold",
 };
 
 export default HeroScreen;

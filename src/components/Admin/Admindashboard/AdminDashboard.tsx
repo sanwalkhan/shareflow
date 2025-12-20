@@ -38,7 +38,7 @@ const COLORS = {
 
 const { width: screenWidth } = Dimensions.get("window");
 const sidebarWidth = 250;
-const breakpoint = 768; // tablet breakpoint
+const breakpoint = 980; // Responsive threshold
 
 const sidebarItems = [
   { label: "Dashboard", icon: "speedometer-outline" },
@@ -65,12 +65,19 @@ const AdminDashboard: React.FC = () => {
   const navigation = useNavigation<AdminNavigationProp>();
   const [activeTab, setActiveTab] = React.useState("Dashboard");
   const [showNotifications, setShowNotifications] = React.useState(false);
+  const [windowWidth, setWindowWidth] = React.useState(Dimensions.get("window").width);
+
+  const isMobile = windowWidth <= breakpoint;
 
   const slideAnim = React.useRef(new Animated.Value(300)).current;
   const sidebarAnim = React.useRef(new Animated.Value(-sidebarWidth)).current;
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
 
-  const isSmallScreen = screenWidth < breakpoint;
+  React.useEffect(() => {
+    const update = () => setWindowWidth(Dimensions.get("window").width);
+    const sub = Dimensions.addEventListener("change", update);
+    return () => sub.remove();
+  }, []);
 
   // Notifications
   const openNotifications = () => {
@@ -107,9 +114,9 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1, flexDirection: isSmallScreen ? "column" : "row", backgroundColor: "#E6F0FF" }}>
+    <View style={{ flex: 1, flexDirection: isMobile ? "column" : "row", backgroundColor: "#E6F0FF" }}>
       {/* DESKTOP SIDEBAR */}
-      {!isSmallScreen && (
+      {!isMobile && (
         <LinearGradient
           colors={["#193288", "#FFC20E"]}
           start={{ x: 0, y: 0 }}
@@ -164,7 +171,7 @@ const AdminDashboard: React.FC = () => {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {isSmallScreen && (
+            {isMobile && (
               <TouchableOpacity onPress={openMobileSidebar} style={{ marginRight: 12 }}>
                 <Ionicons name="menu" size={28} color="#fff" />
               </TouchableOpacity>
@@ -184,24 +191,25 @@ const AdminDashboard: React.FC = () => {
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Dashboard")}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: COLORS.button,
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 8,
-                marginRight: 12,
-                minWidth: 140,
-                height: 50,
-                justifyContent: "center",
-              }}
-            >
-              <Ionicons name="search-outline" size={18} color={COLORS.accent} style={{ marginRight: 6 }} />
-              <Text style={{ color: COLORS.accent, fontWeight: "800", fontSize: 14 }}>Search for everything</Text>
-            </TouchableOpacity>
+            {!isMobile && (
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: COLORS.button,
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 8,
+                  marginRight: 12,
+                  minWidth: 140,
+                  height: 50,
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons name="search-outline" size={18} color={COLORS.accent} style={{ marginRight: 6 }} />
+                <Text style={{ color: COLORS.accent, fontWeight: "800", fontSize: 14 }}>Search for everything</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity onPress={openNotifications}>
               <Ionicons name="notifications-outline" size={28} color="#fff" />
@@ -209,10 +217,35 @@ const AdminDashboard: React.FC = () => {
           </View>
         </View>
 
-        {/* SCROLLABLE MAIN CONTENT */}
+        {/* MOBILE BUTTONS BELOW HEADER */}
+        {isMobile && (
+          <View style={{ flexDirection: "row", padding: 10, marginBottom: 16 }}>
+            <TouchableOpacity
+              style={{ flex: 1, backgroundColor: COLORS.button, padding: 12, borderRadius: 8, marginRight: 8 }}
+              onPress={() => {}}
+            >
+              <Text style={{ fontWeight: "bold", color: COLORS.accent, textAlign: "center" }}>Search for everything</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ flex: 1, backgroundColor: COLORS.button, padding: 12, borderRadius: 8 }}
+              onPress={() => {}}
+            >
+              <Text style={{ fontWeight: "bold", color: COLORS.accent, textAlign: "center" }}>+ Add new</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* SCROLLABLE CONTENT */}
         <ScrollView contentContainerStyle={{ padding: 12 }}>
-          {/* Stats Cards */}
-          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 16 }}>
+          {/* TOP STATS */}
+          <View
+            style={{
+              flexDirection: isMobile ? "column" : "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
             {topStats.map((card, idx) => (
               <View
                 key={idx}
@@ -220,7 +253,7 @@ const AdminDashboard: React.FC = () => {
                   backgroundColor: "#000",
                   padding: 16,
                   borderRadius: 12,
-                  flex: isSmallScreen ? 1 : 0.48,
+                  width: isMobile ? "100%" : "48%",
                   marginBottom: 16,
                 }}
               >
@@ -231,16 +264,23 @@ const AdminDashboard: React.FC = () => {
             ))}
           </View>
 
-          {/* Charts */}
-          <View style={{ flexDirection: isSmallScreen ? "column" : "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 16 }}>
-            <View style={{ flex: isSmallScreen ? 1 : 0.48, backgroundColor: "#1c1c1c", borderRadius: 12, padding: 12, marginBottom: 16 }}>
+          {/* CHARTS */}
+          <View
+            style={{
+              flexDirection: isMobile ? "column" : "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
+            <View style={{ flex: isMobile ? 1 : 0.48, backgroundColor: "#1c1c1c", borderRadius: 12, padding: 12, marginBottom: 16 }}>
               <Text style={{ color: "#fff", fontWeight: "700", marginBottom: 8 }}>Weekly Sales</Text>
               <LineChart
                 data={{
                   labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
                   datasets: [{ data: [120000, 150000, 110000, 170000, 160000, 140000, 180000] }]
                 }}
-                width={isSmallScreen ? screenWidth-32 : screenWidth*0.48}
+                width={isMobile ? screenWidth-32 : screenWidth*0.48}
                 height={150}
                 chartConfig={{
                   backgroundGradientFrom: "#1c1c1c",
@@ -254,14 +294,14 @@ const AdminDashboard: React.FC = () => {
               />
             </View>
 
-            <View style={{ flex: isSmallScreen ? 1 : 0.48, backgroundColor: "#1c1c1c", borderRadius: 12, padding: 12, marginBottom: 16 }}>
+            <View style={{ flex: isMobile ? 1 : 0.48, backgroundColor: "#1c1c1c", borderRadius: 12, padding: 12, marginBottom: 16 }}>
               <Text style={{ color: "#fff", fontWeight: "700", marginBottom: 8 }}>Customer Fulfillment</Text>
               <BarChart
                 data={{
                   labels: ["Jan","Feb","Mar","Apr","May"],
                   datasets: [{ data: [80, 85, 90, 92, 92] }]
                 }}
-                width={isSmallScreen ? screenWidth-32 : screenWidth*0.48}
+                width={isMobile ? screenWidth-32 : screenWidth*0.48}
                 height={150}
                 chartConfig={{
                   backgroundGradientFrom: "#1c1c1c",
@@ -310,7 +350,7 @@ const AdminDashboard: React.FC = () => {
       </View>
 
       {/* MOBILE SIDEBAR OVERLAY */}
-      {isSmallScreen && mobileSidebarOpen && (
+      {isMobile && mobileSidebarOpen && (
         <View
           style={{
             position: "absolute",
@@ -332,10 +372,7 @@ const AdminDashboard: React.FC = () => {
             }}
           >
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-              <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold" }}>
-                ShareFlow
-              </Text>
-
+              <Text style={{ color: "#fff", fontSize: 22, fontWeight: "bold" }}>ShareFlow</Text>
               <TouchableOpacity onPress={closeMobileSidebar}>
                 <Ionicons name="close" size={28} color="#fff" />
               </TouchableOpacity>
@@ -399,7 +436,6 @@ const AdminDashboard: React.FC = () => {
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-
           <ScrollView>
             {topProducts.map((item, idx) => (
               <View key={idx} style={{ paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "#ccc" }}>

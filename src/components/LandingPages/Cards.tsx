@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     elevation: 6,
     alignItems: "center",
     justifyContent: "flex-start",
+    marginTop:320,
   },
   iconWrapper: {
     marginBottom: 20,
