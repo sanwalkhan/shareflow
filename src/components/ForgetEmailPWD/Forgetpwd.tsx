@@ -16,13 +16,11 @@ import { COLORS } from "../../Constants/theme";
 
 const ForgetPwd: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { width: screenWidth } = useWindowDimensions(); // dynamically track width
-
+  const { width: screenWidth } = useWindowDimensions();
   const [email, setEmail] = useState("");
 
-  // Responsive layout logic
-  const isMobile = screenWidth < 768; // narrow screens
-  const outerCardWidth = Math.min(Math.max(360, screenWidth - 40), 800); // min 360, max 800
+  const isMobile = screenWidth < 768;
+  const outerCardWidth = Math.min(Math.max(360, screenWidth - 40), 800);
   const innerCardWidth = Math.min(outerCardWidth - 20, 600);
 
   return (
@@ -48,7 +46,7 @@ const ForgetPwd: React.FC = () => {
             <View
               style={{
                 flexDirection: "row",
-                alignItems: "center", // vertical center
+                alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 16,
                 paddingTop: isMobile ? 8 : 60,
@@ -63,7 +61,7 @@ const ForgetPwd: React.FC = () => {
                   fontSize: 24,
                   fontWeight: "bold",
                   color: "#193288",
-                  lineHeight: 40, // match logo height for perfect alignment
+                  lineHeight: 40,
                 }}
               >
                 ShareFlow
@@ -141,21 +139,17 @@ const ForgetPwd: React.FC = () => {
                     return (
                       <React.Fragment key={step}>
                         {/* Circle */}
-                        <View style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, justifyContent: "center", alignItems: "center" }}>
-                          {step === 1 ? (
-                            <LinearGradient
-                              colors={["#193288", "#FFC20E"]}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 1 }}
-                              style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, justifyContent: "center", alignItems: "center" }}
-                            >
-                              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
-                            </LinearGradient>
-                          ) : (
-                            <View style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, borderWidth: 2, borderColor: "#9CA3AF", backgroundColor: "#fff", justifyContent: "center", alignItems: "center" }}>
-                              <Text style={{ color: "#9CA3AF", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
-                            </View>
-                          )}
+                        <View
+                          style={{
+                            width: circleSize,
+                            height: circleSize,
+                            borderRadius: circleSize / 2,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#193288",
+                          }}
+                        >
+                          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
                         </View>
 
                         {/* Line between steps */}

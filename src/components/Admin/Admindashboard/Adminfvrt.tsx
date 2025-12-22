@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Sidebar from "../AdminSidebar/ADsidebar";
+
 
 const COLORS = {
   primary: "#14339b",

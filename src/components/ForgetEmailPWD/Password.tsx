@@ -18,11 +18,9 @@ const Password: React.FC = () => {
   const navigation = useNavigation<any>();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
 
-  // Responsive checks
   const isMobile = SCREEN_WIDTH < 768;
   const CARD_MIN_WIDTH = 360;
   const CARD_MAX_WIDTH = 800;
-
   const cardWidth = Math.min(Math.max(SCREEN_WIDTH * 0.95, CARD_MIN_WIDTH), CARD_MAX_WIDTH);
 
   const [password, setPassword] = useState("");
@@ -52,72 +50,69 @@ const Password: React.FC = () => {
             }}
           >
             {/* Header */}
-           {/* Header */}
-<View style={{ alignItems: "center", marginBottom: 24, position: "relative", width: "100%" }}>
-  <View style={{ flexDirection: "row", alignItems: "center" }}>
-    <Image
-      source={require("../../assets/image.png")}
-      style={{ width: 40, height: 40 }}
-    />
-    <Text
-      style={{
-        color: "#193288",
-        fontSize: 24,
-        fontWeight: "bold",
-        marginLeft: 8,
-        // Adjust marginTop to center perfectly with logo
-        marginTop: 2, 
-      }}
-    >
-      ShareFlow
-    </Text>
-  </View>
+            <View style={{ alignItems: "center", marginBottom: 24, position: "relative", width: "100%" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image
+                  source={require("../../assets/image.png")}
+                  style={{ width: 40, height: 40 }}
+                />
+                <Text
+                  style={{
+                    color: "#193288",
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    marginLeft: 8,
+                    marginTop: 2,
+                  }}
+                >
+                  ShareFlow
+                </Text>
+              </View>
 
-  {/* Back Button */}
-  {isMobile ? (
-    <View style={{ marginTop: 12 }}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <LinearGradient
-          colors={["#FFC20E", "#FFD666"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            width: 140,
-            height: 38,
-            borderRadius: 12,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 14 }}>
-            ← Back To Home
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
-  ) : (
-    <TouchableOpacity
-      onPress={() => navigation.goBack()}
-      style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
-    >
-      <LinearGradient
-        colors={["#FFC20E", "#FFD666"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{
-          width: 160,
-          height: 40,
-          borderRadius: 12,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
-      </LinearGradient>
-    </TouchableOpacity>
-  )}
-</View>
-
+              {/* Back Button */}
+              {isMobile ? (
+                <View style={{ marginTop: 12 }}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <LinearGradient
+                      colors={["#FFC20E", "#FFD666"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{
+                        width: 140,
+                        height: 38,
+                        borderRadius: 12,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 14 }}>
+                        ← Back To Home
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={{ position: "absolute", top: 4, left: 4, zIndex: 10 }}
+                >
+                  <LinearGradient
+                    colors={["#FFC20E", "#FFD666"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      width: 160,
+                      height: 40,
+                      borderRadius: 12,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: COLORS.white, fontWeight: "bold" }}>← Back To Home</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
+            </View>
 
             {/* Inner Card */}
             <View
@@ -143,30 +138,18 @@ const Password: React.FC = () => {
                           borderRadius: circleSize / 2,
                           justifyContent: "center",
                           alignItems: "center",
+                          backgroundColor: "#193288",
                         }}
                       >
-                        <LinearGradient
-                          colors={["#193288", "#FFC20E"]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
+                        <Text
                           style={{
-                            width: circleSize,
-                            height: circleSize,
-                            borderRadius: circleSize / 2,
-                            justifyContent: "center",
-                            alignItems: "center",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            fontSize: isMobile ? 12 : 14,
                           }}
                         >
-                          <Text
-                            style={{
-                              color: "#fff",
-                              fontWeight: "bold",
-                              fontSize: isMobile ? 12 : 14,
-                            }}
-                          >
-                            {step}
-                          </Text>
-                        </LinearGradient>
+                          {step}
+                        </Text>
                       </View>
 
                       {idx < 3 && (
@@ -195,7 +178,6 @@ const Password: React.FC = () => {
 
               {/* Password Fields */}
               <View style={{ gap: 24 }}>
-                {/* Password */}
                 <View>
                   <Text style={{ fontWeight: "600", marginBottom: 4 }}>Password</Text>
                   <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#E8EDF5", borderRadius: 12, paddingHorizontal: 12 }}>
@@ -213,7 +195,6 @@ const Password: React.FC = () => {
                   </View>
                 </View>
 
-                {/* Confirm Password */}
                 <View>
                   <Text style={{ fontWeight: "600", marginBottom: 4 }}>Confirm Password</Text>
                   <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#E8EDF5", borderRadius: 12, paddingHorizontal: 12 }}>

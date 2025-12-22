@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Header from "./src/components/HeaderFooter/Header";
 /* Sidebar */
 import sidebar from "./src/components/SidebarComponent/sidebar";
+import ADsidebar from "./src/components/AdminSidebar/ADsidebar";
 
 /* Landing Pages */
 import HeroScreen from "./src/components/LandingPages/HeroScreen";
@@ -101,6 +102,7 @@ export type RootStackParamList = {
   ShareholderHistory;
   Admindashboard;
   sidebar;
+  ADsidebar;
   ShareholderAnalytic;
   ShareholderHelp;
   ShareholderMessage;
