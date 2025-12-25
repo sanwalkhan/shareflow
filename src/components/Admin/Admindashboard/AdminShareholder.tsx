@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { LineChart, BarChart } from "react-native-chart-kit";
-
+import Sidebar from "../AdminSidebar/ADsidebar";
 
 export type RootStackParamList = {
   Dashboard: undefined;

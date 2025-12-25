@@ -14,7 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 
 // Sidebar
-
+import Sidebar from "../AdminSidebar/ADsidebar";
 
 /* ================= COLORS ================= */
 const COLORS = {

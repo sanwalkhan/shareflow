@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ScrollView, Dimensions, Animated, TextInp
 import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-
+import Sidebar from "../AdminSidebar/ADsidebar";
 
 const COLORS = {
   primary: "#14339b",

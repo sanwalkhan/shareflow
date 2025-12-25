@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-
+import Sidebar from "../AdminSidebar/ADsidebar";
 const COLORS = {
   primary: "#14339b",
   secondary: "#1a45c2",

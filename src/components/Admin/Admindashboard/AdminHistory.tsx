@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
+import Sidebar from "../AdminSidebar/ADsidebar";
 
 const COLORS = {
   primary: "#14339b",
