@@ -16,13 +16,11 @@ import { COLORS } from "../../Constants/theme";
 
 const ForgetPwd: React.FC = () => {
   const navigation = useNavigation<any>();
-  const { width: screenWidth } = useWindowDimensions(); // dynamically track width
-
+  const { width: screenWidth } = useWindowDimensions();
   const [email, setEmail] = useState("");
 
-  // Responsive layout logic
-  const isMobile = screenWidth < 768; // narrow screens
-  const outerCardWidth = Math.min(Math.max(360, screenWidth - 40), 800); // min 360, max 800
+  const isMobile = screenWidth < 768;
+  const outerCardWidth = Math.min(Math.max(360, screenWidth - 40), 800);
   const innerCardWidth = Math.min(outerCardWidth - 20, 600);
 
   return (
@@ -45,12 +43,27 @@ const ForgetPwd: React.FC = () => {
             }}
           >
             {/* Header */}
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 16,
+                paddingTop: isMobile ? 8 : 60,
+              }}
+            >
               <Image
                 source={require("../../assets/image.png")}
-                style={{ width: 40, height: 40, marginRight: 8, marginTop: isMobile ? 8 : 60 }}
+                style={{ width: 40, height: 40, marginRight: 8 }}
               />
-              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#193288", marginTop: isMobile ? 8 : 60 }}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "bold",
+                  color: "#193288",
+                  lineHeight: 40,
+                }}
+              >
                 ShareFlow
               </Text>
             </View>
@@ -126,30 +139,26 @@ const ForgetPwd: React.FC = () => {
                     return (
                       <React.Fragment key={step}>
                         {/* Circle */}
-                        <View style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, justifyContent: "center", alignItems: "center" }}>
-                          {step === 1 ? (
-                            <LinearGradient
-                              colors={["#193288", "#FFC20E"]}
-                              start={{ x: 0, y: 0 }}
-                              end={{ x: 1, y: 1 }}
-                              style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, justifyContent: "center", alignItems: "center" }}
-                            >
-                              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
-                            </LinearGradient>
-                          ) : (
-                            <View style={{ width: circleSize, height: circleSize, borderRadius: circleSize / 2, borderWidth: 2, borderColor: "#9CA3AF", backgroundColor: "#fff", justifyContent: "center", alignItems: "center" }}>
-                              <Text style={{ color: "#9CA3AF", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
-                            </View>
-                          )}
+                        <View
+                          style={{
+                            width: circleSize,
+                            height: circleSize,
+                            borderRadius: circleSize / 2,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#193288",
+                          }}
+                        >
+                          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: isMobile ? 12 : 14 }}>{step}</Text>
                         </View>
 
                         {/* Line between steps */}
                         {idx < 1 && (
                           <View
                             style={{
-                              width: 50,             // fixed width for line
+                              width: 50,
                               height: 2,
-                              backgroundColor: "#193288", // blue color
+                              backgroundColor: "#193288",
                               marginHorizontal: 6,
                               alignSelf: "center",
                             }}

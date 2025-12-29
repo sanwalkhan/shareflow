@@ -1,272 +1,251 @@
-// src/components/Expenses.tsx
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
-  Image,
   Dimensions,
   Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
+import MaskedView from "@react-native-masked-view/masked-view";
+import Sidebar from "../../SidebarComponent/sidebar";
 
-const { width: screenWidth } = Dimensions.get("window");
-const sidebarItems = ["Shareholder", "Expenses"];
+const COLORS = {
+  primary: "#193288",
+  secondary: "#1a45c2",
+  buttonDesktopBg: "#fff",
+  buttonDesktopText: "#193288",
+  buttonMobileBg: "#193288",
+  buttonMobileText: "#fff",
+  cardBackground: "#fff",
+  cardText: "#000",
+};
+
+const BREAKPOINT = 700;
+
+const tableData = [
+  { date: "2025-12-01", category: "Office Supplies", amount: "$120", method: "Credit Card", status: "Paid" },
+  { date: "2025-12-05", category: "Travel", amount: "$450", method: "Bank Transfer", status: "Pending" },
+  { date: "2025-12-10", category: "Software", amount: "$300", method: "Credit Card", status: "Paid" },
+];
+
+const topButtons = [
+  { title: "Add Expense" },
+  { title: "Generate Report" },
+];
 
 const Expenses: React.FC = () => {
-  const navigation = useNavigation();
-  const isSmallScreen = screenWidth < 768; // breakpoint for mobile
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get("window").width);
+  const [isMobile, setIsMobile] = useState(screenWidth < BREAKPOINT);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarAnim = useRef(new Animated.Value(-260)).current;
 
-  // -------------------------
-  // Notification Drawer States
-  // -------------------------
-  const [showNotifications, setShowNotifications] = React.useState(false);
-  const slideAnim = React.useRef(new Animated.Value(300)).current;
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifAnim = useRef(new Animated.Value(300)).current;
 
-  const openNotifications = () => {
-    setShowNotifications(true);
-    Animated.timing(slideAnim, {
-      toValue: 0,
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setScreenWidth(window.width);
+      setIsMobile(window.width < BREAKPOINT);
+
+      if (window.width >= BREAKPOINT) {
+        setSidebarOpen(false);
+        sidebarAnim.setValue(0);
+      } else {
+        sidebarAnim.setValue(-260);
+      }
+    });
+    return () => subscription?.remove?.();
+  }, []);
+
+  const toggleSidebar = () => {
+    const toValue = sidebarOpen ? -260 : 0;
+    setSidebarOpen(!sidebarOpen);
+    Animated.timing(sidebarAnim, {
+      toValue,
       duration: 300,
       useNativeDriver: false,
     }).start();
   };
 
+  const openNotifications = () => {
+    setShowNotifications(true);
+    Animated.timing(notifAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start();
+  };
+
   const closeNotifications = () => {
-    Animated.timing(slideAnim, {
-      toValue: 300,
-      duration: 300,
-      useNativeDriver: false,
-    }).start(() => setShowNotifications(false));
+    Animated.timing(notifAnim, { toValue: 300, duration: 300, useNativeDriver: false }).start(() =>
+      setShowNotifications(false)
+    );
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <View style={{ flex: 1, flexDirection: "row" }}>
-        {/* Sidebar with Gradient */}
-        <LinearGradient
-          colors={["#2A2F50", "#28A745"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ width: 250, padding: 16 }}
+    <View style={{ flex: 1, flexDirection: "row", backgroundColor: "#f3f4f6" }}>
+      {/* SIDEBAR */}
+      {!isMobile && <Sidebar />}
+      {isMobile && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: sidebarAnim,
+            bottom: 0,
+            width: 260,
+            backgroundColor: "#fff",
+            zIndex: 999,
+            shadowColor: "#000",
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+          }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 32 }}>
-            <Image
-              source={require("../../../assets/image.png")}
-              style={{ width: 40, height: 40, borderRadius: 8 }}
-            />
-            <Text style={{ color: "white", fontSize: 24, fontWeight: "bold", marginLeft: 8 }}>
-              ShareFlow
-            </Text>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+            <TouchableOpacity onPress={toggleSidebar}>
+              <Ionicons name="close" size={28} color="#333" />
+            </TouchableOpacity>
+          </View>
+          <Sidebar mobile open onClose={toggleSidebar} />
+        </Animated.View>
+      )}
+
+      {/* MAIN */}
+      <View style={{ flex: 1 }}>
+        {/* HEADER */}
+        <LinearGradient
+          colors={[COLORS.primary, COLORS.secondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {isMobile && (
+              <TouchableOpacity onPress={toggleSidebar} style={{ marginRight: 12 }}>
+                <Ionicons name="menu-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            )}
+            <MaskedView
+              maskElement={
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Ionicons name="wallet-outline" size={24} color="#fff" />
+                  <Text style={{ fontSize: 24, fontWeight: "600", color: "#fff", marginLeft: 6 }}>
+                    Expenses
+                  </Text>
+                </View>
+              }
+            >
+              <LinearGradient colors={[COLORS.primary, COLORS.secondary]}>
+                <Text style={{ fontSize: 24, fontWeight: "600", opacity: 0 }}>Expenses</Text>
+              </LinearGradient>
+            </MaskedView>
           </View>
 
-          {sidebarItems.map((item, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-                marginBottom: 8,
-                borderRadius: 8,
-                backgroundColor: item === "Expenses" ? "#28A745" : "transparent",
-              }}
-              onPress={() => {
-                if (item === "Shareholder") navigation.navigate("Shareholder");
-              }}
-            >
-              {item === "Shareholder" && (
-                <Ionicons name="person-outline" size={20} color="white" style={{ marginRight: 8 }} />
-              )}
-              {item === "Expenses" && (
-                <Ionicons name="wallet-outline" size={20} color="white" style={{ marginRight: 8 }} />
-              )}
-              <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>{item}</Text>
-            </TouchableOpacity>
-          ))}
+          {/* Bell icon always */}
+          <TouchableOpacity onPress={openNotifications}>
+            <Ionicons name="notifications-outline" size={28} color="#fff" />
+          </TouchableOpacity>
         </LinearGradient>
 
-        {/* Main Section */}
-        <View style={{ flex: 1, backgroundColor: "#f3f3f3" }}>
-          {/* Header */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: "#f3f3f3",
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              shadowColor: "#000",
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
-            }}
-          >
-            {/* Header Title */}
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Ionicons name="wallet-outline" size={24} color="#28A745" style={{ marginRight: 6 }} />
-              <Text style={{ fontSize: 24, fontWeight: "600", color: "#2A2F50" }}>Expenses</Text>
-            </View>
-
-            {/* Search + Notification */}
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {/* TOP BUTTONS */}
+        {isMobile ? (
+          <View style={{ flexDirection: "row", padding: 16, gap: 12 }}>
+            {topButtons.map((btn, idx) => (
               <TouchableOpacity
+                key={idx}
                 style={{
-                  flexDirection: "row",
+                  flex: 1,
+                  backgroundColor: COLORS.primary,
+                  paddingVertical: 12,
+                  borderRadius: 12,
                   alignItems: "center",
-                  backgroundColor: "#e5e5e5",
-                  paddingVertical: 6,
-                  paddingHorizontal: 10,
-                  borderRadius: 8,
-                  marginRight: 12,
-                  width: 190,
-                  height: 50,
-                  justifyContent: "center",
                 }}
               >
-                <Ionicons name="search-outline" size={18} color="gray" style={{ marginRight: 6 }} />
-                <Text style={{ color: "#333", fontWeight: "600", fontSize: 14 }}>Search for everything</Text>
+                <Text style={{ color: "#fff", fontWeight: "700" }}>{btn.title}</Text>
               </TouchableOpacity>
-
-              {/* Bell Icon */}
-              <TouchableOpacity onPress={openNotifications}>
-                <Ionicons name="notifications-outline" size={28} color="gray" />
-              </TouchableOpacity>
-            </View>
+            ))}
           </View>
+        ) : (
+          <View style={{ flexDirection: "row", padding: 16, gap: 12, maxWidth: 400 }}>
+            {topButtons.map((btn, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={{
+                  flex: 1,
+                  backgroundColor: COLORS.buttonDesktopBg,
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: COLORS.buttonDesktopText, fontWeight: "700" }}>{btn.title}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-          {/* Main Content */}
-          <View style={{ padding: 16 }}>
+        {/* CONTENT */}
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View
               style={{
-                flexDirection: isSmallScreen ? "column" : "row",
-                justifyContent: "space-between",
-                alignItems: isSmallScreen ? "flex-start" : "center",
-                marginBottom: 16,
+                minWidth: isMobile ? 700 : "100%",
+                backgroundColor: COLORS.cardBackground,
+                borderRadius: 12,
+                padding: 16,
               }}
             >
-              <Text style={{ fontSize: 20, fontWeight: "500", marginBottom: isSmallScreen ? 12 : 0 }}>
-                Welcome back, Sarah!
-              </Text>
-
-              {/* Add Expense Button */}
-              <LinearGradient
-                colors={["#2A2F50", "#28A745"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{
-                  borderRadius: 24.23,
-                  width: 180,
-                  alignSelf: isSmallScreen ? "flex-start" : "auto",
-                }}
-              >
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingVertical: 12,
-                  }}
-                >
-                  <Ionicons name="add-outline" size={20} color="white" style={{ marginRight: 6 }} />
-                  <Text style={{ color: "white", fontWeight: "600" }}>Add Expense</Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            </View>
-
-            {/* Table */}
-            <ScrollView horizontal style={{ marginTop: 16 }}>
-              <View style={{ borderWidth: 1, borderColor: "#ccc" }}>
-                {Array.from({ length: 5 }).map((_, rowIdx) => (
-                  <View key={rowIdx} style={{ flexDirection: "row", borderBottomWidth: 1, borderColor: "#ccc" }}>
-                    {Array.from({ length: 11 }).map((_, colIdx) => (
-                      <View
-                        key={colIdx}
-                        style={{
-                          width: 96,
-                          height: 92,
-                          borderRightWidth: 1,
-                          borderColor: "#ccc",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text style={{ color: "#555" }}>&nbsp;</Text>
-                      </View>
-                    ))}
-                  </View>
+              {/* TABLE HEADER */}
+              <View style={{ flexDirection: "row", borderBottomWidth: 2, borderBottomColor: "#ccc", paddingBottom: 12, marginBottom: 12 }}>
+                {["Date", "Category", "Amount", "Payment Method", "Status"].map((h, i) => (
+                  <Text key={i} style={{ minWidth: 140, fontWeight: "700", marginRight: 24 }}>
+                    {h}
+                  </Text>
                 ))}
               </View>
-            </ScrollView>
-          </View>
-        </View>
+
+              {/* TABLE ROWS */}
+              {tableData.map((row, i) => (
+                <View key={i} style={{ flexDirection: "row", paddingVertical: 12, borderBottomWidth: i === tableData.length - 1 ? 0 : 1, borderBottomColor: "#eee" }}>
+                  <Text style={{ minWidth: 140, marginRight: 24 }}>{row.date}</Text>
+                  <Text style={{ minWidth: 140, marginRight: 24 }}>{row.category}</Text>
+                  <Text style={{ minWidth: 140, marginRight: 24 }}>{row.amount}</Text>
+                  <Text style={{ minWidth: 140, marginRight: 24 }}>{row.method}</Text>
+                  <Text style={{ minWidth: 140, marginRight: 24, fontWeight: "600", color: row.status === "Paid" ? "green" : "orange" }}>
+                    {row.status}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </ScrollView>
       </View>
 
-      {/* -------------------------------------- */}
-      {/* Notification Drawer */}
-      {/* -------------------------------------- */}
+      {/* NOTIFICATIONS */}
       {showNotifications && (
         <Animated.View
           style={{
             position: "absolute",
-            right: slideAnim,
+            right: notifAnim,
             top: 0,
             height: "100%",
             width: 300,
-            backgroundColor: "white",
-            shadowColor: "#000",
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
-            elevation: 6,
+            backgroundColor: "#fff",
+            zIndex: 1000,
             padding: 16,
           }}
         >
-          {/* Header */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 16,
-            }}
-          >
-            <Text style={{ fontSize: 20, fontWeight: "700" }}>Notifications</Text>
-
+          <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 12 }}>
+            <Text style={{ fontWeight: "700", fontSize: 20 }}>Notifications</Text>
             <TouchableOpacity onPress={closeNotifications}>
-              <Ionicons name="close" size={24} color="black" />
+              <Ionicons name="close" size={24} />
             </TouchableOpacity>
           </View>
-
-          {/* Mark all read */}
-          <TouchableOpacity style={{ paddingVertical: 8, marginBottom: 12 }}>
-            <Text style={{ color: "#28A745", fontWeight: "600" }}>Mark All as Read</Text>
-          </TouchableOpacity>
-
-          {/* Dummy notifications */}
-          <ScrollView>
-            {[
-              "Your report has been generated.",
-              "New expense added.",
-              "Payment approved.",
-              "Reminder: Submit your receipts.",
-            ].map((n, i) => (
-              <View
-                key={i}
-                style={{
-                  paddingVertical: 12,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#eee",
-                }}
-              >
-                <Text style={{ fontSize: 15, color: "#333" }}>{n}</Text>
-              </View>
-            ))}
-          </ScrollView>
         </Animated.View>
       )}
     </View>
