@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
 import Sidebar from "../AdminSidebar/ADsidebar";
-
+//////////////////Theme.tsx colors
 const COLORS = {
   primary: "#193288",
   accent: "#001867",
