@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import Sidebar from "../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 
 const COLORS = {

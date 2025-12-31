@@ -16,7 +16,7 @@ import Adminfvrt from "../../components/Admin/Admindashboard/Adminfvrt";
 import AdminHelp from "../../components/Admin/Admindashboard/AdminHelp";
 
 // Sidebar
-import ADSidebar from "../../components/Admin/AdminSidebar/ADsidebar";
+import ADSidebar from "../../components/Admin/Admindashboard/ADsidebar";
 
 export type Tab =
   | "Dashboard"

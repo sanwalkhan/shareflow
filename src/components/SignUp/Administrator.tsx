@@ -34,7 +34,7 @@ const Administrator: React.FC = () => {
           <View
             style={{
               width: cardWidth,
-              backgroundColor: "#E6F0FF",
+              backgroundColor: COLORS.outerCardBackground, 
               borderRadius: 24,
               padding: 34,
               shadowColor: "#000",
@@ -204,12 +204,23 @@ const Administrator: React.FC = () => {
 
               {/* Buttons */}
               <View style={{ flexDirection: "row", gap: 12, marginTop: 20 }}>
-                <TouchableOpacity
-                  style={{ flex: 1, height: 48, backgroundColor: "#D1D5DB", borderRadius: 12, justifyContent: "center", alignItems: "center" }}
-                  onPress={() => navigation.goBack()}
-                >
-                  <Text style={{ color: "#4B5563", fontWeight: "bold" }}>← Previous</Text>
-                </TouchableOpacity>
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      height: 48,
+      backgroundColor: COLORS.grayButton, // theme se bg
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+    onPress={() => navigation.goBack()}
+  >
+    <Text style={{ color: COLORS.grayButtonText, fontWeight: "bold" }}>
+      ← Previous
+    </Text>
+  </TouchableOpacity>
+
+
 
                 <TouchableOpacity
                   style={{ flex: 1, height: 48, borderRadius: 12 }}

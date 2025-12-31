@@ -47,17 +47,18 @@ export default function LoginScreen() {
       >
         {/* OUTER CARD */}
         <View
-          style={{
-            width: cardWidth,
-            backgroundColor: "#E6F0FF",
-            borderRadius: 24,
-            padding: 20,
-            shadowColor: "#000",
-            shadowOpacity: 0.15,
-            shadowRadius: 6,
-            elevation: 5,
-          }}
-        >
+  style={{
+    width: cardWidth,
+    backgroundColor: COLORS.outerCardBackground, // 👈 theme.tsx se outer card bg
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: COLORS.black,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5,
+  }}
+>
+
           {/* TOP BAR */}
           <View
             style={{
@@ -69,7 +70,7 @@ export default function LoginScreen() {
             {/* Back Button — Top Left (>=500px) */}
             {!isCongested && (
               <TouchableOpacity
-                onPress={() => navigation.navigate("Header")}
+                onPress={() => navigation.navigate("Hero")}
                 style={{ position: "absolute", left: 0, top: 0 }}
               >
                 <LinearGradient

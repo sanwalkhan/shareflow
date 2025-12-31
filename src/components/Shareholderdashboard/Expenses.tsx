@@ -10,7 +10,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from "@react-native-masked-view/masked-view";
-import Sidebar from "../../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
+
 
 const COLORS = {
   primary: "#193288",

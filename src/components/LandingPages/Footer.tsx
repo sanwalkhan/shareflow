@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
-
+import { COLORS } from "../../Constants/theme";
 const Footer: React.FC = () => {
   const { width: sw } = useWindowDimensions();
   const isDesktop = sw >= 1200;
@@ -14,13 +14,13 @@ const Footer: React.FC = () => {
   const stayWidth = isDesktop ? '15%' : isTablet ? '30%' : '100%';
 
   return (
-    <View
-      style={{
-        backgroundColor: '#001867',
-        paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
-        paddingVertical: 40,
-      }}
-    >
+   <View
+  style={{
+    backgroundColor: COLORS.heroBackground, // theme color
+    paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
+    paddingVertical: 40,
+  }}
+>
       {/* Top section */}
       <View
         style={{
@@ -86,16 +86,16 @@ const Footer: React.FC = () => {
               }}
             />
             <TouchableOpacity
-              style={{
-                backgroundColor: '#FFC20E',
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingHorizontal: 16,
-                height: '100%',
-              }}
-            >
-              <Text style={{ color: '#001867', fontWeight: 'bold', fontSize: 16 }}>→</Text>
-            </TouchableOpacity>
+  style={{
+    backgroundColor: COLORS.button, // theme yellow
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    height: '100%',
+  }}
+>
+  <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>→</Text>
+</TouchableOpacity>
           </View>
         </View>
       </View>

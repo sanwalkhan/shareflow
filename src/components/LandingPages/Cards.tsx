@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { TrendingUp, Shield, Zap } from "lucide-react-native";
-
+import { COLORS } from "../../Constants/theme";
 interface CardProps {
   icon: "analytics" | "security" | "automation";
   title: string;
@@ -153,31 +153,31 @@ const dynamicCardWidth = () => {
 // ========= BASE STYLES =========
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.cardBackground, // theme white
     marginHorizontal: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.black, // theme black
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 6,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop:320,
+    marginTop: 320,
   },
   iconWrapper: {
     marginBottom: 20,
-    backgroundColor: "#001867ff",
+    backgroundColor: COLORS.primary, // theme primary (#001867)
     alignItems: "center",
     justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
-    color: "#001867ff",
+    color: COLORS.primary, // theme primary
     marginBottom: 10,
     textAlign: "center",
   },
   cardDescription: {
-    color: "#333333",
+    color: COLORS.textDark, // theme text color (#333333)
     textAlign: "center",
   },
 });

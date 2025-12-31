@@ -5,11 +5,10 @@ import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-/* Header */
-import Header from "./src/components/HeaderFooter/Header";
+
 /* Sidebar */
-import sidebar from "./src/components/SidebarComponent/sidebar";
-import ADsidebar from "./src/components/AdminSidebar/ADsidebar";
+import sidebar from "./src/components/Shareholderdashboard/sidebar";
+import ADsidebar from "./src/components/Admin/Admindashboard/ADsidebar";
 
 /* Landing Pages */
 import HeroScreen from "./src/components/LandingPages/HeroScreen";
@@ -17,6 +16,7 @@ import BusinessScreen from "./src/components/LandingPages/BusinessScreen";
 import InfoScreen from "./src/components/LandingPages/InfoScreen";
 import Cards from "./src/components/LandingPages/Cards";
 import Marketing from "./src/components/LandingPages/Marketing";
+import Header from "./src/components/LandingPages/Header";
 
 /* Auth / Account */
 import LoginScreen from "./src/components/Login/LoginScreen";
@@ -31,18 +31,14 @@ import VerifyEmail from "./src/components/ForgetEmailPWD/VerifyEmail";
 import VerifyReset from "./src/components/ForgetEmailPWD/VerifyReset";
 
 /* Dashboard / Home */
-import Dashboard from "./src/Screens/DashboardFolder/Dashboard";
+
 import HomeLayout from "./src/Screens/HomeFolder/HomeLayout";
 
-/* Contact / HRPanel */
-import ContactDetails2 from "./src/components/HrPanel/ContactDetails2";
-import Header2 from "./src/components/HrPanel/Header2";
-import Sidebar2 from "./src/components/HrPanel/Sidebar2";
-import ProfileSection from "./src/components/HrPanel/ProfileSection";
+
 
 /* Admin */
-import Shareholder from "./src/components/Admin/Expenses/Shareholder/Shareholder";
-import Expenses from "./src/components/Admin/Expenses/Expenses";
+import Shareholder from "./src/components/Shareholderdashboard/Shareholder";
+import Expenses from "./src/components/Shareholderdashboard/Expenses";
 import Adminreport from "./src/components/Admin/Admindashboard/Adminreport";
 import AdminDashboard from "./src/components/Admin/Admindashboard/AdminDashboard";
 import ADDashboard from "./src/components/Admin/Admindashboard/ADDashboard";
@@ -86,7 +82,7 @@ export type RootStackParamList = {
   Password: undefined;
   VerifyEmail: undefined;
   VerifyReset: undefined;
-  Dashboard: undefined;
+  
   HomeLayout: undefined;
   ContactDetails2: undefined;
   Shareholder: undefined;
@@ -161,14 +157,11 @@ const App: React.FC = () => {
         <Stack.Screen name="VerifyReset" component={VerifyReset} />
 
         {/* Dashboard / Home */}
-        <Stack.Screen name="Dashboard" component={Dashboard} />
+       
         <Stack.Screen name="HomeLayout" component={HomeLayout} />
 
-        {/* HRPanel */}
-        <Stack.Screen name="ContactDetails2" component={ContactDetails2} />
-        <Stack.Screen name="Header2" component={Header2} />
-        <Stack.Screen name="Sidebar2" component={Sidebar2} />
-        <Stack.Screen name="ProfileSection" component={ProfileSection} />
+    
+       
 
         {/* Admin */}
         <Stack.Screen name="Shareholder" component={Shareholder} />

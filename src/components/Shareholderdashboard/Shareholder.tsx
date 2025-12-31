@@ -13,7 +13,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 
 // ✅ Correct Sidebar import
-import Sidebar from "../../../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 
 const COLORS = {
   primary: "#193288",

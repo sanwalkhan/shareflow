@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, useWindowDimensions, ScrollView } from "react-native";
 import { Users, Building, CreditCard, Wallet } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { COLORS } from "../../Constants/theme";
 
 const BusinessScreen: React.FC = () => {
   const { width: sw } = useWindowDimensions();
@@ -11,48 +12,52 @@ const BusinessScreen: React.FC = () => {
 
   return (
     <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        backgroundColor: "#FFFFFF",
-        paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
-        paddingTop: 16,
-        paddingBottom: 16,
-      }}
+  contentContainerStyle={{
+    flexGrow: 1,
+    backgroundColor: COLORS.cardBackground, // 👈 white bg from theme
+    paddingHorizontal: isDesktop ? 80 : isTablet ? 40 : 16,
+    paddingTop: 16,
+    paddingBottom: 16,
+  }}
+
       showsVerticalScrollIndicator={false}
     >
       {/* Heading */}
       <View style={{ marginBottom: 16, alignItems: "center" }}>
         <Text
-          style={{
-            fontFamily: "Poppins-Bold",
-            fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
-            color: "#00124D",
-            textAlign: "center",
-          }}
-        >
-          Helping a local
-        </Text>
+    style={{
+      fontFamily: "Poppins-Bold",
+      fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
+      color: COLORS.textDark, // 👈 #00124D from theme
+      textAlign: "center",
+    
+          fontWeight: "700",
+    }}
+  >
+    Helping a local
+  </Text>
+       <Text
+    style={{
+      fontFamily: "Poppins-Bold",
+      fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
+      color: COLORS.button, // 👈 #FFC20E from theme
+      textAlign: "center",
+       fontWeight: "700",
+    }}
+  >
+    business reinvent itself
+  </Text>
         <Text
-          style={{
-            fontFamily: "Poppins-Bold",
-            fontSize: isDesktop ? 36 : isTablet ? 30 : 24,
-            color: "#FFC20E",
-            textAlign: "center",
-          }}
-        >
-          business reinvent itself
-        </Text>
-        <Text
-          style={{
-            fontFamily: "Poppins-Regular",
-            fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
-            color: "#00124D",
-            marginTop: 8,
-            textAlign: "center",
-          }}
-        >
-          We reached here with our hard work and dedication.
-        </Text>
+    style={{
+      fontFamily: "Poppins-Regular",
+      fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
+      color: COLORS.textDark, // 👈 #00124D from theme
+      marginTop: 8,
+      textAlign: "center",
+    }}
+  >
+    We reached here with our hard work and dedication.
+  </Text>
       </View>
 
       {/* Stats Boxes */}
@@ -138,6 +143,7 @@ const BusinessScreen: React.FC = () => {
               lineHeight: isDesktop ? 36 : isTablet ? 32 : 28,
               textAlign: isDesktop || isTablet ? "left" : "center",
               marginBottom: 12,
+               fontWeight: "700",
             }}
           >
             How to design your site footer like we did

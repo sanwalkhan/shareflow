@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Sidebar from "../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
 
 const COLORS = {

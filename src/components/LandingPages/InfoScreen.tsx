@@ -75,6 +75,8 @@ const InfoScreen: React.FC = () => {
           </Text>
 
           {/* PARAGRAPH */}
+
+
           <Text
             style={{
               fontFamily: "Inter-Regular",

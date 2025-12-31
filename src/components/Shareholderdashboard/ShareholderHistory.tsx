@@ -8,10 +8,10 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
 // ✅ Import Sidebar
-import Sidebar from "../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 
 const COLORS = {
-  primary: "#14339b",
+primary: "#193288",
   button: "#FFC20E",
   cardBackground: "#000",
   cardText: "#fff",

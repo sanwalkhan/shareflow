@@ -7,9 +7,9 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
-  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { COLORS } from "../../Constants/theme";
 
 import {
   AdvancedAnalyticsCard,
@@ -20,14 +20,14 @@ import {
 import InfoScreen from "./InfoScreen";
 import BusinessScreen from "./BusinessScreen";
 import Marketing from "./Marketing";
-import Footer from "../HeaderFooter/Footer";
+import Footer from "./Footer";
 
 const HeroScreen: React.FC = () => {
   const { width, height } = useWindowDimensions();
   const navigation = useNavigation<any>();
 
   const isSmallMobile = width <= 380;
-  const isMobile = width < 768;
+  const isMobile = width < 780;
   const isTablet = width >= 768;
   const isDesktop = width >= 1200;
 
@@ -39,11 +39,6 @@ const HeroScreen: React.FC = () => {
     ? 28
     : 36;
   const subHeadingFontSize = isSmallMobile ? 24 : headingFontSize;
-
-  const cardContainerStyle = {
-    width: isTablet || isDesktop ? "32%" : "100%",
-    marginTop: 16,
-  } as const;
 
   const heroImageStyle = {
     width: "100%",
@@ -57,15 +52,26 @@ const HeroScreen: React.FC = () => {
     navigation.navigate("AdminStack", { screen: "ADDashboard" });
   };
 
-  // ================= CARD OVERLAP =================
+  // Card overlap for visual effect
   const cardSectionMarginTop = isMobile ? -120 : isTablet ? -540 : -200;
+
+  // Card container style
+  const cardContainerStyle = (isMobile: boolean) => ({
+  width: isMobile ? "100%" : "32%",
+  marginTop: isMobile ? -210 : 16, // 0 for mobile, 16 (or negative if needed) for desktop/tablet
+});
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      {/* ================= BLUE SECTION ================= */}
-      <View style={{ backgroundColor: "#001867ff", position: "relative" }}>
-        {/* HERO CONTENT */}
-        <View
+      {/* ================= BLUE HERO SECTION ================= */}
+     <View
+  style={{
+    backgroundColor: COLORS.heroBackground, // 👈 theme.tsx se
+    position: "relative",
+  }}
+>
+  {/* HERO CONTENT */}
+<View
           style={{
             paddingVertical: sectionVerticalPadding,
             paddingHorizontal: 24,
@@ -96,7 +102,10 @@ const HeroScreen: React.FC = () => {
                 </Text>
 
                 <View style={{ flexDirection: "row", marginTop: 24 }}>
-                  <TouchableOpacity style={btnStyle} onPress={goToAdminDashboard}>
+                  <TouchableOpacity
+                    style={btnStyle}
+                    onPress={goToAdminDashboard}
+                  >
                     <Text style={btnText}>Register</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={btnStyle}>
@@ -151,17 +160,24 @@ const HeroScreen: React.FC = () => {
                   gap: 10,
                 }}
               >
-                <TouchableOpacity style={btnStyle} onPress={goToAdminDashboard}>
+                <TouchableOpacity
+                  style={btnStyle}
+                  onPress={goToAdminDashboard}
+                >
                   <Text style={btnText}>Register</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={btnStyle}>
+                
+                <TouchableOpacity
+                  style={btnStyle}
+                  onPress={goToAdminDashboard}
+                >
                   <Text style={btnText}>Watch Demo</Text>
                 </TouchableOpacity>
               </View>
             </View>
           )}
 
-          {/* ================= SECTION TITLE FOR MOBILE ================= */}
+          {/* MOBILE SECTION TITLE */}
           {isMobile && (
             <View
               style={{
@@ -203,7 +219,7 @@ const HeroScreen: React.FC = () => {
           )}
         </View>
 
-        {/* ================= SECTION TITLE FOR WEB/TABLET ================= */}
+        {/* DESKTOP/TABLET SECTION TITLE */}
         {!isMobile && (
           <View
             style={{
@@ -251,35 +267,37 @@ const HeroScreen: React.FC = () => {
 
       {/* ================= WHITE CARD SECTION ================= */}
       <View
-        style={{
-          backgroundColor: "#fff",
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          paddingVertical: 24,
-          paddingHorizontal: 24,
-        }}
-      >
+  style={{
+    backgroundColor: COLORS.cardBackground, // 👈 theme.tsx se
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 24,
+  }}
+>
+
         <View
           style={{
             flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between",
-            marginTop: cardSectionMarginTop, // moved slightly up for mobile
-            gap: 0, // remove extra space
+            justifyContent: "flex-start",
+            marginTop: cardSectionMarginTop,
+            gap: 0,
+            marginLeft: isMobile ? 0 : 104,
           }}
         >
-          <View style={cardContainerStyle}>
+          <View style={cardContainerStyle(isMobile)}>
             <AdvancedAnalyticsCard />
           </View>
-          <View style={cardContainerStyle}>
+          <View style={cardContainerStyle(isMobile)}>
             <EnterpriseSecurityCard />
           </View>
-          <View style={cardContainerStyle}>
+          <View style={cardContainerStyle(isMobile)}>
             <SmartAutomationCard />
           </View>
         </View>
       </View>
 
-      {/* ================= OTHER SECTIONS ================= */}
+      {/* OTHER SECTIONS */}
       <InfoScreen />
       <BusinessScreen />
       <Marketing />
@@ -289,7 +307,7 @@ const HeroScreen: React.FC = () => {
 };
 
 const btnStyle = {
-  backgroundColor: "#FFC20E",
+  backgroundColor: COLORS.button, // 👈 #FFC20E from theme
   paddingVertical: 12,
   paddingHorizontal: 20,
   borderRadius: 8,
@@ -297,7 +315,7 @@ const btnStyle = {
 };
 
 const btnText = {
-  color: "#001867",
+  color: COLORS.accent, // 👈 #001867ff from theme
   fontSize: 16,
   fontWeight: "bold",
 };
