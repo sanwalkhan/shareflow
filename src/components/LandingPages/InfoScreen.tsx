@@ -1,19 +1,18 @@
-// InfoScreen.tsx
 import React from "react";
 import { View, Text, Image, TouchableOpacity, useWindowDimensions, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
+ 
 const InfoScreen: React.FC = () => {
   const { width: sw } = useWindowDimensions();
-
+ 
   const isDesktop = sw >= 1200;
   const isTablet = sw >= 768 && sw < 1200;
   const isMobile = sw < 768;
-
+ 
   const headingFontSize = isDesktop ? 36 : isTablet ? 30 : 22;
   const paragraphFontSize = isDesktop ? 18 : isTablet ? 16 : 14;
   const lineHeight = isDesktop ? 42 : isTablet ? 28 : 22;
-
+ 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -51,7 +50,7 @@ const InfoScreen: React.FC = () => {
             resizeMode="cover"
           />
         </View>
-
+ 
         {/* CONTENT */}
         <View
           style={{
@@ -73,8 +72,10 @@ const InfoScreen: React.FC = () => {
           >
             The unseen of spending three years at Pixelgrade
           </Text>
-
+ 
           {/* PARAGRAPH */}
+ 
+ 
           <Text
             style={{
               fontFamily: "Inter-Regular",
@@ -92,7 +93,7 @@ const InfoScreen: React.FC = () => {
             Nullam pulvinar sit amet risus pretium auctor. Etiam quis massa
             pulvinar, aliquam quam vitae, tempus sem. Donec elementum pulvinar odio.
           </Text>
-
+ 
           {/* BUTTON */}
           <TouchableOpacity
             style={{
@@ -128,5 +129,5 @@ const InfoScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
+ 
 export default InfoScreen;

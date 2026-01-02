@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import Sidebar from "../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 
 const COLORS = {
@@ -45,7 +45,7 @@ const ShareholderReport: React.FC = () => {
   useEffect(() => {
     const onChange = ({ window }: { window: { width: number; height: number } }) => setWindowWidth(window.width);
     Dimensions.addEventListener("change", onChange);
-    return () => Dimensions.removeEventListener("change", onChange);
+    return () => subscription?.remove()
   }, []);
 
   const toggleSidebar = () => {

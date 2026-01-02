@@ -11,10 +11,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import Sidebar from "../SidebarComponent/sidebar";
+import Sidebar from "./sidebar";
 
 const COLORS = {
-  primary: "#14339b",
+  primary: "#193288",
   secondary: "#1a45c2",
   cardBackground: "#000",
   cardText: "#fff",
@@ -50,7 +50,7 @@ export default function HelpSupportScreen() {
     const subscription = Dimensions.addEventListener("change", onChange);
     return () => {
       if (subscription?.remove) subscription.remove();
-      else Dimensions.removeEventListener("change", onChange);
+      else subscription?.remove()
     };
   }, []);
 

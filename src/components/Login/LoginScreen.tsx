@@ -12,28 +12,28 @@ import { Eye, EyeOff, LogIn, Building2 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../Constants/theme";
-
+ 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
   const { width } = useWindowDimensions();
-
+ 
   // 🔑 SAFE WIDTH (360 minimum reference)
   const SAFE_WIDTH = Math.max(width, 360);
-
+ 
   const isMobile = SAFE_WIDTH <= 480;
   const isCongested = SAFE_WIDTH < 500; // 👈 Back button breakpoint
-
+ 
   // 🔑 SMART CARD WIDTH
   const cardWidth =
     SAFE_WIDTH < 768
       ? SAFE_WIDTH - 24
       : Math.min(SAFE_WIDTH * 0.6, 720);
-
+ 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
+ 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView
@@ -47,17 +47,18 @@ export default function LoginScreen() {
       >
         {/* OUTER CARD */}
         <View
-          style={{
-            width: cardWidth,
-            backgroundColor: "#E6F0FF",
-            borderRadius: 24,
-            padding: 20,
-            shadowColor: "#000",
-            shadowOpacity: 0.15,
-            shadowRadius: 6,
-            elevation: 5,
-          }}
-        >
+  style={{
+    width: cardWidth,
+    backgroundColor: COLORS.outerCardBackground, // 👈 theme.tsx se outer card bg
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: COLORS.black,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5,
+  }}
+>
+ 
           {/* TOP BAR */}
           <View
             style={{
@@ -69,7 +70,7 @@ export default function LoginScreen() {
             {/* Back Button — Top Left (>=500px) */}
             {!isCongested && (
               <TouchableOpacity
-                onPress={() => navigation.navigate("Header")}
+                onPress={() => navigation.navigate("Hero")}
                 style={{ position: "absolute", left: 0, top: 0 }}
               >
                 <LinearGradient
@@ -87,7 +88,7 @@ export default function LoginScreen() {
                 </LinearGradient>
               </TouchableOpacity>
             )}
-
+ 
             {/* Logo + ShareFlow Text */}
             <View
               style={{
@@ -116,7 +117,7 @@ export default function LoginScreen() {
                 ShareFlow
               </Text>
             </View>
-
+ 
             {/* Back Button — Below Logo (<500px) */}
             {isCongested && (
               <TouchableOpacity
@@ -139,7 +140,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
             )}
           </View>
-
+ 
           {/* INNER CARD */}
           <View
             style={{
@@ -170,7 +171,7 @@ export default function LoginScreen() {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
-
+ 
             {/* Title */}
             <Text
               style={{
@@ -192,7 +193,7 @@ export default function LoginScreen() {
             >
               Sign into your ShareFlow account
             </Text>
-
+ 
             {/* Email */}
             <Text style={{ color: COLORS.primary, marginBottom: 6 }}>
               Email Address
@@ -211,7 +212,7 @@ export default function LoginScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-
+ 
             {/* Password */}
             <Text style={{ color: COLORS.primary, marginBottom: 6 }}>
               Password
@@ -241,7 +242,7 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
             </View>
-
+ 
             {/* Remember + Forget */}
             <View
               style={{
@@ -266,12 +267,12 @@ export default function LoginScreen() {
                 />
                 <Text>Remember me</Text>
               </TouchableOpacity>
-
+ 
               <TouchableOpacity onPress={() => navigation.navigate("ForgetPwd")}>
                 <Text style={{ color: COLORS.accent }}>Forget password?</Text>
               </TouchableOpacity>
             </View>
-
+ 
             {/* Login Button */}
             <TouchableOpacity onPress={() => navigation.navigate("ShareholderDashboard")}>
               <LinearGradient
@@ -291,7 +292,7 @@ export default function LoginScreen() {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
-
+ 
             {/* Create Account */}
             <TouchableOpacity
               style={{ marginTop: 20 }}

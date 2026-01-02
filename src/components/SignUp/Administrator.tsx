@@ -12,36 +12,36 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../Constants/theme";
-
+ 
 const Administrator: React.FC = () => {
   const navigation = useNavigation<any>();
   const { width } = useWindowDimensions(); // ✅ automatically updates on resize
   const isMobile = width < 768; // mobile breakpoint
-
+ 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
-
+ 
   const cardWidth = isMobile ? width - 32 : Math.min(width * 0.8, 800);
-
+ 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View style={{ flex: 1, alignItems: "center", paddingVertical: 24 }}>
-
+ 
           {/* Outer Card */}
           <View
             style={{
               width: cardWidth,
-              backgroundColor: "#E6F0FF",
+              backgroundColor: COLORS.outerCardBackground,
               borderRadius: 24,
               padding: 34,
               shadowColor: "#000",
               shadowOpacity: 0.2,
               shadowRadius: 6,
               elevation: 5,
-            
+           
             }}
           >
             {/* Header */}
@@ -53,7 +53,7 @@ const Administrator: React.FC = () => {
                 />
                 <Text style={{ color: COLORS.primary, fontSize: 24, fontWeight: "bold" }}>ShareFlow</Text>
               </View>
-
+ 
               {/* Back Button */}
               {isMobile ? (
                 <View style={{ marginTop: 12 }}>
@@ -98,7 +98,7 @@ const Administrator: React.FC = () => {
                 </TouchableOpacity>
               )}
             </View>
-
+ 
             {/* Inner Card */}
             <View
               style={{
@@ -116,7 +116,7 @@ const Administrator: React.FC = () => {
               <Text style={{ fontSize: 14, color: "#6C717D", textAlign: "center", marginBottom: 16 }}>
                 Primary account administrator information
               </Text>
-
+ 
               {/* Stepper */}
               <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 16 }}>
                 {[1, 2, 3, 4].map((step, idx) => {
@@ -156,7 +156,7 @@ const Administrator: React.FC = () => {
                   );
                 })}
               </View>
-
+ 
               {/* Form Fields */}
               <View style={{ gap: 12 }}>
                 <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12 }}>
@@ -179,7 +179,7 @@ const Administrator: React.FC = () => {
                     />
                   </View>
                 </View>
-
+ 
                 <View style={{ flexDirection: isMobile ? "column" : "row", gap: 12 }}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 14, fontWeight: "600" }}>Job Title</Text>
@@ -201,16 +201,27 @@ const Administrator: React.FC = () => {
                   </View>
                 </View>
               </View>
-
+ 
               {/* Buttons */}
               <View style={{ flexDirection: "row", gap: 12, marginTop: 20 }}>
-                <TouchableOpacity
-                  style={{ flex: 1, height: 48, backgroundColor: "#D1D5DB", borderRadius: 12, justifyContent: "center", alignItems: "center" }}
-                  onPress={() => navigation.goBack()}
-                >
-                  <Text style={{ color: "#4B5563", fontWeight: "bold" }}>← Previous</Text>
-                </TouchableOpacity>
-
+  <TouchableOpacity
+    style={{
+      flex: 1,
+      height: 48,
+      backgroundColor: COLORS.grayButton, // theme se bg
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+    onPress={() => navigation.goBack()}
+  >
+    <Text style={{ color: COLORS.grayButtonText, fontWeight: "bold" }}>
+      ← Previous
+    </Text>
+  </TouchableOpacity>
+ 
+ 
+ 
                 <TouchableOpacity
                   style={{ flex: 1, height: 48, borderRadius: 12 }}
                   onPress={() => navigation.navigate("Password")}
@@ -232,5 +243,5 @@ const Administrator: React.FC = () => {
     </SafeAreaView>
   );
 };
-
+ 
 export default Administrator;

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ScrollView } from "react-native";
-import Header from "../../components/HeaderFooter/Header"; 
+import Header from "../../components/LandingPages/Header"; 
 import HeroScreen from "../../components/LandingPages/HeroScreen"; // HeroScreen component
 import Cards from "../../components/LandingPages/Cards"; // HeroScreen component
 

@@ -14,10 +14,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-import Sidebar from "../AdminSidebar/ADsidebar";
+import Sidebar from "./ADsidebar";
 
 const COLORS = {
-  primary: "#14339b",
+  primary: "#193288",
   button: "#FFC20E",
   cardBackground: "#000",
   cardText: "#fff",

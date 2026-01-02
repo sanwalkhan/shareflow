@@ -11,11 +11,11 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Sidebar from "../AdminSidebar/ADsidebar";
+import Sidebar from "./ADsidebar";
 import { LineChart } from "react-native-chart-kit";
 
 const COLORS = {
-  primary: "#001867",
+  primary: "#193288",
    accent: "#16a34a",
   chartLine: "#16a34a",
   background: "#000",

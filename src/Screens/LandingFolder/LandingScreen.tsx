@@ -9,7 +9,7 @@ import InfoScreen from '../../components/LandingPages/InfoScreen';
 import Marketing from '../../components/LandingPages/Marketing';
 
 // ✅ Import HR Layout
-import HrLayout from '../../components/Hr-profile/HrLayout';
+import HrLayout from '../../components/Hr-side/HrLayout';
 
 const LandingScreen: React.FC = () => {
   const [showHR, setShowHR] = useState(false);

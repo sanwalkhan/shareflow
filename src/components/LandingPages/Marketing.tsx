@@ -1,9 +1,8 @@
-// MarketingPage.tsx
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { ChevronRight, ArrowRight } from 'lucide-react-native';
 import { LinearGradient } from "expo-linear-gradient";
-
+import { COLORS } from "../../Constants/theme";
 const cards = [
   {
     title: 'Creating Streamlined Safeguarding Processes with OneRen',
@@ -18,12 +17,12 @@ const cards = [
     image: require('../../assets/image20.png'),
   },
 ];
-
+ 
 const Marketing: React.FC = () => {
   const { width: sw } = useWindowDimensions();
   const isDesktop = sw >= 1200;
   const isTablet = sw >= 768 && sw < 1200;
-
+ 
   return (
     <ScrollView
       contentContainerStyle={{
@@ -37,31 +36,32 @@ const Marketing: React.FC = () => {
     >
       {/* Heading */}
       <Text
-        style={{
-          textAlign: "center",
-          fontSize: isDesktop ? 32 : isTablet ? 28 : 24,
-          fontWeight: "700",
-          color: "#00124D",
-          marginTop: 24,
-        }}
-      >
-        Caring is the new marketing
-      </Text>
-
+  style={{
+    textAlign: "center",
+    fontSize: isDesktop ? 32 : isTablet ? 28 : 24,
+    fontWeight: "700",
+    color: COLORS.textDark, // 👈 #00124D from theme
+    marginTop: 24,
+  }}
+>
+  Caring is the new marketing
+</Text>
       <Text
-        style={{
-          textAlign: "center",
-          fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
-          color: "#666666",
-          marginTop: 8,
-          lineHeight: 22,
-        }}
-      >
+  style={{
+    textAlign: "center",
+    fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
+    color: COLORS.gray, // 👈 #666666 from theme
+    marginTop: 8,
+    lineHeight: 22,
+  }}
+>
+ 
+ 
         The Noticest blog is the best place to read about the latest membership insights, trends and more.{"\n"}
         See who's joining the community, read about how our community are increasing their membership income{"\n"}
         and lots more.
       </Text>
-
+ 
       {/* Cards */}
       <View
         style={{
@@ -102,7 +102,7 @@ const Marketing: React.FC = () => {
                 marginTop: 16,
               }}
             />
-
+ 
             {/* Title Box */}
             <View
               style={{
@@ -127,17 +127,17 @@ const Marketing: React.FC = () => {
                 {card.title}
               </Text>
             </View>
-
+ 
             {/* Read More Button */}
-            <LinearGradient
-              colors={['#FFC20E', '#FFC20E']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{
-                borderRadius: 20,
-                marginTop: 8,
-              }}
-            >
+           <LinearGradient
+  colors={[COLORS.button, COLORS.button]} // 👈 gradient from theme
+  start={{ x: 0, y: 0 }}
+  end={{ x: 1, y: 0 }}
+  style={{
+    borderRadius: 20,
+    marginTop: 8,
+  }}
+>
               <TouchableOpacity
                 style={{
                   paddingVertical: 8,
@@ -147,26 +147,33 @@ const Marketing: React.FC = () => {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "#00124D", fontWeight: "700", marginRight: 4 }}>
-                  Read More
-                </Text>
+                 <Text
+    style={{
+      color: COLORS.textDark, // 👈 #00124D from theme
+      fontWeight: "700",
+      marginRight: 4,
+    }}
+  >
+    Read More
+  </Text>
                 <ChevronRight size={16} color="#00124D" />
               </TouchableOpacity>
             </LinearGradient>
           </View>
         ))}
       </View>
-
+ 
       {/* Get a Demo Button */}
-      <View style={{ marginTop: 32, alignItems: "center" }}>
-        <LinearGradient
-          colors={['#FFC20E', '#FFC20E']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            borderRadius: 20,
-          }}
-        >
+   
+<View style={{ marginTop: 32, alignItems: "center" }}>
+  <LinearGradient
+    colors={[COLORS.button, COLORS.button]} // 👈 gradient from theme
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 0 }}
+    style={{
+      borderRadius: 20,
+    }}
+  >
           <TouchableOpacity
             style={{
               paddingVertical: 10,
@@ -175,15 +182,21 @@ const Marketing: React.FC = () => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#00124D", fontWeight: "700", marginRight: 6 }}>
-              Get a Demo
-            </Text>
-            <ArrowRight size={18} color="#00124D" />
+             <Text
+      style={{
+        color: COLORS.textDark, // 👈 #00124D from theme
+        fontWeight: "700",
+        marginRight: 6,
+      }}
+    >
+      Get a Demo
+    </Text>
+    <ArrowRight size={18} color={COLORS.textDark} />
           </TouchableOpacity>
         </LinearGradient>
       </View>
     </ScrollView>
   );
 };
-
+ 
 export default Marketing;

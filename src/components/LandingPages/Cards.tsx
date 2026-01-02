@@ -9,14 +9,14 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { TrendingUp, Shield, Zap } from "lucide-react-native";
-
+import { COLORS } from "../../Constants/theme";
 interface CardProps {
   icon: "analytics" | "security" | "automation";
   title: string;
   description: string;
   style?: ViewStyle;
 }
-
+ 
 export const Cards: React.FC<CardProps> = ({
   icon,
   title,
@@ -24,14 +24,14 @@ export const Cards: React.FC<CardProps> = ({
   style,
 }) => {
   const { width } = useWindowDimensions();
-
+ 
   const isSmallMobile = width <= 380;
   const isTablet = width >= 768;
   const isDesktop = width >= 1200;
-
+ 
   const IconComponent =
     icon === "analytics" ? TrendingUp : icon === "security" ? Shield : Zap;
-
+ 
   return (
     <View
       style={[
@@ -58,7 +58,7 @@ export const Cards: React.FC<CardProps> = ({
           strokeWidth={3}
         />
       </View>
-
+ 
       <Text
         style={[
           styles.cardTitle,
@@ -69,7 +69,7 @@ export const Cards: React.FC<CardProps> = ({
       >
         {title}
       </Text>
-
+ 
       <Text
         style={[
           styles.cardDescription,
@@ -84,7 +84,7 @@ export const Cards: React.FC<CardProps> = ({
     </View>
   );
 };
-
+ 
 // Individual cards
 export const AdvancedAnalyticsCard = () => (
   <Cards
@@ -94,7 +94,7 @@ export const AdvancedAnalyticsCard = () => (
     style={dynamicCardWidth()}
   />
 );
-
+ 
 export const EnterpriseSecurityCard = () => (
   <Cards
     icon="security"
@@ -103,7 +103,7 @@ export const EnterpriseSecurityCard = () => (
     style={dynamicCardWidth()}
   />
 );
-
+ 
 export const SmartAutomationCard = () => (
   <Cards
     icon="automation"
@@ -112,11 +112,11 @@ export const SmartAutomationCard = () => (
     style={dynamicCardWidth()}
   />
 );
-
+ 
 // ========= RESPONSIVE CARD WIDTH FUNCTION =========
 const dynamicCardWidth = () => {
   const width = Dimensions.get("window").width;
-
+ 
   if (width <= 380) {
     // ✔ Perfect for 360px — full width
     return {
@@ -125,7 +125,7 @@ const dynamicCardWidth = () => {
       marginBottom: 16,
     };
   }
-
+ 
   if (width < 768) {
     // Normal mobile
     return {
@@ -134,7 +134,7 @@ const dynamicCardWidth = () => {
       marginBottom: 16,
     };
   }
-
+ 
   if (width < 1200) {
     // Tablet – 3 cards in one row
     return {
@@ -142,46 +142,46 @@ const dynamicCardWidth = () => {
       minHeight: 340,
     };
   }
-
+ 
   // Desktop
   return {
     width: width / 4,
     minHeight: 360,
   };
 };
-
+ 
 // ========= BASE STYLES =========
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.cardBackground, // theme white
     marginHorizontal: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.black, // theme black
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 6,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop:320,
+    marginTop: 320,
   },
   iconWrapper: {
     marginBottom: 20,
-    backgroundColor: "#001867ff",
+    backgroundColor: COLORS.primary, // theme primary (#001867)
     alignItems: "center",
     justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
-    color: "#001867ff",
+    color: COLORS.primary, // theme primary
     marginBottom: 10,
     textAlign: "center",
   },
   cardDescription: {
-    color: "#333333",
+    color: COLORS.textDark, // theme text color (#333333)
     textAlign: "center",
   },
 });
-
+ 
 // ========= SCROLL ROW WRAPPER =========
 export const CardsRow: React.FC = () => (
   <ScrollView
@@ -197,5 +197,5 @@ export const CardsRow: React.FC = () => (
     <SmartAutomationCard />
   </ScrollView>
 );
-
+ 
 export default Cards;
